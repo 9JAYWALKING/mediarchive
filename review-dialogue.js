@@ -1,0 +1,19 @@
+const voices={
+ haru:{intro:'잠깐! 가기 전에 나랑 두 가지만 맞춰 보자!',right:'맞았어! 헤헤, 역시 같이 하길 잘했지?',wrong:'우우, 그건 아니잖아! 나랑 본 거 다시 떠올려 봐.',unknown:'에에… 벌써 잊은 거야? 이번엔 내가 옆에서 짚어 줄게.',recover:'그래, 그거야! 다시 해 줘서… 조금 기뻐.',perfect:'전부 맞혔다! 오늘 너, 꽤 멋있었어!',end:'아까 막힌 데는 다음에 내가 또 물어볼 거야. 약속!',negative:'angry',positive:'happy'},
+ nagi:{intro:'가기 전에… 내가 물어봐도 될까?',right:'응, 맞아… 네가 설명해 주니까 안심돼.',wrong:'아… 그건 조금 달라. 같이 본 부분인데… 아쉬워.',unknown:'잊어버렸어…? 으응, 울진 않을게. 한 번만 다시 보자.',recover:'이번엔 기억했네. …고마워, 다시 해 줘서.',perfect:'다 기억하고 있었구나… 나, 지금 많이 기뻐.',end:'헷갈린 곳은 표시해 둘게. 다음에도 같이 와 줘.',negative:'disappointed',positive:'smile'},
+ shiori:{intro:'돌아가기 전에 확인할 게 있어. 오래 걸리진 않아.',right:'정확해. 네 칸에는 작은 별을 붙여 둘게.',wrong:'…고개만 끄덕인 거 아니지? 이 칸은 다시 봐.',unknown:'빈칸으로 남겨 뒀구나. 내가 기다린 부분인데.',recover:'좋아. 이제 빈칸은 없어. 네가 직접 채운 거야.',perfect:'빠진 게 없네. …오늘은 조금 자랑해도 돼.',end:'막힌 곳은 책갈피를 끼워 뒀어. 다음에 같이 펼치자.',negative:'angry',positive:'smile'},
+ rei:{intro:'가기 전에, 오늘의 연결을 네 말로 확인하고 싶어.',right:'응. 근거까지 이어졌네. …잘했어.',wrong:'그 결론에는 빠진 연결이 있어. 기대했는데… 아쉽네.',unknown:'…기억나지 않는구나. 피하지 말고 여기부터 다시 보자.',recover:'이제 설명이 이어졌어. 다시 생각해 준 건… 기뻐.',perfect:'모두 맞았어. 오늘은 네가 든든하네. …웃지 마.',end:'빠진 연결은 남겨 둘게. 다음에는 네가 이어 줘.',negative:'disappointed',positive:'smile'},
+ ritsu:{intro:'마지막 점검. 순서대로 가 보자.',right:'좋아, 딱 맞아. 흐름도 정확했어.',wrong:'잠깐, 그 연결은 어긋났어. 다시 맞춰 보자.',unknown:'거기서 멈췄구나. 한 단계 전부터 같이 보자.',recover:'이제 맞물렸네. 좋아.',perfect:'끝까지 정확했어. 오늘 점검은 합격.',end:'걸린 부분은 남겨 둘게. 다음엔 한 번에 가자.',negative:'disappointed',positive:'smile'},
+ ibuki:{intro:'마지막 두근두근 시간! 내가 물어볼게!',right:'바로 그거지! 너랑 호흡 잘 맞는데?',wrong:'앗, 거기서 빗나가면 어떡해! 한 번 더 봐!',unknown:'에이, 멈추지 마! 힌트는 내가 같이 찾아 줄게.',recover:'그렇지! 다시 박자 맞았다!',perfect:'완벽한 마무리! 나 지금 엄청 신났어!',end:'다음엔 놓친 박자까지 같이 맞추자!',negative:'angry',positive:'happy'},
+ mio:{intro:'마지막으로 큰 흐름만 같이 확인하자.',right:'응, 잘 이어졌어. 차분하게 잘 봤네.',wrong:'그 부분이 빠졌구나… 조금 아쉽네.',unknown:'괜찮아, 비어 있는 곳부터 다시 찾아보자.',recover:'이제 채워졌네. 네가 돌아봐 줘서 기뻐.',perfect:'오늘 흐름이 전부 이어졌어. 나도 마음이 놓여.',end:'서두르지 말고, 막힌 부분만 다음에 다시 보자.',negative:'disappointed',positive:'smile'},
+ sena:{intro:'가기 전에 작은 단서 두 개만 찾아 줄래?',right:'찾았네! 네가 짚은 곳이 맞아.',wrong:'음… 내가 기다리던 단서는 그쪽이 아닌데.',unknown:'놓쳤구나… 가까이서 한 번 더 보자.',recover:'이제 보이지? 잘 찾았어.',perfect:'단서를 하나도 놓치지 않았네. 멋졌어.',end:'안 보였던 부분은 다음에 같이 찾아보자.',negative:'disappointed',positive:'smile'},
+ aoi:{intro:'마지막 갈림길이야. 방향을 골라 봐.',right:'응, 그 길이야. 이유도 잘 잡았네.',wrong:'그쪽으로 가면 연결이 끊겨. 조금 실망했어.',unknown:'길을 잃었구나. 시작점으로 돌아가 보자.',recover:'이번엔 맞는 방향이네. 잘 돌아왔어.',perfect:'끝까지 길을 잃지 않았네. 믿음직했어.',end:'헷갈린 갈림길만 다음에 다시 걸어 보자.',negative:'disappointed',positive:'smile'},
+ akari:{intro:'마지막 스퍼트! 두 가지만 같이 보자!',right:'좋았어! 그 판단, 마음에 들어!',wrong:'우, 너무 급했잖아! 놓친 조건부터 봐!',unknown:'여기서 포기야? 내가 한 번 더 같이 봐 줄게.',recover:'됐어! 이번엔 제대로 잡았네!',perfect:'전부 맞혔어! 오늘 너 진짜 든든했어!',end:'다음엔 아까 놓친 조건도 꼭 챙겨 와!',negative:'angry',positive:'happy'},
+ momo:{intro:'후후, 선배가 마지막으로 물어봐도 돼?',right:'잘했어. 외운 답 말고 흐름도 기억했네.',wrong:'어머… 익숙하다고 눈으로만 넘긴 건 아니지?',unknown:'선배가 조금 서운한데? 같이 다시 보자.',recover:'그렇지. 이제 선배도 안심이야.',perfect:'하나도 안 놓쳤네. 선배가 칭찬해 줄게.',end:'틀린 곳만 다시 보면 돼. 다음에도 잊지 말고 와.',negative:'disappointed',positive:'smile'},
+ tsumugi:{intro:'마지막으로 연결한 곳을 같이 살펴볼까?',right:'좋아. 처음부터 끝까지 잘 이어졌어.',wrong:'음… 그 연결은 맞지 않아. 다시 짚어 보자.',unknown:'그 부분은 비워 뒀구나. 같이 채워 보자.',recover:'이제 튼튼하게 이어졌네. 잘했어.',perfect:'마지막까지 깔끔하네. 오늘은 마음이 놓여.',end:'느슨했던 연결만 다음에 다시 확인하자.',negative:'disappointed',positive:'smile'}
+};
+export function reviewReaction(student,kind,{misses=0}={}){
+ const v=voices[student]||voices.mio;
+ const expression=kind==='perfect'?'happy':['right','recover'].includes(kind)?v.positive:kind==='intro'?'neutral':kind==='end'?'smile':student==='nagi'&&(kind==='unknown'||misses>=2)?'cry':v.negative;
+ return {text:v[kind]||v.end,expression};
+}

@@ -1,0 +1,926 @@
+{
+  "schemaVersion": 1,
+  "status": "design-proposal",
+  "date": "2026-11-09",
+  "source": "Local course-data.js, jbl-data.js, jbl-concepts.js, lecture-notes.js; refreshed group metrics. Original PDF banks were not reread for this pass.",
+  "evidenceCaveat": "Repeat-group membership is not an exact-repeat rate, a prediction of this year’s exam, or a calibrated workload. Wiki character counts and missing Wiki/JBL pages do not determine workload. Difficulty and burden are design estimates.",
+  "students": [
+    {
+      "id": "haru",
+      "name": "하루",
+      "grade": 1,
+      "role": "생리학부 · 행동파",
+      "personality": "명랑하고 승부욕이 강하다. 먼저 나서지만 막힌 친구를 두고 가지 못한다.",
+      "contrast": "자신 있게 시작해 놓고 칭찬에는 쉽게 당황한다.",
+      "daily": "게임 기록 갱신과 매점 신상품을 좋아한다.",
+      "appearance": "승인된 코랄 단발·호박색 눈·화이트 재킷을 유지. 새로운 얼굴이나 머리로 교체하지 않는다.",
+      "accessory": "하트 머리핀",
+      "trait": "첫 박자",
+      "traitMeaning": "처음 만나는 원리를 끝까지 이해했을 때 크게 기뻐하는 타입.",
+      "status": "approved-art",
+      "subject": "심장생리",
+      "lectureIds": [
+        1,
+        2,
+        6
+      ],
+      "scheduledHours": 6,
+      "dialogue": {
+        "greeting": "왔네! 오늘은 내가 먼저 기다렸지.",
+        "early": "헉, 벌써? 나 아직 멋있게 등장할 준비도 안 했는데!",
+        "idle": "나 쳐다보지 말고 앞에 봐, 우우. …나도 보고 있었지만.",
+        "wrong": "우우, 뭐야! 너라면 알 줄 알았는데. 다시 한 번 보자.",
+        "reminder": "내 옆자리, 아직 비어 있는데?",
+        "bond": "오늘은 기록 못 깨도 돼. 네가 도망 안 갔잖아."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "높음",
+        "workloadEstimate": "높음",
+        "reason": "인과관계와 그래프·계산을 연결해야 한다. 첫 이해에 걸리는 긴 시간을 낮은 집중도로 판정하지 않는다.",
+        "questionCount": 62,
+        "repeatGroupMemberCount": 22,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 10,
+        "latestYearRepeatGroupMemberCount": 0,
+        "currentTeachers": [
+          "곽지연"
+        ],
+        "pastBankTeachers": {
+          "곽지연": 20,
+          "박소라": 42
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": "./assets/haru-fresh-airy.png",
+        "model": "./assets/haru.model3.json"
+      }
+    },
+    {
+      "id": "nagi",
+      "name": "나기",
+      "grade": 1,
+      "role": "생리학부 · 하루의 쌍둥이",
+      "personality": "유하고 섬세하다. 말을 고르느라 느리지만 자기 생각을 쉽게 포기하지 않는다.",
+      "contrast": "하루 뒤에 숨다가도 잘못된 길에는 조용히 제동을 건다.",
+      "daily": "식물 돌보기와 조용한 퍼즐을 좋아한다.",
+      "appearance": "하루와 얼굴의 가족 유사성. 차분한 눈매, 옅은 애쉬브라운 머리를 낮게 묶고 민트 리본 사용. 단순한 색상 교체는 피한다.",
+      "accessory": "물방울 리본",
+      "trait": "잔잔한 흐름",
+      "traitMeaning": "흩어진 조건을 하나씩 연결해 가는 꾸준함.",
+      "status": "approved-art",
+      "subject": "순환생리",
+      "lectureIds": [
+        3,
+        4,
+        5,
+        7
+      ],
+      "scheduledHours": 7,
+      "dialogue": {
+        "greeting": "여기… 앉을래? 창문은 조금 닫아 뒀어.",
+        "early": "아직 아무도 안 왔는데… 나랑 먼저 있을래?",
+        "idle": "나는 괜찮으니까… 앞을 봐도 돼.",
+        "wrong": "아… 그쪽은 아닌 것 같아. 우리 하나씩 다시 볼까?",
+        "reminder": "오늘은… 내 옆에도 잠깐 와 줄래?",
+        "bond": "하루 없이도 괜찮아. 오늘은 내가 먼저 말 걸었잖아."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "높음",
+        "workloadEstimate": "높음",
+        "reason": "여러 변수의 방향과 통합 조절을 다룬다. 조건을 바꾼 문제와 첫 개념 학습을 반복 암기와 구별한다.",
+        "questionCount": 60,
+        "repeatGroupMemberCount": 16,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 13,
+        "latestYearRepeatGroupMemberCount": 0,
+        "currentTeachers": [
+          "곽지연"
+        ],
+        "pastBankTeachers": {
+          "곽지연": 21,
+          "박소라": 39
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": "./assets/nagi-v1.png",
+        "model": "./assets/nagi.model3.json",
+        "approval": "approved by user praise and continuation"
+      },
+      "availableInGallery": true
+    },
+    {
+      "id": "shiori",
+      "name": "시오리",
+      "grade": 1,
+      "role": "학생회 서기",
+      "personality": "정리정돈에 철저하고 은근히 참견한다. 친구들에게 필요한 물건을 늘 챙긴다.",
+      "contrast": "남의 일정은 완벽히 기억하면서 자기 간식을 어디 뒀는지 잊는다.",
+      "daily": "작은 문구류와 색인 스티커를 모은다.",
+      "appearance": "밤색의 매끈한 중단발, 얇은 옆머리 땋기, 작은 라일락 리본. 약병이나 주사기 소품은 쓰지 않는다.",
+      "accessory": "책갈피 브로치",
+      "trait": "작은 주석",
+      "traitMeaning": "여러 학생의 이야기에서 자연스럽게 등장하는 연결 역할.",
+      "status": "proposed",
+      "subject": "심혈관약리",
+      "lectureIds": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "scheduledHours": 6,
+      "dialogue": {
+        "greeting": "왔네. 펜은 여기. 네가 또 두고 갈까 봐.",
+        "early": "예정보다 빠르네. 좋아, 빈칸 하나 만들어 둘게.",
+        "idle": "내 쪽은 정리됐어. 네 쪽은?",
+        "wrong": "잠깐. 그건 옆 칸이야. …기억할 줄 알았는데.",
+        "reminder": "네 자리만 비어 있으면 표가 이상하게 보이잖아.",
+        "bond": "이 책갈피는 네 거야. 빌려주는 거 아니고."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "높음",
+        "workloadEstimate": "높음",
+        "reason": "약물별 비교와 기전 연결이 중심. 강의 담당자 변화 때문에 과거 반복률을 올해 출제 예측으로 쓰지 않는다.",
+        "questionCount": 63,
+        "repeatGroupMemberCount": 20,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 10,
+        "latestYearRepeatGroupMemberCount": 1,
+        "currentTeachers": [
+          "김채균",
+          "강주희"
+        ],
+        "pastBankTeachers": {
+          "강주희": 10,
+          "김채균": 6,
+          "김일진": 10,
+          "박창신": 37
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": "./assets/shiori-v1.png",
+        "model": "./assets/shiori.model3.json",
+        "approval": "proposed"
+      },
+      "availableInGallery": true
+    },
+    {
+      "id": "rei",
+      "name": "레이",
+      "grade": 1,
+      "role": "학생회장",
+      "personality": "작은 단서도 놓치지 않는 단정한 완벽주의자. 선배들 앞에서도 논리에는 양보하지 않는다.",
+      "contrast": "공적인 자리에서는 당당하지만 혼자서는 귀여운 도장을 고른다.",
+      "daily": "사진첩과 작은 도장 수집을 좋아한다.",
+      "appearance": "짙은 자주빛 긴 생머리와 정돈된 앞머리. 작은 진주빛 포인트, 간결한 재킷. 성숙함보다 또렷하고 귀여운 인상.",
+      "accessory": "은빛 프레임 브로치",
+      "trait": "남겨진 단서",
+      "traitMeaning": "겉으로 비슷한 것에서 결정적인 차이를 찾는다.",
+      "status": "proposed",
+      "subject": "심혈관병리",
+      "lectureIds": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "scheduledHours": 4,
+      "dialogue": {
+        "greeting": "왔구나. 자리는 비워 뒀어. 이유까지 물을 필요는 없고.",
+        "early": "시간을 잘못 본 건… 아니구나. 그럼 나도 준비할게.",
+        "idle": "시선은 그쪽. 나는 도망가지 않아.",
+        "wrong": "그 대답은 조금 실망인데. 근거부터 다시 보자.",
+        "reminder": "예약을 취소한 기억은 없는데. 언제 올 거야?",
+        "bond": "여기서는… 그렇게 격식 차리지 않아도 돼."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "중상",
+        "workloadEstimate": "중간",
+        "reason": "형태·기전·질환 연결이 핵심. 반복된 소재의 친숙함과 새로운 이미지 판독을 구분한다.",
+        "questionCount": 47,
+        "repeatGroupMemberCount": 18,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 9,
+        "latestYearRepeatGroupMemberCount": 5,
+        "currentTeachers": [
+          "김루시아"
+        ],
+        "pastBankTeachers": {
+          "김루시아": 47
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": "./assets/rei-v1.png",
+        "model": "./assets/rei.model3.json",
+        "approval": "proposed"
+      },
+      "availableInGallery": true
+    },
+    {
+      "id": "ritsu",
+      "name": "리츠",
+      "grade": 2,
+      "role": "방송부 · 음향 담당",
+      "personality": "말수가 적고 박자와 규칙에 예민하다. 무심해 보여도 작은 변화를 먼저 알아챈다.",
+      "contrast": "침착한 얼굴로 아주 썰렁한 농담을 한다.",
+      "daily": "헤드폰 수리와 오래된 음악 듣기를 좋아한다.",
+      "appearance": "잿빛이 감도는 네이비의 깔끔한 단발, 청록색 눈. 작은 이어커프 하나. 거대한 헤드셋은 상시 착용하지 않는다.",
+      "accessory": "박자 이어커프",
+      "trait": "정확한 간격",
+      "traitMeaning": "속도보다 구별의 정확도를 중요하게 생각한다.",
+      "status": "proposed",
+      "subject": "심전도·전도·기기",
+      "lectureIds": [
+        20,
+        21,
+        35
+      ],
+      "scheduledHours": 5,
+      "dialogue": {
+        "greeting": "왔어? …의자 소리로 알았어.",
+        "early": "아직 시작 신호 전인데. 네가 먼저 왔네.",
+        "idle": "그렇게 보면 박자 놓쳐.",
+        "wrong": "한 칸 밀렸어. …응, 좀 아쉽네.",
+        "reminder": "한 자리만 계속 비면, 소리가 달라.",
+        "bond": "네 발소리는 이제 구별돼."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "높음",
+        "workloadEstimate": "높음",
+        "reason": "파형 인식과 전도·기기 적용을 연결. 문제를 빨리 넘긴 시간보다 구별해 낸 내용으로 판단한다.",
+        "questionCount": 47,
+        "repeatGroupMemberCount": 8,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 11,
+        "latestYearRepeatGroupMemberCount": 3,
+        "currentTeachers": [
+          "김대혁",
+          "이형석"
+        ],
+        "pastBankTeachers": {
+          "김대혁": 44,
+          "신성희": 1,
+          "이형석": 2
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": null,
+        "model": null
+      }
+    },
+    {
+      "id": "ibuki",
+      "name": "이부키",
+      "grade": 2,
+      "role": "방송부 · 진행 담당",
+      "personality": "장난스럽고 순발력이 좋다. 평소엔 떠들다가 중요한 순간에는 말이 짧아진다.",
+      "contrast": "즉흥적으로 보여도 긴급 상황의 순서를 가장 열심히 외운다.",
+      "daily": "리듬게임과 즉석 상황극을 좋아한다.",
+      "appearance": "따뜻한 적갈색의 짧은 높은 포니테일, 생기 있는 눈매, 주황 포인트. 하루와 다른 날렵한 실루엣.",
+      "accessory": "번개 지퍼 참",
+      "trait": "순간의 선택",
+      "traitMeaning": "갈림길에서 핵심 조건을 먼저 찾는 타입.",
+      "status": "proposed",
+      "subject": "빈맥·부정맥 증례",
+      "lectureIds": [
+        22,
+        23,
+        53
+      ],
+      "scheduledHours": 5,
+      "dialogue": {
+        "greeting": "입장 완료! 자, 오늘 내 옆자리 당첨자는—너!",
+        "early": "벌써 왔어? 이건 반칙이지. 나도 일찍 왔는데!",
+        "idle": "진행자 얼굴만 보면 내용 놓친다?",
+        "wrong": "앗, 거기서 그쪽으로? 우우, 방금은 아까웠다!",
+        "reminder": "내 차례 언제야? 마이크 잡고 기다리고 있는데!",
+        "bond": "오늘은 조용히 있어 줄게. 너한테만 특별 편성."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "높음",
+        "workloadEstimate": "높음",
+        "reason": "빈맥·실신 증례의 분기 판단이 중심. 처음 보는 증례는 익숙한 정답 문구 반복과 분리한다.",
+        "questionCount": 42,
+        "repeatGroupMemberCount": 16,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 8,
+        "latestYearRepeatGroupMemberCount": 1,
+        "currentTeachers": [
+          "백용수",
+          "이형석"
+        ],
+        "pastBankTeachers": {
+          "백용수": 37,
+          "김대혁": 5
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": null,
+        "model": null
+      }
+    },
+    {
+      "id": "mio",
+      "name": "미오",
+      "grade": 2,
+      "role": "생활지원부",
+      "personality": "차분하고 믿음직하다. 여러 사람의 상태를 동시에 챙기느라 자기 부탁은 미룬다.",
+      "contrast": "늘 괜찮다면서 사소한 부탁 하나를 쉽게 못 한다.",
+      "daily": "뜨개질과 따뜻한 음료를 좋아한다.",
+      "appearance": "부드러운 밀크티색 어깨 길이 머리, 낮은 반묶음, 푸른 회색 카디건. 과도하게 성숙한 비율을 피한다.",
+      "accessory": "매듭 팔찌",
+      "trait": "버팀목",
+      "traitMeaning": "복잡한 내용을 오래 붙들어도 옆을 지키는 타입.",
+      "status": "proposed",
+      "subject": "심부전·심근·심장막",
+      "lectureIds": [
+        28,
+        30,
+        31,
+        33,
+        34
+      ],
+      "scheduledHours": 7,
+      "dialogue": {
+        "greeting": "잘 왔어. 의자 조금 당겨 줄까?",
+        "early": "일찍 왔네. 아직 따뜻할 때 같이 마시자.",
+        "idle": "나는 여기 있어. 천천히 앞에 있는 것부터 해.",
+        "wrong": "음… 기대했는데, 조금 아쉽다. 같이 다시 보자.",
+        "reminder": "오늘 내 쪽에도 잠깐 들를 여유 있어?",
+        "bond": "오늘은 내가 부탁해도 될까? 조금만 더 앉아 있어 줘."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "높음",
+        "workloadEstimate": "매우 높음",
+        "reason": "심부전부터 심근·심장막·종양까지 범위가 넓다. 다섯 강의의 세부 단위로 나눠 부분 완료를 인정한다.",
+        "questionCount": 55,
+        "repeatGroupMemberCount": 16,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 14,
+        "latestYearRepeatGroupMemberCount": 5,
+        "currentTeachers": [
+          "신성희",
+          "장지훈"
+        ],
+        "pastBankTeachers": {
+          "신성희": 15,
+          "장지훈": 29,
+          "최성환": 1,
+          "권준": 10
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": null,
+        "model": null
+      }
+    },
+    {
+      "id": "sena",
+      "name": "세나",
+      "grade": 2,
+      "role": "사진부 · 관찰 담당",
+      "personality": "조용히 관찰하다 정확한 질문을 던진다. 관심 없는 척하면서 소소한 변화에 잘 반응한다.",
+      "contrast": "풍경 사진은 잘 찍는데 자기 사진에는 늘 어색하다.",
+      "daily": "필름 사진과 창가 자리 탐색을 좋아한다.",
+      "appearance": "짙은 갈색의 턱 아래 단발, 한쪽 귀 뒤로 넘긴 머리와 옅은 청색 포인트. 눈은 선명하되 과장된 광택 금지.",
+      "accessory": "유리꽃 핀",
+      "trait": "한 번 더 보기",
+      "traitMeaning": "듣고 본 단서를 겹쳐 전체 모습을 만든다.",
+      "status": "proposed",
+      "subject": "진찰·영상·판막",
+      "lectureIds": [
+        18,
+        27,
+        29,
+        39,
+        51
+      ],
+      "scheduledHours": 6,
+      "dialogue": {
+        "greeting": "잠깐. 머리에 뭐 묻었어. …됐어, 앉아.",
+        "early": "빛이 제일 좋은 시간에 왔네.",
+        "idle": "초점이 잘못 맞았는데. 나는 이쪽이고, 네 할 일은 저쪽.",
+        "wrong": "중요한 데를 지나쳤어. …너는 볼 줄 알았는데.",
+        "reminder": "내 옆자리에는 햇빛이 들던데. 잠깐 올래?",
+        "bond": "오늘 사진에는 나도 들어갈까. 네 옆에."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "높음",
+        "workloadEstimate": "높음",
+        "reason": "진찰·판막·초음파·심내막염·중재를 연결. 서로 다른 담당 강의의 반복 양상을 한 계수로 뭉개지 않는다.",
+        "questionCount": 62,
+        "repeatGroupMemberCount": 20,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 9,
+        "latestYearRepeatGroupMemberCount": 2,
+        "currentTeachers": [
+          "최성환",
+          "신성희",
+          "김대영",
+          "박상돈"
+        ],
+        "pastBankTeachers": {
+          "김대영": 7,
+          "박상돈": 10,
+          "신성희": 27,
+          "권성우": 7,
+          "김정택": 4,
+          "장지훈": 2,
+          "윤광석": 1,
+          "백용수": 4
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": null,
+        "model": null
+      }
+    },
+    {
+      "id": "aoi",
+      "name": "아오이",
+      "grade": 2,
+      "role": "교내 안내부",
+      "personality": "활동적이고 꼼꼼하다. 여러 길을 비교해 안전하게 도착하는 데서 만족을 느낀다.",
+      "contrast": "남에게 길을 잘 알려 주면서 자기 여행은 분 단위로 고치느라 늦는다.",
+      "daily": "산책 지도와 작은 여행 계획을 좋아한다.",
+      "appearance": "청흑색의 긴 옆땋기, 맑은 눈과 청록 포인트. 작은 가방과 가느다란 리본으로 경쾌하게.",
+      "accessory": "나침반 참",
+      "trait": "갈림길 지도",
+      "traitMeaning": "비슷해 보이는 길의 조건과 차이를 정리한다.",
+      "status": "proposed",
+      "subject": "혈관·위험인자",
+      "lectureIds": [
+        32,
+        36,
+        37,
+        38,
+        40
+      ],
+      "scheduledHours": 6,
+      "dialogue": {
+        "greeting": "왔구나! 오늘은 어디부터 갈래?",
+        "early": "지름길로 왔어? 예상보다 빠른데!",
+        "idle": "나 말고 지도 봐. …같이 헤매고 싶으면 계속 봐도 되고.",
+        "wrong": "그쪽은 막다른 길인데. 우, 안내판 봤잖아.",
+        "reminder": "네 자리까지 오는 길, 아직 표시해 뒀어.",
+        "bond": "오늘은 목적지 없어도 괜찮겠네. 같이 걷자."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "중상",
+        "workloadEstimate": "높음",
+        "reason": "고혈압·지질·대동맥·폐동맥·말초혈관으로 범위가 분산된다. 강의별 부담을 별도로 추적한다.",
+        "questionCount": 46,
+        "repeatGroupMemberCount": 8,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 10,
+        "latestYearRepeatGroupMemberCount": 2,
+        "currentTeachers": [
+          "김대영",
+          "박상돈",
+          "최성환",
+          "이기정"
+        ],
+        "pastBankTeachers": {
+          "김대영": 8,
+          "박상돈": 14,
+          "최성환": 8,
+          "김정택": 4,
+          "장지훈": 2,
+          "권준": 6,
+          "권성우": 4
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": null,
+        "model": null
+      }
+    },
+    {
+      "id": "akari",
+      "name": "아카리",
+      "grade": 2,
+      "role": "행사운영부 · 현장 담당",
+      "personality": "직선적이고 결단이 빠르다. 평소엔 털털하지만 필요한 순간에는 집중한다.",
+      "contrast": "대담하게 나서고 나서야 손이 떨렸다고 털어놓는다.",
+      "daily": "짧은 달리기와 간단한 요리를 좋아한다.",
+      "appearance": "짙은 구리빛 중단발을 작게 묶고 크림·적색 포인트. 눈썹과 입꼬리로 자신감 표현, 날카롭거나 성숙하게 몰지 않는다.",
+      "accessory": "작은 태양 배지",
+      "trait": "결정의 순간",
+      "traitMeaning": "상황을 정리하고 다음 행동을 고르는 추진력.",
+      "status": "proposed",
+      "subject": "관상동맥·허혈",
+      "lectureIds": [
+        19,
+        41,
+        42,
+        43,
+        52
+      ],
+      "scheduledHours": 6,
+      "dialogue": {
+        "greeting": "왔으면 앉아. 자, 시작하자!",
+        "early": "좋아, 먼저 움직이는 거 마음에 들어.",
+        "idle": "내 얼굴에 답은 없어. …지금 웃은 거 봤다?",
+        "wrong": "아, 거기서 망설이더니! 다음엔 잡자.",
+        "reminder": "나도 대기 중이야. 신호만 줘.",
+        "bond": "아까 사실 좀 떨렸어. 네 앞이라 티 안 낸 거야."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "높음",
+        "workloadEstimate": "높음",
+        "reason": "관상동맥·허혈 증례와 검사·접근을 묶는다. 52강 종합 증례는 주담당만 두고 다른 학생과의 연계 태그를 단다.",
+        "questionCount": 60,
+        "repeatGroupMemberCount": 20,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 11,
+        "latestYearRepeatGroupMemberCount": 5,
+        "currentTeachers": [
+          "최성환",
+          "우성일",
+          "이기정"
+        ],
+        "pastBankTeachers": {
+          "우성일": 40,
+          "이기정": 2,
+          "최성환": 7,
+          "권성우": 11
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": null,
+        "model": null
+      }
+    },
+    {
+      "id": "momo",
+      "name": "모모",
+      "grade": 3,
+      "role": "놀이부 · 부장",
+      "personality": "작고 귀여운 인상이지만 선배다운 여유가 있다. 익숙한 놀이의 요령을 금방 짚어 준다.",
+      "contrast": "늘 쉽게 해내는 듯 보이지만 새로운 규칙에는 남몰래 연습한다.",
+      "daily": "보드게임과 손가락 인형을 좋아한다.",
+      "appearance": "크림빛의 둥글고 정돈된 단발, 작은 체리색 리본과 웃는 눈매. 아기 말투·유아 복장으로 소아과를 표현하지 않는다.",
+      "accessory": "토끼 가방 참",
+      "trait": "익숙한 놀이",
+      "traitMeaning": "반복 속의 패턴을 먼저 알아채는 여유.",
+      "status": "proposed",
+      "subject": "소아심장",
+      "lectureIds": [
+        24,
+        25,
+        26,
+        44,
+        45,
+        46
+      ],
+      "scheduledHours": 6,
+      "dialogue": {
+        "greeting": "어라, 왔네? 여기 네 몫 남겨 뒀지.",
+        "early": "선배보다 먼저 오면 반칙인데. 후후, 이번엔 봐줄게.",
+        "idle": "선배 구경은 나중에. 먼저 네 차례잖아?",
+        "wrong": "에에, 그건 같이 봤잖아. 선배 조금 서운한데?",
+        "reminder": "우리 하던 거, 네 차례에서 멈춰 있어.",
+        "bond": "사실 나도 새 규칙은 연습해. 너한테만 말하는 거야."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "기본 중상 / 반복 숙달 후 낮음",
+        "workloadEstimate": "분량 중상 / 반복 숙달 후 중간",
+        "reason": "6강을 한 학생으로 유지. 기존 자료 사용은 사용자 결정. 사이트 반복 묶음 비중이 높지만 개념 난도 자체가 낮다는 뜻은 아니다. 담당자 변화와 반복 자료 친숙도도 별도 표시한다.",
+        "questionCount": 107,
+        "repeatGroupMemberCount": 83,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 17,
+        "latestYearRepeatGroupMemberCount": 14,
+        "currentTeachers": [
+          "김남수"
+        ],
+        "pastBankTeachers": {
+          "김정택": 3,
+          "신은정": 87,
+          "백완기": 17
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": null,
+        "model": null
+      }
+    },
+    {
+      "id": "tsumugi",
+      "name": "츠무기",
+      "grade": 3,
+      "role": "공작부 · 부장",
+      "personality": "말보다 손이 먼저 움직이는 실무파. 완성 뒤의 정리와 회복까지 책임진다.",
+      "contrast": "정교한 작업은 잘하면서 선물 포장에는 쓸데없이 힘을 준다.",
+      "daily": "작은 모형 만들기와 걷기를 좋아한다.",
+      "appearance": "차분한 올리브브라운 머리를 낮게 묶고 소매를 조금 걷은 재킷. 황동색 작은 장식. 수술도구는 상시 소품으로 쓰지 않는다.",
+      "accessory": "실매듭 키링",
+      "trait": "마지막 매듭",
+      "traitMeaning": "시작부터 마무리까지 이어 주는 손길.",
+      "status": "proposed",
+      "subject": "외과·재활",
+      "lectureIds": [
+        47,
+        48,
+        49,
+        50
+      ],
+      "scheduledHours": 7,
+      "dialogue": {
+        "greeting": "왔어? 이쪽은 치워 놨어. 앉아.",
+        "early": "벌써? 그럼 준비부터 같이 할까.",
+        "idle": "손은 이쪽, 눈은 저쪽. …아니, 내 얼굴 말고.",
+        "wrong": "음, 마무리가 조금 풀렸네. 다시 묶자.",
+        "reminder": "너랑 하려고 남겨 둔 게 있어.",
+        "bond": "이건 네가 가져. 튼튼하게 만들었으니까 오래 써."
+      },
+      "internalLearningProfile": {
+        "difficultyEstimate": "중상",
+        "workloadEstimate": "높음",
+        "reason": "외과 3강과 재활 1강을 치료 이후의 연속 과정으로 묶는다. 반복 문항은 활용하되 담당자별 과거 문항을 동일하게 신뢰하지 않는다.",
+        "questionCount": 56,
+        "repeatGroupMemberCount": 31,
+        "latestYear": 2025,
+        "latestYearQuestionCount": 16,
+        "latestYearRepeatGroupMemberCount": 9,
+        "currentTeachers": [
+          "강철웅",
+          "좌경림"
+        ],
+        "pastBankTeachers": {
+          "강철웅": 19,
+          "김정택": 22,
+          "좌경림": 11,
+          "신윤철": 4
+        },
+        "estimateOnly": true
+      },
+      "art": {
+        "portrait": null,
+        "model": null
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "a": "haru",
+      "b": "nagi",
+      "label": "쌍둥이",
+      "story": "하루가 먼저 나서고 나기가 조건을 짚어 준다. 서로를 답답해하면서도 가장 먼저 찾는다.",
+      "relatedLectureIds": [
+        7
+      ]
+    },
+    {
+      "a": "shiori",
+      "b": "rei",
+      "label": "학생회",
+      "story": "엄격한 회장과 빈틈을 조용히 메우는 서기. 두 사람 모두 1학년이다.",
+      "relatedLectureIds": []
+    },
+    {
+      "a": "haru",
+      "b": "ritsu",
+      "label": "기초와 해석",
+      "story": "하루의 추진력을 리츠가 일정한 박자로 맞춰 준다.",
+      "relatedLectureIds": [
+        1,
+        20
+      ]
+    },
+    {
+      "a": "ritsu",
+      "b": "ibuki",
+      "label": "방송부 콤비",
+      "story": "정확한 음향 담당과 즉흥적인 진행 담당. 방식은 달라도 서로의 빈자리를 못 견딘다.",
+      "relatedLectureIds": [
+        20,
+        22,
+        23,
+        35,
+        53
+      ]
+    },
+    {
+      "a": "nagi",
+      "b": "aoi",
+      "label": "흐름과 길",
+      "story": "혼자 고민하는 나기를 아오이가 산책에 데리고 나온다.",
+      "relatedLectureIds": [
+        3,
+        4,
+        5,
+        32,
+        36,
+        37,
+        38
+      ]
+    },
+    {
+      "a": "haru",
+      "b": "mio",
+      "label": "추진력과 버팀목",
+      "story": "하루는 미오의 부탁을 먼저 알아채려고 애쓴다.",
+      "relatedLectureIds": [
+        2,
+        6,
+        28,
+        30,
+        31
+      ]
+    },
+    {
+      "a": "rei",
+      "b": "sena",
+      "label": "단서 찾기",
+      "story": "같은 장면의 다른 부분을 기억하는 관찰 친구.",
+      "relatedLectureIds": [
+        16,
+        17,
+        27,
+        29,
+        39
+      ]
+    },
+    {
+      "a": "shiori",
+      "b": "mio",
+      "label": "서기와 지원부",
+      "story": "자기 일을 미루는 미오의 몫까지 시오리가 체크한다.",
+      "relatedLectureIds": [
+        12,
+        28,
+        30
+      ]
+    },
+    {
+      "a": "shiori",
+      "b": "ibuki",
+      "label": "정리와 즉흥",
+      "story": "이부키의 즉석 계획을 시오리가 실행 가능한 순서로 바꾼다.",
+      "relatedLectureIds": [
+        13,
+        22,
+        23
+      ]
+    },
+    {
+      "a": "rei",
+      "b": "akari",
+      "label": "분석과 결정",
+      "story": "확인하고 움직이려는 레이와 일단 현장에 가려는 아카리의 티격태격.",
+      "relatedLectureIds": [
+        14,
+        15,
+        41,
+        42,
+        43
+      ]
+    },
+    {
+      "a": "aoi",
+      "b": "akari",
+      "label": "예방과 현장",
+      "story": "멀리 보는 계획 담당과 눈앞의 문제부터 푸는 행동 담당.",
+      "relatedLectureIds": [
+        32,
+        40,
+        41,
+        42,
+        43
+      ]
+    },
+    {
+      "a": "momo",
+      "b": "sena",
+      "label": "선배와 관찰자",
+      "story": "모모의 작은 요령을 세나가 사진처럼 기억한다.",
+      "relatedLectureIds": [
+        24,
+        25,
+        26,
+        27,
+        29,
+        44,
+        51
+      ]
+    },
+    {
+      "a": "momo",
+      "b": "tsumugi",
+      "label": "3학년 친구",
+      "story": "장난을 시작하는 모모와 마지막 정리를 하는 츠무기.",
+      "relatedLectureIds": [
+        26,
+        44,
+        47,
+        48,
+        49
+      ]
+    },
+    {
+      "a": "tsumugi",
+      "b": "mio",
+      "label": "회복까지 함께",
+      "story": "츠무기가 마무리한 자리에서 미오가 다음 하루를 챙긴다.",
+      "relatedLectureIds": [
+        28,
+        30,
+        47,
+        48,
+        49,
+        50
+      ]
+    },
+    {
+      "a": "tsumugi",
+      "b": "akari",
+      "label": "현장 콤비",
+      "story": "둘 다 행동이 빠르지만 츠무기는 돌아오는 길까지 챙긴다.",
+      "relatedLectureIds": [
+        19,
+        41,
+        42,
+        43,
+        47,
+        48,
+        49
+      ]
+    }
+  ],
+  "crossLectureRules": {
+    "7": {
+      "owner": "nagi",
+      "guests": [
+        "haru"
+      ]
+    },
+    "51": {
+      "owner": "sena",
+      "guests": [
+        "momo"
+      ]
+    },
+    "52": {
+      "owner": "akari",
+      "guests": [
+        "aoi",
+        "mio",
+        "sena"
+      ]
+    },
+    "53": {
+      "owner": "ibuki",
+      "guests": [
+        "ritsu"
+      ]
+    }
+  },
+  "sharedRules": {
+    "visibleFields": [
+      "name",
+      "grade",
+      "role",
+      "level",
+      "stars",
+      "bond",
+      "abilities",
+      "accessory",
+      "relationships"
+    ],
+    "abilities": {
+      "Wiki": "이해",
+      "J": "판단",
+      "JBL": "응용"
+    },
+    "progression": [
+      "학생 1성",
+      "학생 2성",
+      "학생 3성 + 악세사리 해금",
+      "악세사리 1성",
+      "악세사리 2성"
+    ],
+    "previewTimeMultiplier": 1.5,
+    "previewCondition": "해당 강의의 예정 시작 시각 이전에 실제 수행한 활성 시간 구간만 적용. 시각을 넘기면 구간 분할. 세션 전체에 소급 적용하지 않는다.",
+    "traits": "연출과 반응 성향. 현재는 학생별 성장 배율 차이를 만들지 않는다.",
+    "effort": "실제 활성 시간은 모든 과목에서 기록. 어려운 첫 이해를 느리다는 이유로 감점하지 않고, 익숙한 반복 문항 속도만으로 집중도 고득점을 주지 않는다. 기준 시간은 문항·개념·회차별 근거 확보 후 보정.",
+    "bond": "함께한 시간과 상호작용으로 별도 성장. 기존 질문 정답·오답 보상과 일일 감점 제한은 유지. 오답의 실망은 짧고 회복 가능하게, 응답을 미뤘다고 감점하지 않는다.",
+    "relationships": "관계 대사와 짧은 공동 이벤트. 연계 학생의 진도·별·인연은 실제 수행 없이 자동 증가하지 않는다.",
+    "reminders": "시험일까지 남은 일정과 학생별 실제 완료 범위로 우선순위 산정. 같은 학생 반복 출현 쿨다운, 한 번에 한 명. 단순 접속일만으로 성급을 추정하지 않는다.",
+    "reviewUnit": "성급은 담당 범위를 재방문해 완료하는 사이클을 기준으로 설계. 아직 없는 Wiki/JBL 자료를 필수 조건으로 잠그지 않는다. 사이클에 포함될 단위는 자료 버전별로 고정하고 신규 자료가 기존 별을 취소하지 않는다.",
+    "runtimeIntegration": "하루·나기·시오리·레이의 원화와 Live2D 감상 및 학생회 이야기 3편을 지원한다. 학습 세션·퀴즈·성장 기록은 하루만 지원한다."
+  }
+}

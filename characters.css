@@ -1,0 +1,62 @@
+/* Student portraits and full-height portrait viewing room. */
+.studentCard[data-student=shiori] .studentArt{background-image:radial-gradient(ellipse at 70% 20%,#fff,transparent 65%),linear-gradient(135deg,#f6f0e8,#e5ddf1)}
+.studentCard[data-student=shiori] .studentCardInfo{border-top-color:#b5a2cf;background:linear-gradient(115deg,#55506f,#756586)}
+.studentCard[data-student=shiori] .cardCrest svg{stroke:#9583b2;fill:#eee8f7}
+.studentCard[data-student=rei] .studentArt{background-image:radial-gradient(ellipse at 70% 20%,#fff,transparent 65%),linear-gradient(135deg,#f1eaf2,#e1d9e5)}
+.studentCard[data-student=rei] .studentCardInfo{border-top-color:#bb9caf;background:linear-gradient(115deg,#51465c,#745e74)}
+.studentCard[data-student=rei] .cardCrest svg{stroke:#9e788e;fill:#f2e6ee}
+.studentGrid[data-count="4"] .studentArt{height:160px}.studentCard[data-student=rei] .cardRole,.studentCard[data-student=shiori] .cardRole{color:#e1d7eb}
+.portraitBanner[data-student=nagi]{background:linear-gradient(120deg,#e1f1ed,#f4fcf8 50%,#dbece4)}
+.portraitBanner[data-student=shiori]{background:linear-gradient(120deg,#f0eaf5,#fffaf7 50%,#e8dff1)}
+.portraitBanner[data-student=rei]{background:linear-gradient(120deg,#ece6ef,#fff9fc 50%,#e8dce6)}
+.portraitBanner>div{max-width:43%}.portraitBanner img{right:-26px}.portraitBanner>div>b{font:700 11px var(--ui);color:#fff;background:#617c8e}
+.portraitBanner[data-student=nagi]>div>b{background:#5a8275}.portraitBanner[data-student=shiori]>div>b,.studentCard[data-student=shiori] .cardLevel{background:#756586}.portraitBanner[data-student=rei]>div>b,.studentCard[data-student=rei] .cardLevel{background:#745e74}
+.profileAccessoryIcon{width:57px;height:57px;padding:11px;flex-shrink:0;color:var(--character-accent);fill:#f8fafc;stroke:currentColor;stroke-width:1.6;background:#eff3f8;border-radius:50%}
+.storyList{margin:22px 0 0}.storyList>h3{font:700 13px var(--display);color:#56778d;margin:0 0 10px}
+.storyButton{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:15px 16px;margin:0 0 9px;background:linear-gradient(120deg,#fff,#f3eff7);border:1px solid white;border-left:3px solid #b4a2c6;border-radius:4px 13px 4px 13px;box-shadow:0 2px 0 #dbe5ef;color:#59627e}
+.storyButton b{display:block;font:800 13px var(--ui)}.storyButton small{display:block;margin-top:6px;font:500 10px var(--ui);color:#9194a8}.storyArrow{font-size:22px;color:#a48eb7}
+.characterViewer[data-student=shiori] .viewerRoom{background-image:linear-gradient(#f8f4fadd,transparent 30%,#f3eef750 65%,#f4eef8),url('./assets/lobby-room.png')}
+.characterViewer[data-student=rei] .viewerRoom{background-image:linear-gradient(#f5f0f6dd,transparent 30%,#f2eaf350 65%,#f5eef5),url('./assets/lobby-room.png')}
+.characterViewer .viewerSwitch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.characterViewer .viewerSwitch button{min-width:0;padding:8px 6px}.characterViewer .viewerSwitch button[aria-pressed=true]{background:var(--character-accent);border-color:#fff8;box-shadow:0 2px 0 #bfcbd7}
+.viewerStoryBar{display:flex;align-items:center;gap:10px;margin:0 3px 21px;padding:7px 9px 7px 12px;background:#fffffff0;border:1px solid white;border-radius:4px 11px 4px 11px;box-shadow:0 2px 8px #3a365812;color:#6a627e}
+.viewerStoryBar[hidden]{display:none}.viewerStoryBar>span{flex:1;font:800 11px var(--ui);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.viewerStoryBar small{font:700 10px var(--display);color:#9d8eae;white-space:nowrap}.viewerStoryBar button{min-height:30px;padding:5px 9px;border:1px solid #e0d9e7;background:#f5f1f8;border-radius:4px;color:#8a779d;font:700 11px var(--ui)}
+.characterViewer[data-mode=story] .viewerStage{bottom:152px}
+.studentCard[data-student=nagi] .studentArt{background-image:radial-gradient(ellipse at 70% 20%,#fff,transparent 65%),linear-gradient(135deg,#e6f4f3,#d7e9df)}
+.studentCard[data-student=nagi] .studentCardInfo{border-top-color:#98c4b5;background:linear-gradient(115deg,#355c57,#4b7870)}
+.studentCard[data-student=nagi] .cardCrest svg{stroke:#6b9c8d;fill:#e0f2e8}
+.studentGrid .studentArt{height:225px}.studentGrid .studentArt img{width:150%;left:-25%;top:25px}
+.studentGrid .studentCardInfo{padding:13px 11px}.studentGrid .studentCardInfo strong{font-size:23px;margin:7px 0 10px}
+.studentGrid .cardLevel{font-size:8px;padding:6px;left:8px;top:9px}.studentGrid .cardCrest{right:9px;top:9px;width:26px;height:26px}
+.studentGrid .studentCardInfo .rating{font-size:13px;letter-spacing:1px}.studentGrid .studentCardInfo>span{font-size:9px}
+.cardRole{font-size:10px;color:#c6e0d9}.studentCard[data-student=nagi] .studentArt img{top:19px}
+.portraitAction{display:flex;justify-content:center;align-items:center;gap:8px;width:100%;min-height:46px;margin:0 0 16px;background:linear-gradient(110deg,#3e8eae,#347c9b);color:white;border:1px solid #8fc4d7;border-radius:4px 13px 4px 13px;font:700 14px var(--ui);box-shadow:0 3px 0 #c0dae7}
+.portraitAction svg{width:16px;height:16px;fill:#fff;stroke:currentColor;stroke-width:1.5}
+.nagiBanner{background:linear-gradient(120deg,#e1f1ed,#f4fcf8 50%,#dbece4)}.nagiBanner .bannerCrest{color:#8eb8a8}.nagiBanner>div{max-width:42%}.nagiBanner img{right:-26px}
+.characterProfile p{font:500 14px/1.8 var(--ui);color:#53758a;margin:0;word-break:keep-all}.characterProfile h3{margin-bottom:10px}.characterProfile .profileTrait{color:#557e72;font-weight:800;font-size:12px;margin:14px 0 0}.relationButton{width:100%;display:flex;justify-content:space-between;text-align:left;border:1px solid white;background:#f9fcfe;padding:15px;border-radius:4px 12px 4px 12px;color:#52788d;font:700 13px var(--ui);margin:12px 0}.relationButton small{color:#87a1b1}.profileAccessory{display:flex;gap:13px;align-items:center}.ribbonIcon{font-size:27px;color:#6b9c8d;background:#e1f1e9;padding:12px 16px;border-radius:50%}.profileAccessory b{font:700 14px var(--ui)}.profileAccessory small{display:block;margin-top:7px;color:#879f9b;font-size:11px}
+.characterViewer{position:fixed;inset:0;width:min(100vw,480px);height:100dvh;max-width:480px;max-height:100dvh;min-height:0;margin:auto;padding:0;border:0;border-radius:0;overflow:hidden;background:#e6f4ef;color:#325968;isolation:isolate;--character-accent:#6b9c8d}
+.characterViewer:before{display:none}.characterViewer::backdrop{background:#1f3948b3;backdrop-filter:blur(8px)}
+.viewerRoom{position:absolute;inset:0;z-index:-1;background:linear-gradient(#f2faf7dd,transparent 30%,#ebf7f250 65%,#edf7f2),url('./assets/lobby-room.png') center/cover}
+.characterViewer[data-student=haru] .viewerRoom{background-image:linear-gradient(#f8f5f9dd,transparent 30%,#f8eff350 65%,#f8f2f5),url('./assets/lobby-room.png')}
+.viewerHeader{position:absolute;inset:0 0 auto;display:flex;align-items:center;gap:14px;padding:calc(20px + env(safe-area-inset-top)) 20px 12px;z-index:3;background:linear-gradient(#f5fcf9e8,#f5fcf900)}
+.viewerHeader>div{flex:1;min-width:0}.viewerHeader h2{margin:5px 0 0;font:700 29px/1.2 var(--display);color:#305466;letter-spacing:-1px;transform:none}.viewerHeader small{font:800 10px var(--ui);color:#618579}
+.viewerBack,.viewerRound{display:grid;place-items:center;flex-shrink:0;width:40px;height:40px;background:#ffffffcf;border:1px solid white;color:#517e75;border-radius:5px 12px 5px 12px;box-shadow:0 2px 0 #bed7cf;font:400 29px var(--ui)}
+.viewerRound svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2}.viewerRound:disabled{opacity:.45}
+.viewerStage{position:absolute;top:110px;bottom:110px;left:0;right:0;overflow:hidden;mask-image:linear-gradient(#000 90%,transparent)}
+#viewerCanvasHost,#viewerCanvasHost canvas{position:absolute;inset:0;width:100%;height:100%}
+#viewerFallback{position:absolute;top:1.25%;left:50%;transform:translateX(-50%);width:125%;max-width:none;height:auto;max-height:99%;object-fit:contain}
+#viewerTouch{position:absolute;left:15%;width:70%;top:3%;bottom:0;border:0;background:transparent;cursor:pointer}
+#viewerStatus{position:absolute;left:30px;right:30px;top:110px;text-align:center;font-size:12px;z-index:2;background:#ffffffe6;border-radius:8px;margin:0}
+#viewerStatus:empty{display:none}#viewerRetry{position:absolute;top:148px;left:calc(50% - 47px);width:94px;z-index:3;border:1px solid #bdd8cf;background:white;color:#527d6f;border-radius:5px;padding:8px;font:700 12px var(--ui)}
+.viewerFooter{position:absolute;left:18px;right:18px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:4}
+.viewerDialogue{position:relative;min-height:112px;background:#fffffff0;border:1px solid white;border-bottom:3px solid var(--character-accent);border-radius:4px 18px 4px 18px;padding:26px 22px 18px;box-shadow:0 6px 25px #294f4815}
+.viewerDialogue>span{position:absolute;top:-13px;left:13px;background:#355b61;color:white;padding:8px 19px 6px;border-radius:3px 10px 3px 10px;border-left:3px solid var(--character-accent);font:700 13px var(--display)}
+.viewerDialogue p{font:700 16px/1.7 var(--dialogue);color:#365760;margin:0;padding-right:12px;min-height:52px;word-break:keep-all;overflow-wrap:anywhere}
+.viewerDialogue>button{position:absolute;bottom:7px;right:8px;background:none;border:0;color:var(--character-accent);font:400 26px var(--ui);width:32px;height:32px}
+.viewerDialogue>.viewerNow,.dialogue>.routineNow{position:absolute;top:-14px;right:12px;bottom:auto;width:auto;min-width:48px;height:32px;padding:0 12px;border:1px solid #dce8e6;border-radius:5px 10px 5px 10px;background:#f7fbfa;color:#47666a;font:700 12px var(--ui);cursor:pointer}
+.viewerDialogue>.viewerNow[hidden]{display:none}
+.viewerNow:focus-visible,.routineNow:focus-visible{outline:2px solid #355b61;outline-offset:3px}
+.viewerSwitch{display:flex;justify-content:center;gap:9px;margin-top:14px}.viewerSwitch button{min-width:80px;min-height:38px;padding:8px 20px;background:#ffffffb8;border:1px solid white;border-radius:4px 10px 4px 10px;color:#65867d;font:800 12px var(--ui)}.viewerSwitch button[aria-pressed=true]{background:#355b61;color:white;border-color:#6d9b90;box-shadow:0 2px 0 #a5cabc}
+@media(min-width:600px){.characterViewer{height:calc(100dvh - 32px);max-height:930px;border-radius:24px;border:4px solid white}}
+@media(max-height:700px){.viewerHeader{padding-top:calc(14px + env(safe-area-inset-top))}.viewerHeader h2{font-size:25px}.viewerStage{top:88px;bottom:106px}.viewerFooter{bottom:calc(12px + env(safe-area-inset-bottom))}.viewerDialogue{min-height:101px;padding:23px 17px 13px}.viewerDialogue p{font-size:14px;min-height:48px}.viewerSwitch{margin-top:10px}.viewerSwitch button{min-height:35px}.studentGrid .studentArt{height:185px}}
+@media(max-width:350px){.studentGrid{gap:10px}.studentGrid .studentCardInfo{padding:12px 8px}.studentGrid .studentCardInfo strong{font-size:21px}.studentGrid .cardRole{font-size:9px}.nagiBanner img{right:-57px}.viewerHeader{padding-left:15px;padding-right:15px}.viewerFooter{left:14px;right:14px}}

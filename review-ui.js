@@ -1,0 +1,39 @@
+import {normalizeReview,queueReview,answerReview,pendingQuestion,reviewQuestion,reviewSummary,mergeReview} from './review-engine.js';
+import {reviewReaction} from './review-dialogue.js';
+import {illustratedStudents} from './character-data.js';
+import {defaultStudents} from './planner-catalog.js';
+import {splitDialogue} from './dialogue-pages.js';
+import {createCharacter} from './renderer.js';
+const KEY='heart-companion-v1-reviews';
+export function createReviewUI({getBond,onChange=()=>{},onReaction=()=>{},beforeOpen=()=>{},toast}){
+ let state;try{state=normalizeReview(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{state=normalizeReview(null);}
+ let active=null,model=null,controller=null,generation=0,currentExpression='neutral',bondDeltas=new Map();
+ const dialog=document.createElement('dialog');dialog.className='reviewDialog';dialog.id='reviewDialog';dialog.setAttribute('aria-label','마지막 질문');document.body.append(dialog);
+ const invite=document.createElement('button');invite.className='reviewInvite';invite.id='reviewInvite';document.querySelector('.session').before(invite);
+ const $=s=>dialog.querySelector(s);
+ const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
+ const pending=()=>state.runs.filter(r=>pendingQuestion(r));
+ function update(){bondDeltas=new Map();for(const run of state.runs)for(const answer of run.answers)bondDeltas.set(run.student,(bondDeltas.get(run.student)||0)+answer.delta);const list=pending();invite.hidden=!list.length;invite.textContent=list.length?`${list[0].name||'학생'} · 남은 질문${list.length>1?' '+list.length:''}`:'';}
+ function save(next){try{localStorage.setItem(KEY,JSON.stringify(next));state=next;update();onChange();return true;}catch{toast('질문 기록을 저장하지 못했어. 다시 눌러 줘.');return false;}}
+ function stop(){generation++;controller?.abort();controller=null;model?.destroy();model=null;}
+ dialog.addEventListener('close',stop);dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
+ function react(kind){const run=state.runs.find(r=>r.id===active),misses=run.answers.filter(a=>!a.correct).length,r=reviewReaction(run.student,kind,{misses});currentExpression=r.expression;model?.setExpression(r.expression);model?.react();onReaction(run.student,r);return r.text;}
+ function pageLines(lines,done){let index=0;const body=$('#reviewBody');body.replaceChildren();const text=node('p',undefined,'reviewSpeech'),row=node('div',undefined,'reviewActions'),back=node('button','‹','reviewBack'),next=node('button','다음','reviewPrimary');text.setAttribute('aria-live','polite');back.setAttribute('aria-label','이전 대사');row.append(back,next);body.append(text,row);const render=()=>{text.textContent=lines[index];back.disabled=index===0;};back.onclick=()=>{if(index){index--;render();}};next.onclick=()=>{if(index<lines.length-1){index++;render();}else done();};render();}
+ function result(){const run=state.runs.find(r=>r.id===active),sum=reviewSummary(run);$('#reviewCount').textContent=`${sum.total} / ${sum.total}`;const cleared=run.qids.every(id=>run.answers.some(a=>a.qid===id&&a.correct));const message=react(sum.correct===sum.total?'perfect':cleared?'recover':'end');const body=$('#reviewBody');body.replaceChildren(node('p',message,'reviewSpeech'));const score=node('div',`${sum.correct} / ${sum.total}`,'reviewScore');score.setAttribute('aria-label',`첫 답변 ${sum.total}개 중 ${sum.correct}개 정답`);body.append(score,node('small',`인연 ${sum.delta>0?'+':''}${sum.delta}`,'reviewBond'));
+  if(sum.recovered)body.append(node('small',`다시 맞힘 ${sum.recovered}`,'reviewBond'));for(const id of run.qids){const q=reviewQuestion(id),again=sum.wrong.includes(id),b=node('button',q.text,'reviewRetry');b.setAttribute('aria-label',(again?'다시 풀기':'답 보기')+' · '+b.textContent);b.dataset.retry=String(again);b.onclick=()=>again?question(id,true):pageLines([q.choices[q.answer],...splitDialogue(q.explanation,78)],result);body.append(b);}
+  const close=node('button','닫기','reviewPrimary');close.onclick=()=>dialog.close();body.append(close);
+ }
+ function question(qid,retry=false){const run=state.runs.find(r=>r.id===active),id=qid||pendingQuestion(run);if(!id){result();return;}const q=reviewQuestion(id),position=run.qids.indexOf(id);$('#reviewCount').textContent=`${position+1} / ${run.qids.length}`;currentExpression='neutral';model?.setExpression('neutral');const body=$('#reviewBody');body.replaceChildren();const prompt=node('h3',q.text,'reviewPrompt'),choices=node('div',undefined,'reviewChoices');body.append(prompt,choices);let busy=false;
+  const choose=selected=>{if(busy)return;busy=true;const next=structuredClone(state),answer=answerReview(next,active,id,selected,{bond:getBond(run.student),retry});if(!answer){busy=false;return;}if(!save(next)){busy=false;return;}const reaction=react(answer.correct?(answer.recovered?'recover':'right'):selected===-1?'unknown':'wrong');const resultLabel=answer.correct?'정답':'정답 · '+q.choices[q.answer];const status=node('div',resultLabel,'reviewAnswer '+(answer.correct?'is-correct':'is-wrong'));status.setAttribute('role','status');pageLines([reaction,...splitDialogue(q.explanation,78)],()=>retry?result():question());$('#reviewBody').prepend(status,node('small',answer.delta?`인연 ${answer.delta>0?'+':''}${answer.delta}`:'인연 변동 없음','reviewBond'));};
+  for(const i of run.order[position]){const b=node('button',q.choices[i],'reviewChoice');b.onclick=()=>choose(i);choices.append(b);}
+  const unknown=node('button','모르겠어','reviewUnknown');unknown.onclick=()=>choose(-1);body.append(unknown);
+ }
+ function open(id){const run=state.runs.find(r=>r.id===id);if(!run)return;beforeOpen();stop();active=id;currentExpression='neutral';const student=illustratedStudents.find(s=>s.id===run.student),fallback=defaultStudents.find(s=>s.id===run.student);dialog.style.setProperty('--review-accent',student?.color||fallback?.color||'#8c9eb8');dialog.innerHTML='<header class="reviewHeader"><div><b id="reviewName"></b><small id="reviewLesson"></small></div><button id="reviewClose" aria-label="나중에">×</button></header><div class="reviewStage"><img id="reviewFallback" alt=""><canvas id="reviewCanvas" aria-label="학생 표정"></canvas><span id="reviewCount"></span></div><section id="reviewBody"></section>';
+  $('#reviewName').textContent=run.name||fallback?.name||'학생';$('#reviewLesson').textContent=`${run.lecture}강${run.track?' · '+run.track:''}`;$('#reviewClose').onclick=()=>dialog.close();
+  if(student){$('#reviewFallback').src=student.portrait;$('#reviewFallback').alt=student.name;}else{$('#reviewFallback').hidden=true;$('#reviewCanvas').hidden=true;$('.reviewStage').classList.add('no-portrait');}
+  dialog.showModal();question();
+  if(student){controller=new AbortController();const gen=generation;createCharacter($('#reviewCanvas'),{manifest:student.model,personality:student.id,framing:'face',visibilityRoot:dialog,isVisible:()=>dialog.open&&generation===gen,signal:controller.signal,releaseContext:true,onError:()=>{if(generation===gen){$('#reviewFallback').hidden=false;$('#reviewCanvas').hidden=true;}}}).then(async instance=>{if(generation!==gen||!dialog.open){instance.destroy();return;}model=instance;$('#reviewFallback').hidden=true;model.setExpression(currentExpression);await model.prepareExpressions();}).catch(()=>{if(generation===gen)$('#reviewCanvas').hidden=true;});}
+ }
+ invite.onclick=()=>{const r=pending()[0];if(r)open(r.id);};update();
+ return {enqueue(event){const next=structuredClone(state),run=queueReview(next,event);if(!run)return false;if(!save(next))return false;return run.id;},open,openPending(){const r=pending()[0];if(r)open(r.id);},delta:student=>bondDeltas.get(student)||0,export:()=>structuredClone(state),import:raw=>save(mergeReview(state,raw)),get state(){return state;},get pending(){return pending().length;}};
+}
