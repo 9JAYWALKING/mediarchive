@@ -1,0 +1,39 @@
+/* Full-bleed phone canvas. Insets protect controls, never the scenery. */
+@media (max-width: 599px) {
+  :root {
+    --mobile-nav-height: 62px;
+    --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html, body { width: 100%; height: 100%; min-height: 0; }
+  body { display: block; overflow: hidden; }
+  .phone {
+    width: 100%; max-width: none;
+    height: 100vh; height: 100dvh;
+    min-height: 0; max-height: none;
+    margin: 0; border: 0; border-radius: 0;
+  }
+  .gameHeader { top: calc(8px + env(safe-area-inset-top, 0px)); }
+  .student { top: calc(86px + env(safe-area-inset-top, 0px)); }
+  .stage { top: calc(108px + env(safe-area-inset-top, 0px)); }
+  .gameNav {
+    height: calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));
+    padding: 0 10px var(--mobile-safe-bottom);
+    border-radius: 0; align-items: stretch;
+  }
+  .gameNav button {
+    min-height: 0; padding: 4px 3px; gap: 3px;
+  }
+  .bottom {
+    bottom: calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));
+    padding-bottom: 8px;
+  }
+  .gameScreen {
+    top: calc(82px + env(safe-area-inset-top, 0px));
+    bottom: calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));
+  }
+}
+@media (max-width: 599px) and (max-height: 740px) {
+  .student { top: calc(78px + env(safe-area-inset-top, 0px)); }
+  .stage { top: calc(93px + env(safe-area-inset-top, 0px)); }
+  .gameScreen { top: calc(76px + env(safe-area-inset-top, 0px)); }
+}
