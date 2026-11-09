@@ -1,4 +1,5 @@
 import {expressionRigs,expressionNames,faceTransform,expressionFragment} from './expressions.js';
+import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
 export async function createCharacter(canvas, options={}){
@@ -6,14 +7,14 @@ export async function createCharacter(canvas, options={}){
  if(!core)throw Error('캐릭터를 불러오지 못했어요. 연결을 확인해 주세요.');
  const gl=canvas.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:false});
  if(!gl)throw Error('이 브라우저에서 움직임을 표시할 수 없어요.');
- let moc,model,program,texture,faceTexture,observer,raf=0,disposed=false,contextLost=false;
+ let moc,model,program,texture,previousTexture,faceTexture,observer,raf=0,disposed=false,contextLost=false,appearanceRequest=0;
  const buffers=[],shaders=[],listeners=[];
  const on=(target,type,fn)=>{target.addEventListener(type,fn);listeners.push(()=>target.removeEventListener(type,fn));};
  function destroy(){
-  if(disposed)return;disposed=true;cancelAnimationFrame(raf);observer?.disconnect();
+  if(disposed)return;disposed=true;appearanceRequest++;cancelAnimationFrame(raf);observer?.disconnect();
   for(const remove of listeners)remove();
   model?.release();moc?._release();
-  if(!contextLost){for(const b of buffers)gl.deleteBuffer(b);for(const s of shaders)gl.deleteShader(s);if(texture)gl.deleteTexture(texture);if(faceTexture)gl.deleteTexture(faceTexture);if(program)gl.deleteProgram(program);if(options.releaseContext)gl.getExtension('WEBGL_lose_context')?.loseContext();}
+  if(!contextLost){for(const b of buffers)gl.deleteBuffer(b);for(const s of shaders)gl.deleteShader(s);if(texture)gl.deleteTexture(texture);if(previousTexture)gl.deleteTexture(previousTexture);if(faceTexture)gl.deleteTexture(faceTexture);if(program)gl.deleteProgram(program);if(options.releaseContext)gl.getExtension('WEBGL_lose_context')?.loseContext();}
   canvas.dataset.live2d='disposed';
  }
  try{
@@ -23,7 +24,11 @@ export async function createCharacter(canvas, options={}){
   const modelResponse=await fetch(new URL(manifest.FileReferences.Moc,manifestURL),{signal:options.signal});if(!modelResponse.ok)throw Error('캐릭터를 불러오지 못했어요.');
   moc=core.Moc.fromArrayBuffer(await modelResponse.arrayBuffer());if(!moc)throw Error('캐릭터를 열지 못했어요.');
   model=core.Model.fromMoc(moc);if(!model)throw Error('움직임을 시작하지 못했어요.');
-  const img=new Image();img.src=new URL(manifest.FileReferences.Textures[0],manifestURL).href;await img.decode();
+  const uniformURL=new URL(manifest.FileReferences.Textures[0],manifestURL).href,studentId=options.personality||'haru';
+  let appearanceSelection=['uniform','casual','sleep'].includes(options.outfit)?options.outfit:'auto';
+  let appearance=appearanceFor(studentId,appearanceSelection),textureURL=appearance?new URL(appearance.portrait,document.baseURI).href:uniformURL;
+  let img=new Image();img.src=textureURL;
+  try{await img.decode();}catch(error){if(textureURL===uniformURL)throw error;img=new Image();img.src=uniformURL;await img.decode();textureURL=uniformURL;appearance=appearanceFor(studentId,'uniform');canvas.dataset.outfitError='true';}
   if(options.signal?.aborted)throw new DOMException('Cancelled','AbortError');
   function shader(type,src){const s=gl.createShader(type);shaders.push(s);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error('화면을 열지 못했어요.');return s;}
   program=gl.createProgram();
@@ -34,7 +39,10 @@ export async function createCharacter(canvas, options={}){
   const makeBuffer=()=>{const b=gl.createBuffer();buffers.push(b);return b;},posBuffer=makeBuffer(),uvBuffer=makeBuffer(),indices=makeBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER,uvBuffer);gl.bufferData(gl.ARRAY_BUFFER,model.drawables.vertexUvs[0],gl.STATIC_DRAW);gl.enableVertexAttribArray(uv);gl.vertexAttribPointer(uv,2,gl.FLOAT,false,0,0);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,indices);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,model.drawables.indices[0],gl.STATIC_DRAW);
-  texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,texture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  function makeTexture(art){const value=gl.createTexture();gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,value);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);return value;}
+  texture=makeTexture(img);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,texture);gl.activeTexture(gl.TEXTURE0);
+  const outfitLocation=gl.getUniformLocation(program,'u_outfitBlend');let outfitBlend=1,outfitStarted=0;
+  gl.uniform1i(gl.getUniformLocation(program,'u_previousTexture'),2);gl.uniform1f(outfitLocation,1);
   const faceRig=expressionRigs[options.personality||'haru'];
   let expression=0,previousExpression=0,expressionBlend=1,expressionStarted=0,expressionUntil=0,facesReady=false;
   const exprLocation=gl.getUniformLocation(program,'u_expression'),prevLocation=gl.getUniformLocation(program,'u_previous'),blendLocation=gl.getUniformLocation(program,'u_blend');
@@ -55,6 +63,26 @@ export async function createCharacter(canvas, options={}){
   };
   const profile=profiles[options.personality]||profiles.haru,speed=profile.speed;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  async function setOutfit(selection='auto'){
+   if(!['auto','uniform','casual','sleep'].includes(selection)||disposed||contextLost)return false;
+   appearanceSelection=selection;const request=++appearanceRequest,next=appearanceFor(studentId,selection);
+   if(!next)return false;const url=new URL(next.portrait,document.baseURI).href;
+   if(url===textureURL){canvas.dataset.outfitLoading='false';return true;}
+   canvas.dataset.outfitLoading='true';
+   try{
+    const art=new Image();art.src=url;await art.decode();
+    if(disposed||contextLost||request!==appearanceRequest)return false;
+    if(art.naturalWidth!==img.naturalWidth||art.naturalHeight!==img.naturalHeight)throw Error('복장 크기가 맞지 않아요.');
+    const replacement=makeTexture(art);if(previousTexture)gl.deleteTexture(previousTexture);previousTexture=texture;texture=replacement;
+    gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,previousTexture);gl.activeTexture(gl.TEXTURE0);
+    img=art;textureURL=url;appearance=next;outfitStarted=performance.now();outfitBlend=reduced.matches?1:0;
+    canvas.dataset.outfit=next.id;canvas.dataset.outfitLoading='false';delete canvas.dataset.outfitError;
+    options.onAppearanceChange?.(next);requestDraw();return true;
+   }catch{
+    if(!disposed&&request===appearanceRequest){canvas.dataset.outfitLoading='false';canvas.dataset.outfitError='true';options.onAppearanceError?.();}
+    return false;
+   }
+  }
   let motion=!reduced.matches,last=0,phase=0,target=0,angle=0,hair=0,blinkStart=-10,nextBlink=profile.blink-.4,forcedBlink=false,reactUntil=0;
   const ids=model.parameters.ids;const set=(id,v)=>{const i=ids.indexOf(id);if(i>=0)model.parameters.values[i]=v;};
   const phone=document.querySelector('.phone');
@@ -80,6 +108,9 @@ export async function createCharacter(canvas, options={}){
    set('ParamHairSway',motion?Math.max(-1,Math.min(1,hair)):0);set('ParamEyeLOpen',expression===2?1:eye);model.update();
    if(expressionUntil&&now>=expressionUntil)setExpression('neutral');
    expressionBlend=reduced.matches?1:Math.min(1,(now-expressionStarted)/260);
+   outfitBlend=previousTexture&&!reduced.matches?Math.min(1,(now-outfitStarted)/320):1;
+   gl.uniform1f(outfitLocation,outfitBlend);
+   if(previousTexture&&outfitBlend===1){gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,texture);gl.deleteTexture(previousTexture);previousTexture=null;gl.activeTexture(gl.TEXTURE0);}
    gl.uniform1f(exprLocation,facesReady?expression:0);gl.uniform1f(prevLocation,facesReady?previousExpression:0);gl.uniform1f(blendLocation,expressionBlend);
    const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
    if(rect.width<=0||rect.height<=0)return;
@@ -87,16 +118,19 @@ export async function createCharacter(canvas, options={}){
    const imageH=options.framing==='face'?rect.height*2.5:options.framing==='portrait'?Math.min(rect.height*.99,rect.width*(img.height/img.width)*1.25):Math.max(rect.height*.99,rect.width*1.34);
    gl.uniform2f(scale,imageH/rect.width*2,imageH/rect.height*2);gl.uniform1f(offset,1-imageH/rect.height+(options.framing==='face'?0:-.025));
    gl.bindBuffer(gl.ARRAY_BUFFER,posBuffer);gl.bufferData(gl.ARRAY_BUFFER,model.drawables.vertexPositions[0],gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);gl.drawElements(gl.TRIANGLES,model.drawables.indexCounts[0],gl.UNSIGNED_SHORT,0);model.drawables.resetDynamicFlags();
-   canvas.dataset.live2d='ready';if(motion||expressionBlend<1||expressionUntil)raf=requestAnimationFrame(draw);
+   canvas.dataset.live2d='ready';if(motion||expressionBlend<1||expressionUntil||outfitBlend<1)raf=requestAnimationFrame(draw);
   }
   function requestDraw(){if(!raf&&!disposed&&!contextLost&&!offstage())raf=requestAnimationFrame(draw);}
-  function visibility(){if(offstage()){cancelAnimationFrame(raf);raf=0;}else{last=performance.now();requestDraw();}}
+  function visibility(){if(offstage()){cancelAnimationFrame(raf);raf=0;}else{last=performance.now();if(appearanceSelection==='auto'&&canvas.dataset.outfitError)setOutfit('auto');requestDraw();}}
   observer=new MutationObserver(visibility);observer.observe(options.visibilityRoot||phone,{attributes:true,attributeFilter:options.visibilityRoot?['open','hidden']:['data-view']});
   on(document,'visibilitychange',visibility);on(window,'resize',requestDraw);
+  on(window,'online',()=>{if(appearanceSelection==='auto'&&canvas.dataset.outfitError)setOutfit('auto');});
   on(reduced,'change',e=>{if(e.matches){motion=false;requestDraw();options.onMotionChange?.(motion);}});
   on(canvas,'webglcontextlost',e=>{e.preventDefault();fail();});
   if(options.signal)on(options.signal,'abort',destroy);
+  canvas.dataset.outfit=appearance?.id||'uniform';options.onAppearanceChange?.(appearance);
+  listeners.push(subscribeWardrobe(()=>{if(appearanceSelection==='auto')setOutfit('auto');}));
   requestDraw();
-  return {setExpression,prepareExpressions:loadFaces,get expression(){return expressionNames[expression];},get motion(){return motion;},setMotion(value){motion=!!value;requestDraw();},look(value){target=Math.max(-1,Math.min(1,value))*profile.look;reactUntil=0;requestDraw();},react(){forcedBlink=true;target=(Math.random()-.5)*profile.react;reactUntil=phase+profile.hold;requestDraw();},destroy,model};
+  return {setOutfit,get outfit(){return appearance?.id||'uniform';},setExpression,prepareExpressions:loadFaces,get expression(){return expressionNames[expression];},get motion(){return motion;},setMotion(value){motion=!!value;requestDraw();},look(value){target=Math.max(-1,Math.min(1,value))*profile.look;reactUntil=0;requestDraw();},react(){forcedBlink=true;target=(Math.random()-.5)*profile.react;reactUntil=phase+profile.hold;requestDraw();},destroy,model};
  }catch(error){destroy();throw error;}
 }

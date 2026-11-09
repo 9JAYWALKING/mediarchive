@@ -13,6 +13,7 @@ export function faceTransform(rig){
 }
 export const expressionFragment=`precision mediump float;
 varying vec2 v_uv; uniform sampler2D u_texture; uniform sampler2D u_faces;
+uniform sampler2D u_previousTexture; uniform float u_outfitBlend;
 uniform vec3 u_mapX; uniform vec3 u_mapY; uniform vec2 u_left; uniform vec2 u_right; uniform vec2 u_mouth;
 uniform float u_expression; uniform float u_previous; uniform float u_blend;
 float oval(vec2 p,vec2 c,vec2 r){return 1.0-smoothstep(.68,1.0,length((p-c)/r));}
@@ -26,4 +27,4 @@ vec4 face(float e,vec4 base,vec2 p){
  float mask=max(max(oval(p,u_left+vec2(0.0,tear*15.0),vec2(81.0,74.0+tear*24.0)),oval(p,u_right+vec2(0.0,tear*15.0),vec2(78.0,74.0+tear*24.0))),oval(p,u_mouth,vec2(78.0,58.0)));
  return vec4(mix(base.rgb,ink.rgb,mask*ink.a),base.a);
 }
-void main(){vec4 base=texture2D(u_texture,v_uv);vec2 p=vec2(v_uv.x,1.0-v_uv.y)*vec2(1199.0,1312.0);gl_FragColor=mix(face(u_previous,base,p),face(u_expression,base,p),u_blend);}`;
+void main(){vec4 old=texture2D(u_previousTexture,v_uv),fresh=texture2D(u_texture,v_uv);float alpha=mix(old.a,fresh.a,u_outfitBlend);vec3 rgb=mix(old.rgb*old.a,fresh.rgb*fresh.a,u_outfitBlend)/max(alpha,.00001);vec4 base=vec4(rgb,alpha);vec2 p=vec2(v_uv.x,1.0-v_uv.y)*vec2(1199.0,1312.0);gl_FragColor=mix(face(u_previous,base,p),face(u_expression,base,p),u_blend);}`;

@@ -1,0 +1,17 @@
+.wardrobeCollection{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 22px}
+.wardrobeCard{margin:0;min-width:0;overflow:hidden;border:1px solid #d8e6ec;border-radius:16px;background:linear-gradient(155deg,#fdf8f6,#e6f1f4);position:relative}
+.wardrobeCard[data-outfit=casual]{background:linear-gradient(155deg,#fff6e9,#ede8e1)}.wardrobeCard[data-outfit=sleep]{background:linear-gradient(155deg,#f4eaf7,#dfe6f4)}
+.wardrobeCard.is-current{border-color:#73b4c7;box-shadow:0 0 0 2px #8bcddd26}
+.wardrobeCard img{display:block;width:145%;max-width:none;margin-left:-22.5%;height:160px;object-fit:cover;object-position:center top}
+.wardrobeCard figcaption{padding:10px 3px;background:#ffffffd6;color:#47667c;text-align:center;font:700 13px/1.2 var(--ui)}
+.wardrobeTimes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.wardrobeTimes label{min-width:0;display:grid;gap:8px;color:#536d7c;font:700 14px var(--ui)}
+#wardrobeForm input[type=time]{box-sizing:border-box;min-width:0;width:100%;min-height:48px;border:1px solid #d2e0e7;border-radius:12px;background:#fff;color:#355c72;padding:10px 12px;font:600 17px var(--numbers)}
+.wardrobeDinner{display:flex;justify-content:space-between;align-items:center;padding:18px 2px 12px;margin-top:8px;color:#526e80;font:14px var(--ui)}.wardrobeDinner strong{font-weight:700}.wardrobeDinner span{font-size:13px;color:#77909d}
+.wardrobeFallback{display:grid;grid-template-columns:minmax(0,1fr) 152px;align-items:center;gap:12px;color:#778d99;font:13px var(--ui)}
+.wardrobeError{color:#af5a6e;min-height:0;font:13px/1.5 var(--ui)}.wardrobeError:empty{display:none}
+.viewerLooks{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:5px}
+.viewerLooks .expressionPicker,.outfitPicker{min-width:0;display:flex;align-items:center;gap:7px;padding:0;font:12px var(--ui);color:#6c8290;white-space:nowrap}
+.viewerLooks .expressionPicker select,.outfitPicker select{flex:1;min-width:0;max-width:100%;min-height:40px;border:1px solid #d0dfe8;border-radius:11px;background:#ffffffeb;color:#49697e;padding:7px 8px;font:600 13px var(--ui)}
+.viewerLooks select:focus-visible,#wardrobeForm input:focus-visible{outline:2px solid #4b99b6;outline-offset:2px}
+@media(max-width:350px){.wardrobeTimes{grid-template-columns:1fr}.wardrobeCard img{height:136px}.wardrobeCollection{gap:6px}.wardrobeCard figcaption{font-size:12px}.viewerLooks{gap:8px}.viewerLooks label{gap:5px}.viewerLooks select{padding:6px;font-size:12px}}
+@media(max-height:700px){.viewerLooks{margin-top:4px}.viewerLooks select{min-height:36px}.characterViewer .viewerSwitch{margin-top:9px}}

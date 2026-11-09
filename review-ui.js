@@ -3,6 +3,7 @@ import {reviewReaction} from './review-dialogue.js';
 import {illustratedStudents} from './character-data.js';
 import {defaultStudents} from './planner-catalog.js';
 import {splitDialogue} from './dialogue-pages.js';
+import {appearanceFor} from './wardrobe-service.js';
 import {createCharacter} from './renderer.js';
 const KEY='heart-companion-v1-reviews';
 export function createReviewUI({getBond,onChange=()=>{},onReaction=()=>{},beforeOpen=()=>{},toast}){
@@ -30,9 +31,9 @@ export function createReviewUI({getBond,onChange=()=>{},onReaction=()=>{},before
  }
  function open(id){const run=state.runs.find(r=>r.id===id);if(!run)return;beforeOpen();stop();active=id;currentExpression='neutral';const student=illustratedStudents.find(s=>s.id===run.student),fallback=defaultStudents.find(s=>s.id===run.student);dialog.style.setProperty('--review-accent',student?.color||fallback?.color||'#8c9eb8');dialog.innerHTML='<header class="reviewHeader"><div><b id="reviewName"></b><small id="reviewLesson"></small></div><button id="reviewClose" aria-label="나중에">×</button></header><div class="reviewStage"><img id="reviewFallback" alt=""><canvas id="reviewCanvas" aria-label="학생 표정"></canvas><span id="reviewCount"></span></div><section id="reviewBody"></section>';
   $('#reviewName').textContent=run.name||fallback?.name||'학생';$('#reviewLesson').textContent=`${run.lecture}강${run.track?' · '+run.track:''}`;$('#reviewClose').onclick=()=>dialog.close();
-  if(student){$('#reviewFallback').src=student.portrait;$('#reviewFallback').alt=student.name;}else{$('#reviewFallback').hidden=true;$('#reviewCanvas').hidden=true;$('.reviewStage').classList.add('no-portrait');}
+  if(student){$('#reviewFallback').src=appearanceFor(student.id)?.portrait||student.portrait;$('#reviewFallback').alt=student.name;}else{$('#reviewFallback').hidden=true;$('#reviewCanvas').hidden=true;$('.reviewStage').classList.add('no-portrait');}
   dialog.showModal();question();
-  if(student){controller=new AbortController();const gen=generation;createCharacter($('#reviewCanvas'),{manifest:student.model,personality:student.id,framing:'face',visibilityRoot:dialog,isVisible:()=>dialog.open&&generation===gen,signal:controller.signal,releaseContext:true,onError:()=>{if(generation===gen){$('#reviewFallback').hidden=false;$('#reviewCanvas').hidden=true;}}}).then(async instance=>{if(generation!==gen||!dialog.open){instance.destroy();return;}model=instance;$('#reviewFallback').hidden=true;model.setExpression(currentExpression);await model.prepareExpressions();}).catch(()=>{if(generation===gen)$('#reviewCanvas').hidden=true;});}
+  if(student){controller=new AbortController();const gen=generation;createCharacter($('#reviewCanvas'),{manifest:student.model,personality:student.id,framing:'face',onAppearanceChange:look=>{if(look&&generation===gen)$('#reviewFallback').src=look.portrait;},visibilityRoot:dialog,isVisible:()=>dialog.open&&generation===gen,signal:controller.signal,releaseContext:true,onError:()=>{if(generation===gen){$('#reviewFallback').hidden=false;$('#reviewCanvas').hidden=true;}}}).then(async instance=>{if(generation!==gen||!dialog.open){instance.destroy();return;}model=instance;$('#reviewFallback').hidden=true;model.setExpression(currentExpression);await model.prepareExpressions();}).catch(()=>{if(generation===gen)$('#reviewCanvas').hidden=true;});}
  }
  invite.onclick=()=>{const r=pending()[0];if(r)open(r.id);};update();
  return {enqueue(event){const next=structuredClone(state),run=queueReview(next,event);if(!run)return false;if(!save(next))return false;return run.id;},open,openPending(){const r=pending()[0];if(r)open(r.id);},delta:student=>bondDeltas.get(student)||0,export:()=>structuredClone(state),import:raw=>save(mergeReview(state,raw)),get state(){return state;},get pending(){return pending().length;}};
