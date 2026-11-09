@@ -1,0 +1,16 @@
+Mediarchive typography · 2026-11-09
+- UI: Wanted Sans Variable, original complete WOFF2.
+  https://github.com/wanteddev/wanted-sans
+  https://raw.githubusercontent.com/wanteddev/wanted-sans/main/packages/wanted-sans/fonts/webfonts/variable/complete/woff2/WantedSansVariable.woff2
+  LICENSE-WantedSans.txt
+- Titles / names: LINE Seed Sans KR Bold, original WOFF2 from the official site.
+  https://seed.line.me/index_kr.html
+  https://seed.line.me/src/fonts/LINESeedSansKR-Bd.woff2
+  LICENSE-LINESeedKR.txt; copyright notice from the font, OFL text from https://github.com/line/seed/blob/main/OFL.txt
+- Dialogue: Gowun Dodum Regular, Google Fonts TTF losslessly compressed to WOFF2 with FontTools.
+  https://github.com/google/fonts/tree/main/ofl/gowundodum
+  LICENSE-GowunDodum.txt
+- Numerals / Latin wordmark: Outfit Variable, Google Fonts TTF losslessly compressed to WOFF2 with FontTools.
+  https://github.com/google/fonts/tree/main/ofl/outfit
+  LICENSE-Outfit.txt
+No glyph outlines or font family names were modified. All four families are served locally.
