@@ -1,14 +1,18 @@
 /* Full-bleed phone canvas. Insets protect controls, never the scenery. */
 @media (max-width: 599px) {
   :root {
+    --app-height: 100vh;
+    --app-height: 100dvh;
     --mobile-nav-height: 62px;
-    --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --mobile-safe-bottom: min(12px, env(safe-area-inset-bottom, 0px));
   }
-  html, body { width: 100%; height: 100%; min-height: 0; }
-  body { display: block; overflow: hidden; }
+  html, body { width: 100%; height: var(--app-height); min-height: 0; }
+  /* Match the dock if WebKit paints outside the document during launch. */
+  html, body { background: #fbfdfc; }
+  body { display: block; overflow: hidden; overscroll-behavior: none; }
   .phone {
     width: 100%; max-width: none;
-    height: 100vh; height: 100dvh;
+    height: var(--app-height);
     min-height: 0; max-height: none;
     margin: 0; border: 0; border-radius: 0;
   }
@@ -31,6 +35,15 @@
     top: calc(82px + env(safe-area-inset-top, 0px));
     bottom: calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));
   }
+  .characterViewer { height: var(--app-height); max-height: var(--app-height); }
+}
+/* Installed iOS apps can report dvh minus the status-bar height. The large
+   viewport includes that area. Never add the inset again to the canvas. */
+@media (max-width: 599px) and (display-mode: standalone) {
+  :root { --app-height: 100vh; --app-height: 100lvh; }
+}
+@media (max-width: 599px) {
+  :root[data-ios-standalone] { --app-height: 100vh; --app-height: 100lvh; }
 }
 @media (max-width: 599px) and (max-height: 740px) {
   .student { top: calc(78px + env(safe-area-inset-top, 0px)); }
