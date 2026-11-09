@@ -1,4 +1,4 @@
-import {expressionRigs,expressionNames,expressionPose,faceTransform,expressionFragment} from './expressions.js?v=5';
+import {expressionRigs,expressionNames,expressionPose,faceTransform,expressionFragment} from './expressions.js?v=8';
 import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js';
 import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
@@ -51,6 +51,8 @@ export async function createCharacter(canvas, options={}){
   gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.activeTexture(gl.TEXTURE0);
   if(faceRig){const map=faceTransform(faceRig);gl.uniform3fv(gl.getUniformLocation(program,'u_mapX'),map[0]);gl.uniform3fv(gl.getUniformLocation(program,'u_mapY'),map[1]);for(const [i,name] of ['u_left','u_right','u_mouth'].entries())gl.uniform2fv(gl.getUniformLocation(program,name),faceRig.target[i]);}
+  if(faceRig){const [left,right]=faceRig.target;gl.uniform4fv(gl.getUniformLocation(program,'u_fringe'),[left[0]-85,Math.min(left[1],right[1])-125,right[0]+85,Math.max(left[1],right[1])+20]);}
+  gl.uniform4fv(gl.getUniformLocation(program,'u_protect'),faceRig?.protect||[0,0,0,0]);
   let faceLoad=null;
   function loadFaces(){if(!faceRig)return Promise.resolve(false);if(faceLoad)return faceLoad;faceLoad=(async()=>{try{const art=new Image();art.src=new URL(`expressions/${options.personality||'haru'}-v1.png`,manifestURL).href;await art.decode();if(disposed||contextLost)return false;gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.activeTexture(gl.TEXTURE0);facesReady=true;canvas.dataset.expressions='ready';requestDraw();return true;}catch{canvas.dataset.expressions='unavailable';return false;}})();return faceLoad;}
   function setExpression(name,{duration=0}={}){if(!expressionNames.includes(name)||disposed)return;acting.set(name,activeTime,duration);loadFaces().then(requestDraw);requestDraw();}
