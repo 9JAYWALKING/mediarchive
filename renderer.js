@@ -1,1 +1,1 @@
-export {createCharacter} from './character-renderer.js?v=4';
+export {createCharacter} from './character-renderer.js?v=5';

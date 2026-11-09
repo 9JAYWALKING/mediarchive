@@ -1,4 +1,5 @@
-import {expressionRigs,expressionNames,faceTransform,expressionFragment} from './expressions.js?v=4';
+import {expressionRigs,expressionNames,expressionPose,faceTransform,expressionFragment} from './expressions.js?v=5';
+import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js';
 import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
@@ -42,8 +43,9 @@ export async function createCharacter(canvas, options={}){
   function makeTexture(art){const value=gl.createTexture();gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,value);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);return value;}
   texture=makeTexture(img);
   const faceRig=expressionRigs[options.personality||'haru'];
-  let expression=0,expressionStarted=0,expressionUntil=0,facesReady=false;
-  const exprLocation=gl.getUniformLocation(program,'u_expression');
+  let expression=1,expressionStarted=0,facesReady=false,activeTime=0;
+  const acting=createExpressionPerformance(studentId);
+  const faceLocations=Object.fromEntries(['browPose','eyePose','mouthPose','blink'].map(name=>[name,gl.getUniformLocation(program,'u_'+name)]));
   gl.uniform1i(gl.getUniformLocation(program,'u_texture'),0);gl.uniform1i(gl.getUniformLocation(program,'u_faces'),1);
   faceTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);
   gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
@@ -51,7 +53,9 @@ export async function createCharacter(canvas, options={}){
   if(faceRig){const map=faceTransform(faceRig);gl.uniform3fv(gl.getUniformLocation(program,'u_mapX'),map[0]);gl.uniform3fv(gl.getUniformLocation(program,'u_mapY'),map[1]);for(const [i,name] of ['u_left','u_right','u_mouth'].entries())gl.uniform2fv(gl.getUniformLocation(program,name),faceRig.target[i]);}
   let faceLoad=null;
   function loadFaces(){if(!faceRig)return Promise.resolve(false);if(faceLoad)return faceLoad;faceLoad=(async()=>{try{const art=new Image();art.src=new URL(`expressions/${options.personality||'haru'}-v1.png`,manifestURL).href;await art.decode();if(disposed||contextLost)return false;gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.activeTexture(gl.TEXTURE0);facesReady=true;canvas.dataset.expressions='ready';requestDraw();return true;}catch{canvas.dataset.expressions='unavailable';return false;}})();return faceLoad;}
-  function setExpression(name,{duration=0}={}){const next=expressionNames.indexOf(name);if(next<0||disposed)return;expression=next;expressionStarted=performance.now();expressionUntil=duration?expressionStarted+duration:0;canvas.dataset.expression=name;loadFaces().then(requestDraw);requestDraw();}
+  function setExpression(name,{duration=0}={}){if(!expressionNames.includes(name)||disposed)return;acting.set(name,activeTime,duration);loadFaces().then(requestDraw);requestDraw();}
+  function speak(line,pageText){if(disposed)return;const text=typeof line==='string'?line:line?.text||'';acting.speak({text:pageText||text,expression:dialogueExpression(studentId,line)},activeTime);loadFaces().then(requestDraw);requestDraw();}
+  function autoExpression(){acting.auto(activeTime);requestDraw();}
   gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.disable(gl.DEPTH_TEST);
   const profiles={
    haru:{speed:.72,breath:1.45,head:.34,body:.55,hair:.68,lag:2.5,damping:4.5,look:.65,react:.9,hold:1.5,blink:3.2,open:.16},
@@ -88,12 +92,15 @@ export async function createCharacter(canvas, options={}){
   function draw(now){
    raf=0;if(disposed||contextLost||offstage())return;
    if(now-last<1000/30){raf=requestAnimationFrame(draw);return;}
-   const dt=Math.min((now-last)/1000,.08);last=now;if(motion)phase+=dt;
-   let eye=1;
+   const dt=Math.min((now-last)/1000,.08);last=now;activeTime+=dt*1000;if(motion)phase+=dt;
+   let blink='open';
+   const pose=acting.frame(activeTime,{animate:motion});
+   const nextExpression=expressionNames.indexOf(pose.expression);
+   if(nextExpression!==expression){expression=nextExpression;expressionStarted=now;}
+   canvas.dataset.expression=pose.expression;canvas.dataset.performance=pose.phase;canvas.dataset.talking=String(pose.talking);
    if(motion){
     if(phase>nextBlink||forcedBlink){blinkStart=phase;nextBlink=phase+profile.blink+Math.random()*3.5;forcedBlink=false;}
-    const b=phase-blinkStart,open=profile.open;
-    if(b<.07)eye=1-Math.sin(Math.PI*.5*b/.07);else if(b<.10)eye=0;else if(b<.10+open)eye=1-Math.cos(Math.PI*.5*(b-.10)/open);
+    blink=blinkPose(phase-blinkStart);
     if(reactUntil&&phase>reactUntil){target=0;reactUntil=0;}
     angle+=(target-angle)*(1-Math.exp(-dt*profile.damping));
     const hairTarget=profile.hair*Math.sin(phase*speed-.9)+angle*.35;hair+=(hairTarget-hair)*(1-Math.exp(-dt*profile.lag));
@@ -102,16 +109,23 @@ export async function createCharacter(canvas, options={}){
    set('ParamBreath',motion?.5+.44*Math.sin(phase*profile.breath):.5);
    set('ParamAngleX',motion?Math.max(-1,Math.min(1,angle+emotionTilt+profile.head*Math.sin(phase*speed)+.08*Math.sin(phase*1.17))):0);
    set('ParamBodyAngle',motion?profile.body*Math.sin(phase*speed-.65):0);
-   set('ParamHairSway',motion?Math.max(-1,Math.min(1,hair)):0);set('ParamEyeLOpen',expression===2?1:eye);model.update();
-   if(expressionUntil&&now>=expressionUntil)setExpression('neutral');
-   gl.uniform1f(exprLocation,facesReady?expression:0);
+   set('ParamHairSway',motion?Math.max(-1,Math.min(1,hair)):0);
+   // The baked eye compression stretched skin/eyelashes. Keep that mesh open.
+   set('ParamEyeLOpen',1);model.update();
+   const face=expressionPose(pose.expression);
+   const blinkArt=face.eyes===2||blink==='open'?-1:blink==='closed'?2:4;
+   gl.uniform1f(faceLocations.browPose,facesReady?face.brow:-1);
+   gl.uniform1f(faceLocations.eyePose,facesReady?face.eyes:-1);
+   gl.uniform1f(faceLocations.mouthPose,facesReady?(pose.talking?(studentId==='haru'?-1:2):face.mouth):-1);
+   gl.uniform1f(faceLocations.blink,facesReady?blinkArt:-1);
+   canvas.dataset.blink=blink;
    const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
    if(rect.width<=0||rect.height<=0)return;
    const w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
    const imageH=options.framing==='face'?rect.height*2.5:options.framing==='portrait'?Math.min(rect.height*.99,rect.width*(img.height/img.width)*1.25):Math.max(rect.height*.99,rect.width*1.34);
    gl.uniform2f(scale,imageH/rect.width*2,imageH/rect.height*2);gl.uniform1f(offset,1-imageH/rect.height+(options.framing==='face'?0:-.025));
    gl.bindBuffer(gl.ARRAY_BUFFER,posBuffer);gl.bufferData(gl.ARRAY_BUFFER,model.drawables.vertexPositions[0],gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);gl.drawElements(gl.TRIANGLES,model.drawables.indexCounts[0],gl.UNSIGNED_SHORT,0);model.drawables.resetDynamicFlags();
-   canvas.dataset.live2d='ready';if(motion||expressionUntil)raf=requestAnimationFrame(draw);
+   canvas.dataset.live2d='ready';if(motion||acting.active)raf=requestAnimationFrame(draw);
   }
   function requestDraw(){if(!raf&&!disposed&&!contextLost&&!offstage())raf=requestAnimationFrame(draw);}
   function visibility(){if(offstage()){cancelAnimationFrame(raf);raf=0;}else{last=performance.now();if(appearanceSelection==='auto'&&canvas.dataset.outfitError)setOutfit('auto');requestDraw();}}
@@ -123,7 +137,8 @@ export async function createCharacter(canvas, options={}){
   if(options.signal)on(options.signal,'abort',destroy);
   canvas.dataset.outfit=appearance?.id||'uniform';options.onAppearanceChange?.(appearance);
   listeners.push(subscribeWardrobe(()=>{if(appearanceSelection==='auto')setOutfit('auto');}));
+  await loadFaces();if(options.signal?.aborted)throw new DOMException('Cancelled','AbortError');
   requestDraw();
-  return {setOutfit,get outfit(){return appearance?.id||'uniform';},setExpression,prepareExpressions:loadFaces,get expression(){return expressionNames[expression];},get motion(){return motion;},setMotion(value){motion=!!value;requestDraw();},look(value){target=Math.max(-1,Math.min(1,value))*profile.look;reactUntil=0;requestDraw();},react(){forcedBlink=true;target=(Math.random()-.5)*profile.react;reactUntil=phase+profile.hold;requestDraw();},destroy,model};
+  return {speak,autoExpression,setOutfit,get outfit(){return appearance?.id||'uniform';},setExpression,prepareExpressions:loadFaces,get expression(){return expressionNames[expression];},get motion(){return motion;},setMotion(value){motion=!!value;requestDraw();},look(value){target=Math.max(-1,Math.min(1,value))*profile.look;reactUntil=0;requestDraw();},react(){if(phase-blinkStart>1.5)forcedBlink=true;target=(Math.random()-.5)*profile.react;reactUntil=phase+profile.hold;requestDraw();},destroy,model};
  }catch(error){destroy();throw error;}
 }

@@ -14,7 +14,7 @@ export function createClassCheckin({openModal,closeModal,onLine,onPause,onReady,
   const lesson=classTime.current();if(!lesson||classTime.released())return true;
   const actor=illustratedStudents.find(s=>s.id===student)||illustratedStudents[0],voice=classReplies[actor.id]||classReplies.haru;
   attempted=lesson.key;showing=true;onPause();
-  const line=voice.ask[Math.floor(Math.random()*voice.ask.length)];onLine(line);
+  const line=voice.ask[Math.floor(Math.random()*voice.ask.length)];onLine({text:line,expression:['haru','shiori'].includes(actor.id)?'angry':'calm'});
   openModal('<div class="classCheckin"><img class="classCheckinPortrait" alt=""><div class="sheetEyebrow" id="classSpeaker"></div><h2>잠깐!</h2><p id="classCheckinLine"></p><small id="classCheckinLesson"></small><div class="classReplyButtons"><button class="action" id="classAttend">응, 알겠어</button><button class="action solid" id="classEarly">수업 일찍 끝났어</button></div></div>');
   document.querySelector('.classCheckinPortrait').src=actor.portrait;
   document.querySelector('#classSpeaker').textContent=actor.name;
@@ -27,7 +27,7 @@ export function createClassCheckin({openModal,closeModal,onLine,onPause,onReady,
    if(current?.key!==lesson.key){if(early){if(!ask(continuation,student))return;(continuation||onReady)();}return;}
    classTime.answer(lesson,early);
    if(early)(continuation||onReady)();
-   onLine(early?voice.early:voice.okay);
+   onLine({text:early?voice.early:voice.okay,expression:early&&actor.id==='haru'?'happy':'smile'});
   };
   document.querySelector('#classAttend').onclick=()=>finish(false);
   document.querySelector('#classEarly').onclick=()=>finish(true);

@@ -35,7 +35,7 @@ export function createLectureAdvice({openModal,closeModal,onLine}){
    $('#adviceStart').textContent=page===pages.length-1?'시작':'다음';
   }
   $('#advicePrevious').onclick=()=>{if(page>0){page--;render();}};
-  $('#adviceStart').onclick=()=>{if(committed)return;if(page<pages.length-1){page++;render();return;}committed=true;closeModal();onStart();if(entry.student.id==='haru')onLine?.(pages.at(-1).text);};
+  $('#adviceStart').onclick=()=>{if(committed)return;if(page<pages.length-1){page++;render();return;}committed=true;closeModal();onStart();if(entry.student.id==='haru')onLine?.({text:pages.at(-1).text,group:'advice'});};
   render();
   return true;
  }

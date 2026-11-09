@@ -1,6 +1,14 @@
 // Facial atlas registration: source eye/mouth landmarks align with the approved portrait.
-export const expressionNames=['neutral','smile','happy','angry','disappointed','cry'];
-export const expressionLabels=['평소','미소','활짝','삐침','실망','울먹'];
+export const expressionNames=['neutral','smile','happy','angry','disappointed','cry','soft','sleepy','calm'];
+export const expressionLabels=['평소','미소','활짝','삐침','실망','울먹','눈웃음','나른','차분'];
+export function expressionPose(name){
+ const i=expressionNames.indexOf(name);
+ if(i===0)return {brow:-1,eyes:-1,mouth:-1};
+ if(i===6)return {brow:1,eyes:2,mouth:1};
+ if(i===7)return {brow:1,eyes:4,mouth:1};
+ if(i===8)return {brow:0,eyes:0,mouth:0};
+ return {brow:i,eyes:i,mouth:i};
+}
 export const expressionRigs={
  haru:{target:[[495,353],[650,312],[590,444]],source:[[190,290],[313,258],[264,357]]},
  nagi:{target:[[519,334],[665,303],[608,408]],source:[[198,290],[326,271],[272,365]]},
@@ -14,7 +22,7 @@ export function faceTransform(rig){
 export const expressionFragment=`precision mediump float;
 varying vec2 v_uv; uniform sampler2D u_texture; uniform sampler2D u_faces;
 uniform vec3 u_mapX; uniform vec3 u_mapY; uniform vec2 u_left; uniform vec2 u_right; uniform vec2 u_mouth;
-uniform float u_expression;
+uniform float u_browPose; uniform float u_eyePose; uniform float u_mouthPose; uniform float u_blink;
 float oval(vec2 p,vec2 c,vec2 r){return 1.0-smoothstep(.68,1.0,length((p-c)/r));}
 // Replace the original eyebrow as well as the eyelid. Keep the feathered edge
 // outside both lines; a translucent edge through either line creates a ghost.
@@ -24,16 +32,24 @@ float eyePatch(vec2 p,vec2 c,float tear){
  float tears=tear*oval(p,c+vec2(0.0,30.0),vec2(57.0,57.0));
  return max(max(brow,eye),tears);
 }
-vec4 face(float e,vec4 base,vec2 p){
- if(e<.5)return base;
+vec4 paint(float e,vec4 base,vec2 p,float mask){
+ if(e<0.0)return base;
  vec2 at=vec2(dot(u_mapX,vec3(p,1.0)),dot(u_mapY,vec3(p,1.0)));
  vec2 cell=vec2(mod(e,3.0),floor(e/3.0));
  vec2 uv=(at+cell*512.0)/vec2(1536.0,1024.0);uv.y=1.0-uv.y;
  vec4 ink=texture2D(u_faces,uv);
- float tear=step(4.5,e);
- // Mouth patch ends above the jaw. The portrait owns the chin and silhouette.
- float mouth=1.0-smoothstep(.86,1.0,length((p-u_mouth)/vec2(70.0,42.0)));
- float mask=max(max(eyePatch(p,u_left,tear),eyePatch(p,u_right,tear)),mouth);
  return vec4(mix(base.rgb,ink.rgb,mask*ink.a),base.a);
 }
-void main(){vec4 base=texture2D(u_texture,v_uv);vec2 p=vec2(v_uv.x,1.0-v_uv.y)*vec2(1199.0,1312.0);gl_FragColor=face(u_expression,base,p);}`;
+void main(){
+ vec4 base=texture2D(u_texture,v_uv);
+ vec2 p=vec2(v_uv.x,1.0-v_uv.y)*vec2(1199.0,1312.0);
+ float tear=step(4.5,u_browPose);
+ float faceMask=max(eyePatch(p,u_left,tear),eyePatch(p,u_right,tear));
+ vec4 face=paint(u_browPose,base,p,faceMask);
+ float lids=max(1.0-smoothstep(.8,1.0,length((p-u_left)/vec2(78.0,39.0))),1.0-smoothstep(.8,1.0,length((p-u_right)/vec2(78.0,39.0))));
+ float eyes=u_blink>=0.0?u_blink:u_eyePose;
+ face=paint(eyes,face,p,lids);
+ // A single mouth replaces the old one; jaw pixels always belong to the portrait.
+ float mouth=1.0-smoothstep(.86,1.0,length((p-u_mouth)/vec2(70.0,42.0)));
+ gl_FragColor=paint(u_mouthPose,face,p,mouth);
+}`;
