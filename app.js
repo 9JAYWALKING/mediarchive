@@ -1,14 +1,16 @@
+import {arrivalGreeting} from './arrival-dialogue.js';
+import {createDialogueVisibility} from './dialogue-visibility.js';
 import {configureWardrobe,refreshWardrobe,appearanceFor,wardrobeSettings,saveWardrobe} from './wardrobe-service.js';
 import {wardrobeSettingsError} from './wardrobe-engine.js';
 import {openWardrobeSettings} from './wardrobe-ui.js';
-import {createReviewUI} from './review-ui.js';
+import {createReviewUI} from './review-ui.js?v=2';
 import {studentGrowth} from './student-growth.js';
 import {createDialoguePager} from './dialogue-pages.js';
 import {createLectureAdvice} from './lecture-advice.js';
 import {createClassCheckin} from './class-checkin.js';
-import {createCharacter} from './renderer.js';
+import {createCharacter} from './renderer.js?v=3';
 import {createQuizUI} from './quiz-ui.js';
-import {createGameUI} from './game-ui.js';
+import {createGameUI} from './game-ui.js?v=2';
 import {normalizeChoice} from './game-state.js';
 import {createDialogueDirector} from './dialogue.js';
 import {sessionTotals,summarizeGrowth,normalizeGrowth,growthReminder} from './growth-engine.js';
@@ -18,7 +20,7 @@ import {configureRoutine,routineLine,configuredRoutineContext} from './routine-s
 import {createMomoUI} from './momo-ui.js';
 import {createPlannerUI} from './planner-ui.js?v=2';
 import {startWorldTime} from './world-time.js';
-import {createQuestUI} from './quest-ui.js';
+import {createQuestUI} from './quest-ui.js?v=2';
 const $=s=>document.querySelector(s),KEY='heart-companion-v1';let state=normalizeStudy(null),storageOK=true;
 try{state=normalizeStudy(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{storageOK=false;}
 let reviews=null,lectureAdviceUI=null,classCheckin=null,quiz=null,game=null,momo=null,planner=null,quests=null,growthUI=null,growthCache=null,growthSource=null,growthPlannerSource=null;
@@ -31,7 +33,8 @@ const director=createDialogueDirector({recent:dialoguePrefs.recent||{}}),previou
 let quiet=dialoguePrefs.quiet===true;
 function saveDialogue(){try{localStorage.setItem(KEY+'-dialogue',JSON.stringify({recent:director.history,quiet,lastVisit:Date.now()}));}catch{}}
 const lobbyDialogue=createDialoguePager(58);let currentLobbyLine=null;
-function renderDialoguePage(){lastLineAt=Date.now();$('#line').textContent=lobbyDialogue.text;character?.speak(currentLobbyLine,lobbyDialogue.text);$('#nextLine').setAttribute('aria-label',lobbyDialogue.hasNext?'다음 대사':'하루에게 한 번 더 말 걸기');$('#nextLine').dataset.continued=String(lobbyDialogue.hasNext);$('.dialogue').classList.remove('new-line');requestAnimationFrame(()=>$('.dialogue').classList.add('new-line'));}
+const lobbySpeech=createDialogueVisibility($('.dialogue'),{onHide:()=>{if($('.dialogue').contains(document.activeElement))$('#touch').focus({preventScroll:true});}});
+function renderDialoguePage(){lobbySpeech.show();lastLineAt=Date.now();$('#line').textContent=lobbyDialogue.text;character?.speak(currentLobbyLine,lobbyDialogue.text);$('#nextLine').setAttribute('aria-label',lobbyDialogue.hasNext?'다음 대사':'하루에게 한 번 더 말 걸기');$('#nextLine').dataset.continued=String(lobbyDialogue.hasNext);$('.dialogue').classList.remove('new-line');requestAnimationFrame(()=>$('.dialogue').classList.add('new-line'));}
 function say(line){if(!line)return;if(typeof line==='string')line={text:line,group:'touch'};currentLobbyLine=line;lobbyDialogue.set(line.text);$('#line').dataset.group=line.group;renderDialoguePage();}
 function speak(group){say(director.pick(group));director.schedule(Date.now());character?.react();saveDialogue();}
 let toastTimer;function toast(text){$('#toast').textContent=text;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),3000);}
@@ -54,7 +57,7 @@ function commitEvent(event){
  if(event?.complete){const covered=new Set(after.coverage.flat()),tracks=['Wiki','J','JBL'];let stage=0;while(stage<3&&covered.has(`${event.context.lecture}:${tracks[stage]}`))stage++;if(stage)quiz.confirmLesson(event.context.lecture,stage,event.at);}
  quiz.refresh();refresh();game.refreshPanel();speak(event&&event.duration>=300000?'finish':'shortFinish');const reviewId=event?reviews.enqueue({...event,lecture:event.context?.lecture,track:event.context?.track,student:'haru',name:'하루'}):false;return {ok:true,before,after,reviewId};
 }
-function touch(){if(lobbyDialogue.hasNext){if(Date.now()-lastTouch<250)return;lastTouch=Date.now();lobbyDialogue.next();renderDialoguePage();director.schedule(Date.now());return;}if(quiz?.pending){quiz.openQuestion();return;}const now=Date.now();if(now-lastTouch<900)return;lastTouch=now;const bond=1+Math.floor((quiz?.score||0)/100);say(director.touch({now,active:!!state.session?.started,bond}));character?.react();saveDialogue();}
+function touch(){if(lobbySpeech.hidden){lastTouch=Date.now();renderDialoguePage();character?.react();return;}if(lobbyDialogue.hasNext){if(Date.now()-lastTouch<250)return;lastTouch=Date.now();lobbyDialogue.next();renderDialoguePage();director.schedule(Date.now());return;}if(quiz?.pending){quiz.openQuestion();return;}const now=Date.now();if(now-lastTouch<900)return;lastTouch=now;const bond=1+Math.floor((quiz?.score||0)/100);say(director.touch({now,active:!!state.session?.started,bond}));character?.react();saveDialogue();}
 $('#touch').onclick=touch;$('#nextLine').onclick=touch;
 function refreshQuiet(){$('#quietToggle').classList.toggle('is-on',quiet);$('#quietToggle').setAttribute('aria-pressed',String(quiet));$('#quietToggle').setAttribute('aria-label',quiet?'자동 대사 켜기':'자동 대사 끄기');}
 $('#quietToggle').onclick=()=>{quiet=!quiet;director.schedule(Date.now());saveDialogue();refreshQuiet();toast(quiet?'자동 대사 꺼짐':'자동 대사 켜짐');};
@@ -70,8 +73,8 @@ $('#settings').onclick=()=>{modal('<div class="appIdentity"><img src="./assets/i
  $('#export').onclick=()=>{const data={version:11,wardrobe:wardrobeSettings(),reviews:reviews.export(),quests:quests.export(),planner:planner.export(),momo:momo.export(),memories:state.memories,growth:state.growth,quiz:quiz.export(),preferences:game.export()};const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='mediarchive-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
  $('#import').onclick=()=>$('#importFile').click();$('#importFile').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>10000000)throw Error();const data=JSON.parse(await file.text());if(![1,2,3,4,5,6,7,8,9,10,11].includes(data.version)||!Array.isArray(data.memories)||data.memories.length>20000||data.memories.some(m=>!Number.isFinite(m.duration)||m.duration<0||m.duration>604800000||!Number.isFinite(Date.parse(m.date))))throw Error();if(data.version>=4&&(!data.growth||data.growth.version!==1||!Array.isArray(data.growth.events)||data.growth.events.length>20000))throw Error();if(data.version>=5&&(!data.momo||data.momo.version!==1||!Array.isArray(data.momo.messages)||!Array.isArray(data.momo.plans)||data.momo.messages.length>2000||data.momo.plans.length>2000))throw Error();if(data.version>=6&&(!data.planner||data.planner.version!==1||!Array.isArray(data.planner.plans)||data.planner.plans.length>10000))throw Error();if(data.version>=8&&(!data.quests||data.quests.version!==1||!Array.isArray(data.quests.runs)||!data.quests.attendance))throw Error();if(data.version>=9&&(!data.planner.meals||data.planner.meals.version!==1||!Array.isArray(data.planner.meals.days)))throw Error();if(data.version>=10&&(!data.reviews||data.reviews.version!==1||!Array.isArray(data.reviews.runs)||data.reviews.runs.length>20000))throw Error();if(data.version>=11&&(!data.wardrobe||data.wardrobe.version!==1||wardrobeSettingsError(data.wardrobe)))throw Error();const candidate=mergeStudy(state,data);localStorage.setItem(KEY,JSON.stringify(studySnapshot(candidate)));state=candidate;const quizOK=data.version>=2?quiz.import(data.quiz):true;if(data.version>=3&&data.preferences)game.import(data.preferences);const plannerOK=data.version>=6?planner.import(data.planner):true;const momoOK=data.version>=5?momo.import(data.momo):true;const questOK=data.version>=8?quests.import(data.quests):true;const reviewOK=data.version>=10?reviews.import(data.reviews):true;const wardrobeOK=data.version>=11?saveWardrobe(data.wardrobe):true;refreshWardrobe(true);storageOK=true;refresh();$('#importStatus').textContent=quizOK&&momoOK&&plannerOK&&questOK&&reviewOK&&wardrobeOK?'가져오기 완료':'가져오기 완료 · 일부 기록 저장 실패';}catch{$('#importStatus').textContent='파일을 읽거나 저장할 수 없습니다.';}};
 };
-function renderBond(score){score=Math.max(0,score+(reviews?.delta('haru')||0));$('#bondLevel').textContent=1+Math.floor(score/100);$('#bondProgress').value=score%100;$('#bondPoints').textContent=(score%100)+' / 100';}
-reviews=createReviewUI({beforeOpen:()=>{if(state.session?.started){checkpoint();save();refresh();}planner?.pauseForRest();},getBond:id=>Math.max(0,(id==='haru'?(quiz?.score??20):studentGrowth(planner?.state.records||[],planner?.state.settings.students.find(s=>s.id===id)||{id,lectures:[]}).bond)+(reviews?.delta(id)||0)),onChange:()=>{refresh();game?.refreshPanel();},onReaction:(id,r)=>{if(id==='haru'){say({text:r.text,expression:r.expression});}},toast});
+function renderBond(score){score=Math.max(0,score+(reviews?.delta('haru')||0)+(quests?.penalty('haru')||0));$('#bondLevel').textContent=1+Math.floor(score/100);$('#bondProgress').value=score%100;$('#bondPoints').textContent=(score%100)+' / 100';}
+reviews=createReviewUI({beforeOpen:()=>{if(state.session?.started){checkpoint();save();refresh();}planner?.pauseForRest();},getBond:id=>Math.max(0,(id==='haru'?(quiz?.score??20):studentGrowth(planner?.state.records||[],planner?.state.settings.students.find(s=>s.id===id)||{id,lectures:[]}).bond)+(reviews?.delta(id)||0)+(quests?.penalty(id)||0)),onChange:()=>{refresh();game?.refreshPanel();},onReaction:(id,r)=>{if(id==='haru'){say({text:r.text,expression:r.expression});}},toast});
 lectureAdviceUI=createLectureAdvice({openModal:modal,closeModal:()=>$('#modal').close(),onLine:say});
 quiz=createQuizUI({onExpression:name=>{currentLobbyLine={...currentLobbyLine,expression:name};character?.speak(currentLobbyLine,lobbyDialogue.text);},getMemories:getHaruMemories,onLine:text=>{say(text);director.schedule(Date.now());character?.react();},onBondChange:renderBond,openModal:modal,closeModal:()=>$('#modal').close(),toast});
 growthUI=createGrowthUI({getState:()=>state,getGrowth,openModal:modal,closeModal:()=>$('#modal').close(),onCommit:commitEvent,onReview:id=>reviews.open(id),onContinue:resumeSession,onLaunch:(lecture,track)=>game.launch(lecture,track),format});
@@ -90,6 +93,7 @@ classCheckin=createClassCheckin({openModal:modal,closeModal:()=>$('#modal').clos
  isBlocked:()=>document.hidden||!!document.querySelector('dialog[open]')||!!quiz.pending||!!quests?.resting});
 const routineButton=document.createElement('button');routineButton.className='routineNow';routineButton.textContent='지금';routineButton.setAttribute('aria-label','하루의 지금 일정');routineButton.onclick=()=>{if(quiz.pending){quiz.openQuestion();return;}say(routineLine('haru',{force:true}));director.schedule(Date.now());character?.react();};$('.dialogue').append(routineButton);
 const hasDialog=()=>!!document.querySelector('dialog[open]');
+function checkLateArrival(){if(document.hidden||hasDialog()||game.view!=='home')return false;const event=quests.takeArrival();if(!event)return false;game.showArrival(arrivalGreeting(event));return true;}
 function checkRoutine(){
  if(lobbyDialogue.hasNext||game.view!=='home'||hasDialog())return false;
  const line=routineLine('haru');if(!line)return false;
@@ -106,9 +110,9 @@ function checkReminder(){
  const reminder=growthReminder(state.growth,game.examDate);if(!reminder)return;
  say({text:reminder.line,group:'return'});character?.react();reminderButton.hidden=false;reminderAt=Date.now();try{localStorage.setItem(KEY+'-reminder',String(reminderAt));}catch{}
 }
-setInterval(()=>{classCheckin.check();refresh();const studyTime=['morning','review','evening'].includes(configuredRoutineContext().phase);quiz.tick({active:!!state.session?.started,visible:!document.hidden,blocked:lobbyDialogue.hasNext||!!quests?.resting||!studyTime||hasDialog()||game.view!=='home'||Date.now()-lastTouch<60000,quiet});const routineShown=checkRoutine();if(!routineShown)checkReminder();if(state.session?.started){if(Date.now()-lastSaved>=5000){save();lastSaved=Date.now();}if(!lobbyDialogue.hasNext&&studyTime&&!routineShown&&!quiet&&!quiz.pending&&game.view==='home'){const line=director.ambient({now:Date.now(),active:true,visible:!document.hidden,modalOpen:hasDialog(),duration:elapsed()});if(line){say(line);character?.react();saveDialogue();}}}},1000);
-window.addEventListener('pagehide',()=>{save();saveDialogue();quiz.save();});document.addEventListener('visibilitychange',()=>{if(document.hidden){save();saveDialogue();quiz.save();}else{director.schedule(Date.now());classCheckin.check();}});refresh();refreshQuiet();
+setInterval(()=>{checkLateArrival();classCheckin.check();refresh();const studyTime=['morning','review','evening'].includes(configuredRoutineContext().phase);quiz.tick({active:!!state.session?.started,visible:!document.hidden,blocked:lobbyDialogue.hasNext||!!quests?.resting||!studyTime||hasDialog()||game.view!=='home'||Date.now()-lastTouch<60000,quiet});const routineShown=checkRoutine();if(!routineShown)checkReminder();if(state.session?.started){if(Date.now()-lastSaved>=5000){save();lastSaved=Date.now();}if(!lobbyDialogue.hasNext&&studyTime&&!routineShown&&!quiet&&!quiz.pending&&game.view==='home'){const line=director.ambient({now:Date.now(),active:true,visible:!document.hidden,modalOpen:hasDialog(),duration:elapsed()});if(line){say(line);character?.react();saveDialogue();}}}},1000);
+window.addEventListener('pagehide',()=>{save();saveDialogue();quiz.save();});document.addEventListener('visibilitychange',()=>{if(document.hidden){save();saveDialogue();quiz.save();}else{director.schedule(Date.now());checkLateArrival();classCheckin.check();}});refresh();refreshQuiet();
 const welcome=routineLine('haru');if(welcome)say(welcome);else speak(state.session?'resume':previousVisit&&Date.now()-previousVisit>3*86400000?'return':'greeting');director.schedule(Date.now());
-classCheckin.check();
+checkLateArrival();classCheckin.check();
 $('#fallback').src=appearanceFor('haru').portrait;
 try{character=await createCharacter($('#character'),{onMotionChange:updateMotion,onAppearanceChange:look=>{if(look)$('#fallback').src=look.portrait;}});character.speak(currentLobbyLine,lobbyDialogue.text);$('#fallback').hidden=true;$('#loadStatus').textContent='';updateMotion();}catch(error){$('#loadStatus').textContent=error.message;$('#character').hidden=true;$('#motionToggle').hidden=true;}

@@ -1,4 +1,4 @@
-import {analyzeStatistics,durationText} from './statistics-engine.js';
+import {analyzeStatistics,durationText} from './statistics-engine.js?v=2';
 import {illustratedStudents} from './character-data.js';
 import {schedule} from './schedule-data.js';
 import {koreanDate,shiftDate,validDate} from './game-state.js';

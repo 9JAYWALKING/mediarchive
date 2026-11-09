@@ -2,3 +2,23 @@
 .reviewHeader{inset:auto;width:auto;margin:0}.reviewDialog::before{display:none}.reviewSpeech{color:#3c5568}.reviewHistory{margin-top:18px;padding:14px;background:#ffffffbb;border:1px solid #d8e4ea;border-radius:14px;font:600 14px var(--ui)}.reviewHistory summary{cursor:pointer;margin-bottom:10px}
 
 .reviewRetry[data-retry="false"]:before{content:"≡ ";}
+
+/* The student and question share a portrait sheet; only the answers scroll. */
+.reviewDialog {
+ --review-safe-top: max(14px, env(safe-area-inset-top, 0px));
+ --review-safe-bottom: max(14px, env(safe-area-inset-bottom, 0px));
+ top: var(--review-safe-top); bottom: var(--review-safe-bottom);
+ max-height: calc(100dvh - var(--review-safe-top) - var(--review-safe-bottom));
+ overflow: hidden;
+}
+.reviewDialog[open] { display: flex; flex-direction: column; }
+.reviewHeader { flex: none; padding: 22px 18px 9px; min-height: 72px; }
+.reviewHeader button { width: 40px; height: 40px; flex-shrink: 0; touch-action: manipulation; }
+.reviewStage { flex: none; height: clamp(150px,26dvh,224px); margin-inline: 16px; }
+.reviewStage img { height: 165%; width: auto; left: 50%; top: 0; transform: translateX(-50%); }
+#reviewBody { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 21px 20px 20px; }
+@media(max-height:650px){
+ .reviewHeader { padding-top: 14px; min-height: 62px; }
+ .reviewStage { height: 128px; }
+ #reviewBody { padding: 16px; }
+}

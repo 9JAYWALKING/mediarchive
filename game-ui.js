@@ -2,9 +2,9 @@ import {schedule} from './schedule-data.js';
 import {tracks,haruLessons,koreanDate,validDate,examCountdown,normalizePreferences,normalizeChoice,shiftDate} from './game-state.js';
 
 import {illustratedStudents} from './character-data.js';
-import {createCharacterViewer} from './character-viewer.js';
+import {createCharacterViewer} from './character-viewer.js?v=2';
 import {storiesFor} from './character-stories.js';
-import {createStatisticsUI} from './statistics-ui.js';
+import {createStatisticsUI} from './statistics-ui.js?v=2';
 import {unifiedRecords} from './statistics-engine.js';
 const KEY='heart-companion-shell-v1';
 export function createGameUI({getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
@@ -12,7 +12,7 @@ export function createGameUI({getState,getQuiz,getGrowth,reviews,momo,planner,qu
  const characterViewer=createCharacterViewer();
  let prefs;try{prefs=normalizePreferences(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{prefs=normalizePreferences(null);}
  let view='home',selectedDate=koreanDate(),studentDetail=false,lastDate='',dailySources=[],dailyCache=0;
- const statistics=createStatisticsUI({getLiveData:()=>({study:getState(),planner:planner.state}),getData:()=>({study:getState(),planner:planner.state,growth:getGrowth(),bond:getQuiz().score,quiz:getQuiz().export(),reviews:reviews.export()}),onProfile:id=>{show('students');studentDetail=id;render();body.scrollTop=0;},onPlan:id=>planner.edit({student:id})});
+ const statistics=createStatisticsUI({getLiveData:()=>({study:getState(),planner:planner.state}),getData:()=>({study:getState(),planner:planner.state,growth:getGrowth(),bond:getQuiz().score,quiz:getQuiz().export(),reviews:reviews.export(),quests:quests.state}),onProfile:id=>{show('students');studentDetail=id;render();body.scrollTop=0;},onPlan:id=>planner.edit({student:id})});
  const icon=name=>`<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
  function persist(){try{localStorage.setItem(KEY,JSON.stringify(prefs));return true;}catch{toast('설정 저장 실패');return false;}}
  function node(tag,text,className){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(className)el.className=className;return el;}
@@ -50,7 +50,7 @@ export function createGameUI({getState,getQuiz,getGrowth,reviews,momo,planner,qu
   title(studentDetail?(illustratedStudents.find(x=>x.id===studentDetail)?.name||'하루'):'학생');
   if(!studentDetail){statistics.render(body,{historyOpen:false,mode:'students'});return;}
   if(studentDetail!=='haru'){renderPortraitStudent(studentDetail);return;}
-  const q=getQuiz(),score=Math.max(0,q.score+reviews.delta('haru')),level=1+Math.floor(score/100);
+  const q=getQuiz(),score=Math.max(0,q.score+reviews.delta('haru')+quests.penalty('haru')),level=1+Math.floor(score/100);
   const banner=node('div',undefined,'studentBanner');banner.innerHTML='<span class="bannerCrest">'+icon('heart')+'</span><img src="./assets/haru-fresh-airy.png" alt="하루"><div><span>심장생리 · 1학년</span><h3>하루</h3><b>Lv. '+growth.level+'</b><div class="rating">'+rating+'</div></div>';body.append(banner);
   appendPortraitAction('haru');
   const growthButton=node('button',undefined,'growthProfileButton');growthButton.append(node('span','성장'),node('small',growth.cycles>=5?'완성':(growth.cycles<3?'학생 '+(growth.stars+1)+'성':'악세사리 '+(growth.accessory+1)+'성')+' · '+growth.done.length+'/9  ›'));growthButton.onclick=onGrowth;body.append(growthButton);
@@ -93,6 +93,6 @@ export function createGameUI({getState,getQuiz,getGrowth,reviews,momo,planner,qu
  $('#screenBack').onclick=()=>{if(view==='momo'&&momo.back())return;if(view==='students'&&studentDetail){studentDetail=false;render();}else show('home');};
  $('#examButton').onclick=examEditor;$('#eventContext').onclick=()=>launch();$('#quickQuest').onclick=()=>{quests.resetDate();show('quests');};$('#quickRest').onclick=()=>quests.restOpen();$('#quickSchedule').onclick=()=>show('schedule');
  update();
- return {show,update,launch,examEditor,openSchedule(date){if(validDate(date))selectedDate=date;show('schedule');},refreshPanel(){if(view!=='home'){const scroll=body.scrollTop;render();body.scrollTop=scroll;}},get view(){return view;},get examDate(){return prefs.examDate;},export:()=>structuredClone(prefs),import(raw){prefs=normalizePreferences(raw);persist();update();if(view!=='home')render();}};
+ return {show,update,launch,examEditor,showArrival:greeting=>characterViewer.open(greeting.student,null,greeting),openSchedule(date){if(validDate(date))selectedDate=date;show('schedule');},refreshPanel(){if(view!=='home'){const scroll=body.scrollTop;render();body.scrollTop=scroll;}},get view(){return view;},get examDate(){return prefs.examDate;},export:()=>structuredClone(prefs),import(raw){prefs=normalizePreferences(raw);persist();update();if(view!=='home')render();}};
 }
 
