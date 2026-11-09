@@ -1,0 +1,18 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "shiori.moc3",
+    "Textures": [
+      "shiori-v1.png"
+    ]
+  },
+  "Groups": [
+    {
+      "Target": "Parameter",
+      "Name": "EyeBlink",
+      "Ids": [
+        "ParamEyeLOpen"
+      ]
+    }
+  ]
+}

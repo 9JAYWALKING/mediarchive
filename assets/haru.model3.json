@@ -1,0 +1,18 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "haru.moc3",
+    "Textures": [
+      "haru-fresh-airy.png"
+    ]
+  },
+  "Groups": [
+    {
+      "Target": "Parameter",
+      "Name": "EyeBlink",
+      "Ids": [
+        "ParamEyeLOpen"
+      ]
+    }
+  ]
+}

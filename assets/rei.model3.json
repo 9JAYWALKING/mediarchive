@@ -1,0 +1,18 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "rei.moc3",
+    "Textures": [
+      "rei-v1.png"
+    ]
+  },
+  "Groups": [
+    {
+      "Target": "Parameter",
+      "Name": "EyeBlink",
+      "Ids": [
+        "ParamEyeLOpen"
+      ]
+    }
+  ]
+}

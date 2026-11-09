@@ -1,0 +1,18 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "nagi.moc3",
+    "Textures": [
+      "nagi-v1.png"
+    ]
+  },
+  "Groups": [
+    {
+      "Target": "Parameter",
+      "Name": "EyeBlink",
+      "Ids": [
+        "ParamEyeLOpen"
+      ]
+    }
+  ]
+}
