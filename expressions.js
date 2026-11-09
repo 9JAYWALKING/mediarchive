@@ -13,10 +13,17 @@ export function faceTransform(rig){
 }
 export const expressionFragment=`precision mediump float;
 varying vec2 v_uv; uniform sampler2D u_texture; uniform sampler2D u_faces;
-uniform sampler2D u_previousTexture; uniform float u_outfitBlend;
 uniform vec3 u_mapX; uniform vec3 u_mapY; uniform vec2 u_left; uniform vec2 u_right; uniform vec2 u_mouth;
-uniform float u_expression; uniform float u_previous; uniform float u_blend;
+uniform float u_expression;
 float oval(vec2 p,vec2 c,vec2 r){return 1.0-smoothstep(.68,1.0,length((p-c)/r));}
+// Replace the original eyebrow as well as the eyelid. Keep the feathered edge
+// outside both lines; a translucent edge through either line creates a ghost.
+float eyePatch(vec2 p,vec2 c,float tear){
+ float brow=1.0-smoothstep(.78,1.0,length((p-c-vec2(0.0,-64.0))/vec2(76.0,43.0)));
+ float eye=1.0-smoothstep(.78,1.0,length((p-c)/vec2(79.0,57.0)));
+ float tears=tear*oval(p,c+vec2(0.0,30.0),vec2(57.0,57.0));
+ return max(max(brow,eye),tears);
+}
 vec4 face(float e,vec4 base,vec2 p){
  if(e<.5)return base;
  vec2 at=vec2(dot(u_mapX,vec3(p,1.0)),dot(u_mapY,vec3(p,1.0)));
@@ -24,7 +31,9 @@ vec4 face(float e,vec4 base,vec2 p){
  vec2 uv=(at+cell*512.0)/vec2(1536.0,1024.0);uv.y=1.0-uv.y;
  vec4 ink=texture2D(u_faces,uv);
  float tear=step(4.5,e);
- float mask=max(max(oval(p,u_left+vec2(0.0,tear*15.0),vec2(81.0,74.0+tear*24.0)),oval(p,u_right+vec2(0.0,tear*15.0),vec2(78.0,74.0+tear*24.0))),oval(p,u_mouth,vec2(78.0,58.0)));
+ // Mouth patch ends above the jaw. The portrait owns the chin and silhouette.
+ float mouth=1.0-smoothstep(.86,1.0,length((p-u_mouth)/vec2(70.0,42.0)));
+ float mask=max(max(eyePatch(p,u_left,tear),eyePatch(p,u_right,tear)),mouth);
  return vec4(mix(base.rgb,ink.rgb,mask*ink.a),base.a);
 }
-void main(){vec4 old=texture2D(u_previousTexture,v_uv),fresh=texture2D(u_texture,v_uv);float alpha=mix(old.a,fresh.a,u_outfitBlend);vec3 rgb=mix(old.rgb*old.a,fresh.rgb*fresh.a,u_outfitBlend)/max(alpha,.00001);vec4 base=vec4(rgb,alpha);vec2 p=vec2(v_uv.x,1.0-v_uv.y)*vec2(1199.0,1312.0);gl_FragColor=mix(face(u_previous,base,p),face(u_expression,base,p),u_blend);}`;
+void main(){vec4 base=texture2D(u_texture,v_uv);vec2 p=vec2(v_uv.x,1.0-v_uv.y)*vec2(1199.0,1312.0);gl_FragColor=face(u_expression,base,p);}`;

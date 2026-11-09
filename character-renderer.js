@@ -1,4 +1,4 @@
-import {expressionRigs,expressionNames,faceTransform,expressionFragment} from './expressions.js';
+import {expressionRigs,expressionNames,faceTransform,expressionFragment} from './expressions.js?v=4';
 import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
@@ -7,14 +7,14 @@ export async function createCharacter(canvas, options={}){
  if(!core)throw Error('캐릭터를 불러오지 못했어요. 연결을 확인해 주세요.');
  const gl=canvas.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:false});
  if(!gl)throw Error('이 브라우저에서 움직임을 표시할 수 없어요.');
- let moc,model,program,texture,previousTexture,faceTexture,observer,raf=0,disposed=false,contextLost=false,appearanceRequest=0;
+ let moc,model,program,texture,faceTexture,observer,raf=0,disposed=false,contextLost=false,appearanceRequest=0;
  const buffers=[],shaders=[],listeners=[];
  const on=(target,type,fn)=>{target.addEventListener(type,fn);listeners.push(()=>target.removeEventListener(type,fn));};
  function destroy(){
   if(disposed)return;disposed=true;appearanceRequest++;cancelAnimationFrame(raf);observer?.disconnect();
   for(const remove of listeners)remove();
   model?.release();moc?._release();
-  if(!contextLost){for(const b of buffers)gl.deleteBuffer(b);for(const s of shaders)gl.deleteShader(s);if(texture)gl.deleteTexture(texture);if(previousTexture)gl.deleteTexture(previousTexture);if(faceTexture)gl.deleteTexture(faceTexture);if(program)gl.deleteProgram(program);if(options.releaseContext)gl.getExtension('WEBGL_lose_context')?.loseContext();}
+  if(!contextLost){for(const b of buffers)gl.deleteBuffer(b);for(const s of shaders)gl.deleteShader(s);if(texture)gl.deleteTexture(texture);if(faceTexture)gl.deleteTexture(faceTexture);if(program)gl.deleteProgram(program);if(options.releaseContext)gl.getExtension('WEBGL_lose_context')?.loseContext();}
   canvas.dataset.live2d='disposed';
  }
  try{
@@ -40,12 +40,10 @@ export async function createCharacter(canvas, options={}){
   gl.bindBuffer(gl.ARRAY_BUFFER,uvBuffer);gl.bufferData(gl.ARRAY_BUFFER,model.drawables.vertexUvs[0],gl.STATIC_DRAW);gl.enableVertexAttribArray(uv);gl.vertexAttribPointer(uv,2,gl.FLOAT,false,0,0);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,indices);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,model.drawables.indices[0],gl.STATIC_DRAW);
   function makeTexture(art){const value=gl.createTexture();gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,value);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);return value;}
-  texture=makeTexture(img);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,texture);gl.activeTexture(gl.TEXTURE0);
-  const outfitLocation=gl.getUniformLocation(program,'u_outfitBlend');let outfitBlend=1,outfitStarted=0;
-  gl.uniform1i(gl.getUniformLocation(program,'u_previousTexture'),2);gl.uniform1f(outfitLocation,1);
+  texture=makeTexture(img);
   const faceRig=expressionRigs[options.personality||'haru'];
-  let expression=0,previousExpression=0,expressionBlend=1,expressionStarted=0,expressionUntil=0,facesReady=false;
-  const exprLocation=gl.getUniformLocation(program,'u_expression'),prevLocation=gl.getUniformLocation(program,'u_previous'),blendLocation=gl.getUniformLocation(program,'u_blend');
+  let expression=0,expressionStarted=0,expressionUntil=0,facesReady=false;
+  const exprLocation=gl.getUniformLocation(program,'u_expression');
   gl.uniform1i(gl.getUniformLocation(program,'u_texture'),0);gl.uniform1i(gl.getUniformLocation(program,'u_faces'),1);
   faceTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);
   gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
@@ -53,7 +51,7 @@ export async function createCharacter(canvas, options={}){
   if(faceRig){const map=faceTransform(faceRig);gl.uniform3fv(gl.getUniformLocation(program,'u_mapX'),map[0]);gl.uniform3fv(gl.getUniformLocation(program,'u_mapY'),map[1]);for(const [i,name] of ['u_left','u_right','u_mouth'].entries())gl.uniform2fv(gl.getUniformLocation(program,name),faceRig.target[i]);}
   let faceLoad=null;
   function loadFaces(){if(!faceRig)return Promise.resolve(false);if(faceLoad)return faceLoad;faceLoad=(async()=>{try{const art=new Image();art.src=new URL(`expressions/${options.personality||'haru'}-v1.png`,manifestURL).href;await art.decode();if(disposed||contextLost)return false;gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.activeTexture(gl.TEXTURE0);facesReady=true;canvas.dataset.expressions='ready';requestDraw();return true;}catch{canvas.dataset.expressions='unavailable';return false;}})();return faceLoad;}
-  function setExpression(name,{duration=0}={}){const next=expressionNames.indexOf(name);if(next<0||disposed)return;previousExpression=expression;expression=next;expressionBlend=0;expressionStarted=performance.now();expressionUntil=duration?expressionStarted+duration:0;canvas.dataset.expression=name;loadFaces().then(requestDraw);requestDraw();}
+  function setExpression(name,{duration=0}={}){const next=expressionNames.indexOf(name);if(next<0||disposed)return;expression=next;expressionStarted=performance.now();expressionUntil=duration?expressionStarted+duration:0;canvas.dataset.expression=name;loadFaces().then(requestDraw);requestDraw();}
   gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.disable(gl.DEPTH_TEST);
   const profiles={
    haru:{speed:.72,breath:1.45,head:.34,body:.55,hair:.68,lag:2.5,damping:4.5,look:.65,react:.9,hold:1.5,blink:3.2,open:.16},
@@ -73,9 +71,8 @@ export async function createCharacter(canvas, options={}){
     const art=new Image();art.src=url;await art.decode();
     if(disposed||contextLost||request!==appearanceRequest)return false;
     if(art.naturalWidth!==img.naturalWidth||art.naturalHeight!==img.naturalHeight)throw Error('복장 크기가 맞지 않아요.');
-    const replacement=makeTexture(art);if(previousTexture)gl.deleteTexture(previousTexture);previousTexture=texture;texture=replacement;
-    gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,previousTexture);gl.activeTexture(gl.TEXTURE0);
-    img=art;textureURL=url;appearance=next;outfitStarted=performance.now();outfitBlend=reduced.matches?1:0;
+    const replacement=makeTexture(art),oldTexture=texture;texture=replacement;gl.deleteTexture(oldTexture);
+    img=art;textureURL=url;appearance=next;
     canvas.dataset.outfit=next.id;canvas.dataset.outfitLoading='false';delete canvas.dataset.outfitError;
     options.onAppearanceChange?.(next);requestDraw();return true;
    }catch{
@@ -107,18 +104,14 @@ export async function createCharacter(canvas, options={}){
    set('ParamBodyAngle',motion?profile.body*Math.sin(phase*speed-.65):0);
    set('ParamHairSway',motion?Math.max(-1,Math.min(1,hair)):0);set('ParamEyeLOpen',expression===2?1:eye);model.update();
    if(expressionUntil&&now>=expressionUntil)setExpression('neutral');
-   expressionBlend=reduced.matches?1:Math.min(1,(now-expressionStarted)/260);
-   outfitBlend=previousTexture&&!reduced.matches?Math.min(1,(now-outfitStarted)/320):1;
-   gl.uniform1f(outfitLocation,outfitBlend);
-   if(previousTexture&&outfitBlend===1){gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,texture);gl.deleteTexture(previousTexture);previousTexture=null;gl.activeTexture(gl.TEXTURE0);}
-   gl.uniform1f(exprLocation,facesReady?expression:0);gl.uniform1f(prevLocation,facesReady?previousExpression:0);gl.uniform1f(blendLocation,expressionBlend);
+   gl.uniform1f(exprLocation,facesReady?expression:0);
    const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
    if(rect.width<=0||rect.height<=0)return;
    const w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
    const imageH=options.framing==='face'?rect.height*2.5:options.framing==='portrait'?Math.min(rect.height*.99,rect.width*(img.height/img.width)*1.25):Math.max(rect.height*.99,rect.width*1.34);
    gl.uniform2f(scale,imageH/rect.width*2,imageH/rect.height*2);gl.uniform1f(offset,1-imageH/rect.height+(options.framing==='face'?0:-.025));
    gl.bindBuffer(gl.ARRAY_BUFFER,posBuffer);gl.bufferData(gl.ARRAY_BUFFER,model.drawables.vertexPositions[0],gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);gl.drawElements(gl.TRIANGLES,model.drawables.indexCounts[0],gl.UNSIGNED_SHORT,0);model.drawables.resetDynamicFlags();
-   canvas.dataset.live2d='ready';if(motion||expressionBlend<1||expressionUntil||outfitBlend<1)raf=requestAnimationFrame(draw);
+   canvas.dataset.live2d='ready';if(motion||expressionUntil)raf=requestAnimationFrame(draw);
   }
   function requestDraw(){if(!raf&&!disposed&&!contextLost&&!offstage())raf=requestAnimationFrame(draw);}
   function visibility(){if(offstage()){cancelAnimationFrame(raf);raf=0;}else{last=performance.now();if(appearanceSelection==='auto'&&canvas.dataset.outfitError)setOutfit('auto');requestDraw();}}
