@@ -50,3 +50,61 @@
   .stage { top: calc(93px + env(safe-area-inset-top, 0px)); }
   .gameScreen { top: calc(76px + env(safe-area-inset-top, 0px)); }
 }
+
+/* Keep sheets clear of the iPhone status bar and home indicator. */
+#modal .close {
+  top: 29px; /* Existing 11px offset + half of the 36px button. */
+  z-index: 3;
+  touch-action: manipulation;
+}
+#modal .close::after { content: ''; position: absolute; inset: -4px; }
+@media (max-width: 599px) {
+  #modal {
+    --sheet-top: max(14px, env(safe-area-inset-top, 0px));
+    --sheet-bottom: max(14px, env(safe-area-inset-bottom, 0px));
+    top: var(--sheet-top); bottom: var(--sheet-bottom);
+    width: calc(100% - 24px); max-width: 390px;
+    max-height: calc(100dvh - var(--sheet-top) - var(--sheet-bottom));
+    padding: 0; overflow: hidden;
+  }
+  #modal[open] { display: flex; flex-direction: column; }
+  #modalContent {
+    min-width: 0; min-height: 0; overflow-y: auto;
+    overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+    padding: 27px 18px 20px;
+    scroll-padding-block: 76px 20px;
+  }
+  #modalContent > h2:first-child { margin: 7px 0 16px; padding-right: 46px; }
+  #modal .close { right: 14px; background: #f8fcff; }
+  #plannerForm { min-width: 0; }
+  #plannerForm label { margin: 11px 0 6px; }
+  #plannerForm input:not([type=checkbox]), #plannerForm select, #plannerForm textarea {
+    display: block; width: 100%; max-width: 100%; min-width: 0;
+    box-sizing: border-box; min-height: 46px; padding: 10px;
+    font-size: 16px;
+  }
+  #plannerForm .plannerPair { gap: 8px; }
+  #plannerForm .plannerPair:has(#planLecture) { gap: 0; }
+  #plannerForm .plannerDateRow { grid-template-columns: minmax(112px,1fr) minmax(0,1.7fr); }
+  #plannerForm .plannerPair:has(#planTime) { grid-template-columns: minmax(0,1.6fr) minmax(88px,1fr); }
+  #plannerForm details { margin: 10px 0; padding: 5px 0; }
+  #plannerForm .plannerCheck { min-height: 36px; margin: 8px 0; }
+  #plannerForm #planError:empty { display: none; }
+  #plannerForm button.action { min-height: 48px; }
+  /* WebKit date/time controls otherwise keep an intrinsic content width. */
+  #modal input:is([type=date],[type=time]) {
+    -webkit-appearance: none; appearance: none;
+    box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%;
+  }
+  #modal input::-webkit-date-and-time-value { min-width: 0; text-align: left; }
+  #modal input::-webkit-datetime-edit { min-width: 0; padding: 0; }
+  .plannerToolbar,.plannerToolbar:has(.mealAdd) {
+    grid-template-columns: minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) 44px;
+    gap: 6px;
+  }
+  .plannerToolbar button { min-width: 0; min-height: 44px; }
+}
+@media (max-width: 350px) {
+  #modalContent { padding-inline: 14px; }
+  #plannerForm .plannerPair:has(#planTime), #plannerForm .plannerDateRow { grid-template-columns: minmax(0,1fr); gap: 0; }
+}
