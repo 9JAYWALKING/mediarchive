@@ -1,8 +1,8 @@
-import {analyzeStatistics,durationText} from './statistics-engine.js?v=2';
+import {analyzeStatistics,durationText} from './statistics-engine.js?v=20261110';
 import {illustratedStudents} from './character-data.js';
 import {schedule} from './schedule-data.js';
 import {koreanDate,shiftDate,validDate} from './game-state.js';
-import {sessionTotals} from './growth-engine.js';
+import {sessionTotals} from './growth-engine.js?v=20261110';
 export function createStatisticsUI({getData,getLiveData=getData,onProfile,onPlan}){
  let period='all',from='',to='',search='',sort='default',limit=30,host=null,historyOpen=false,mode='students',rosterOpen=false,expanded=new Set();
  const el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
@@ -29,10 +29,10 @@ export function createStatisticsUI({getData,getLiveData=getData,onProfile,onPlan
   if(stats.count>limit){const more=el('button','더 보기','academyMore');more.onclick=()=>{limit+=30;render(host,{historyOpen:true});};history.append(more);}if(!stats.count)history.append(el('p','저장한 기록이 아직 없어.','academyCaption'));root.append(history);
   if(mode==='records'){const roster=el('details',undefined,'academyRosterFold');roster.open=rosterOpen;roster.ontoggle=()=>rosterOpen=roster.open;roster.append(el('summary','학생별 성장'),rosterHeader,tools,grid);root.insertBefore(roster,overview);root.insertBefore(history,roster);}else{root.append(fold,overview,history);}
  }
- function card(s,stats){
-  const g=s.growth,bond=g.bond,profile=illustratedStudents.find(p=>p.id===s.id),section=el('details',undefined,'academyStudent');section.open=expanded.has(s.id);section.ontoggle=()=>section.open?expanded.add(s.id):expanded.delete(s.id);section.style.setProperty('--student-color',s.color);
-  const summary=el('summary'),art=el('div',undefined,'academyPortrait');if(profile){const img=el('img');img.src=profile.portrait;img.alt='';img.loading='lazy';art.append(img);}else art.append(el('span',s.name.slice(0,1),'academyInitial'));
-  art.append(el('b',`Lv. ${g.level}`,'academyLevel'));const info=el('div',undefined,'academyStudentInfo');info.append(el('small',s.subject),el('h4',s.name));const stars=el('div','★'.repeat(g.stars)+'☆'.repeat(3-g.stars),'academyStars');stars.setAttribute('aria-label',`학생 ${g.stars}성`);info.append(stars,el('strong',durationText(s.time),'academyTime'),el('span',`인연 ${1+Math.floor(bond/100)} · ${bond%100}/100`,'academyBond'));summary.append(art,info);summary.setAttribute('aria-label',s.name+' 통계');section.append(summary);
+ function card(s,stats,detail=false){
+  const g=s.growth,bond=g.bond,profile=illustratedStudents.find(p=>p.id===s.id),section=el('article',undefined,'academyStudent'+(detail?' is-detail':''));section.style.setProperty('--student-color',s.color);
+  const summary=el('button',undefined,'academyCardButton'),art=el('div',undefined,'academyPortrait');if(profile){const img=el('img');img.src=profile.portrait;img.alt='';img.loading='lazy';art.append(img);}else art.append(el('span',s.name.slice(0,1),'academyInitial'));
+  art.append(el('b',`Lv. ${g.level}`,'academyLevel'));const info=el('div',undefined,'academyStudentInfo');info.append(el('small',s.subject),el('h4',s.name));const stars=el('div','★'.repeat(g.stars)+'☆'.repeat(3-g.stars),'academyStars');stars.setAttribute('aria-label',`학생 ${g.stars}성`);info.append(stars,el('strong',durationText(s.time),'academyTime'),el('span',`인연 ${1+Math.floor(bond/100)} · ${bond%100}/100`,'academyBond'));summary.append(art,info);summary.setAttribute('aria-label',s.name+' 상세');summary.onclick=()=>onProfile(s.id);section.append(summary);if(!detail)return section;summary.onclick=null;summary.disabled=true;
   const details=el('div',undefined,'academyStudentDetail');details.append(el('h5','성장'),metric('경험치',`${g.xp} XP`),meter(g.progress,1,'레벨 진행도'),el('small',g.remaining?`다음 레벨까지 ${g.remaining} XP`:'최대 레벨'));
   details.append(metric('인연도',`${bond}점`),meter(bond%100,100,'인연 진행도'),el('small',`다음 인연까지 ${100-bond%100}점`));
   const goal=g.cycles>=5?'완성':g.cycles<3?`학생 ${g.stars+1}성`:`악세사리 ${g.accessory+1}성`;
@@ -42,8 +42,8 @@ export function createStatisticsUI({getData,getLiveData=getData,onProfile,onPlan
   details.append(el('h5','기록'),metric('누적 시간',durationText(s.lifetimeTime)),metric('선택 기간',`${s.count}회 · ${durationText(s.time)}`),metric('예습',durationText(s.preview)),metric('자유',durationText(s.tracks[''])),metric('약속 완료',`${s.plans.done} / ${s.plans.total}`),metric('최근 만남',s.lastAt?new Date(s.lastAt).toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul'}):'아직 없어'));
   details.append(metric('질문',`${s.review.correct} / ${s.review.total}`));
   const coverage=el('details',undefined,'academyCoverage');coverage.append(el('summary','범위'));for(const unit of g.scope){const [id,t]=unit.split(':'),lesson=schedule.find(l=>l.id===Number(id)),row=el('div',`${g.done.includes(unit)?'✓':'○'} ${id}강 · ${t} · ${lesson?.title||''}`);coverage.append(row);}details.append(coverage);
-  const buttons=el('div',undefined,'academyActions'),plan=el('button','약속');plan.onclick=()=>onPlan(s.id);if(!s.archived)buttons.append(plan);if(profile){const b=el('button','프로필');b.onclick=()=>onProfile(s.id);buttons.append(b);}details.append(buttons);section.append(details);return section;
+  const buttons=el('div',undefined,'academyActions'),plan=el('button','약속');plan.onclick=()=>onPlan(s.id);if(!s.archived)buttons.append(plan);details.append(buttons);section.append(details);return section;
  }
  function updateLive(){const target=document.querySelector('#academyPending');if(!target)return;const {study,planner}=getLiveData();let duration=0,label='';if(study.session){duration=sessionTotals(study.session).duration;label=(study.session.started?'진행 중':'일시정지')+' · 하루';}else if(planner.focus){const f=planner.focus;duration=f.elapsed+(f.started?Math.max(0,Date.now()-f.started):0);label=(f.started?'진행 중':'일시정지')+' · '+(planner.settings.students.find(s=>s.id===f.student)?.name||'개인 일정');}target.hidden=!label;target.textContent=`${label} · ${durationText(duration)} · 저장 전`;}
- return {render,updateLive};
+ return {render,updateLive,renderStudent(container,id){const stats=analyzeStatistics(getData(),params()),student=stats.students.find(s=>s.id===id);if(student)container.append(card(student,stats,true));}};
 }

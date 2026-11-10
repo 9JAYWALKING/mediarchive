@@ -1,3 +1,4 @@
+import {studyTargets,completedTargets,allocatedTargets} from './linked-study.js?v=20261110';
 import {schedule} from './schedule-data.js';
 import {haruLessons,tracks,koreanDate,validDate} from './game-state.js';
 // Balance v1: estimates for game rewards, not measured concentration or exam difficulty.
@@ -23,7 +24,8 @@ export function normalizeGrowth(raw){
   if(ids.has(e.id)||sessions.has(key))continue;
   const context=unitKey(e.context)?{lecture:e.context.lecture,track:e.context.track}:undefined;
   const cycle=Number.isInteger(e.cycle)&&e.cycle>=1&&e.cycle<=5?e.cycle:1;
-  events.push({id:e.id,at:e.at,duration:e.duration,preview:context?Math.max(0,Math.min(e.duration,Number(e.preview)||0)):0,...(context?{context}:{}),cycle,mode:e.mode==='familiar'?'familiar':'new',complete:!!context&&e.complete===true&&e.duration>=MIN});
+  const targets=studyTargets(e).filter(t=>haruLessons.includes(t.lecture));
+  events.push({targets,completed:completedTargets({...e,targets}).filter(k=>targets.some(t=>`${t.lecture}:${t.track}`===k)),id:e.id,at:e.at,duration:e.duration,preview:context?Math.max(0,Math.min(e.duration,Number(e.preview)||0)):0,...(context?{context}:{}),cycle,mode:e.mode==='familiar'?'familiar':'new',complete:!!context&&e.complete===true&&e.duration>=MIN});
   ids.add(e.id);sessions.add(key);
  }
  return {version:1,events:events.sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id))};
@@ -45,19 +47,20 @@ export function summarizeGrowth(raw){
  const data=normalizeGrowth(raw),coverage=Array.from({length:5},()=>new Set()),unitTime=new Map(),abilities={Wiki:0,J:0,JBL:0};
  let xp=0;const rewards={};
  for(const e of data.events){
-  const unit=unitKey(e.context),key=`${e.cycle}/${unit}`,time=(unitTime.get(key)||0)+e.duration;unitTime.set(key,time);
-  const base=e.duration/MIN*10,preview=e.preview/MIN*5;
-  let completion=0,focus=0,accepted=false;
-  if(e.complete&&unit&&!coverage[e.cycle-1].has(unit)){
-   const reference=referenceMinutes[e.context.lecture][e.context.track]*(e.mode==='familiar'?.45:1);
-   completion=reference*2;
-   // Only a small completion bonus for new material. Familiar speed has no extra bonus.
-   const pace=e.mode==='new'?Math.max(0,Math.min(.15,(reference/(time/MIN)-1)*.12)):0;
-   focus=completion*pace;accepted=true;coverage[e.cycle-1].add(unit);
-  }
-  const total=base+preview+completion+focus;xp+=total;if(unit)abilities[e.context.track]+=total;
-  rewards[e.id]={base,preview,completion,focus,total,accepted};
+  const parts=e.targets?.length?allocatedTargets(e):[{...e,lecture:e.context?.lecture,track:e.context?.track}];
+  let reward={base:0,preview:0,completion:0,focus:0,total:0,accepted:false};
+  for(const part of parts){
+   const context={lecture:part.lecture,track:part.track},unit=unitKey(context),key=`${e.cycle}/${unit}`,time=(unitTime.get(key)||0)+part.duration;unitTime.set(key,time);
+   const base=part.duration/MIN*10,preview=part.preview/MIN*5;let completion=0,focus=0,accepted=false;
+   if(part.complete&&unit&&!coverage[e.cycle-1].has(unit)){
+    const reference=referenceMinutes[context.lecture][context.track]*(e.mode==='familiar'?.45:1);completion=reference*2;
+    const pace=e.mode==='new'?Math.max(0,Math.min(.15,(reference/(time/MIN)-1)*.12)):0;focus=completion*pace;accepted=true;coverage[e.cycle-1].add(unit);
+   }
+   const total=base+preview+completion+focus;xp+=total;if(unit)abilities[context.track]+=total;
+   for(const [k,v] of Object.entries({base,preview,completion,focus,total}))reward[k]+=v;reward.accepted ||= accepted;
+  }rewards[e.id]=reward;
  }
+
  let cycles=0;while(cycles<5&&coverage[cycles].size===growthUnits.length)cycles++;
  const cycle=Math.min(5,cycles+1),done=[...coverage[cycle-1]],stars=Math.min(3,cycles),accessory=Math.max(0,cycles-3);
  return {...xpLevel(xp),cycles,cycle,stars,accessory,unlocked:cycles>=3,done,coverage:coverage.map(s=>[...s]),abilities:Object.fromEntries(Object.entries(abilities).map(([k,v])=>[k,xpLevel(v)])),rewards,totalDuration:data.events.reduce((n,e)=>n+e.duration,0),lastAt:data.events.at(-1)?.at||0};

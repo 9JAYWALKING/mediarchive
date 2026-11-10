@@ -1,5 +1,5 @@
 import {schedule} from './schedule-data.js';
-import {growthUnits,unitKey,eventFor,summarizeGrowth} from './growth-engine.js';
+import {growthUnits,unitKey,eventFor,summarizeGrowth} from './growth-engine.js?v=20261110';
 const mark=n=>'★'.repeat(n)+'☆'.repeat(3-n);
 export function createGrowthUI({getState,getGrowth,openModal,closeModal,onCommit,onReview=()=>{},onContinue,onLaunch,format}){
  const $=s=>document.querySelector(s);

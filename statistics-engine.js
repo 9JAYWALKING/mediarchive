@@ -1,7 +1,8 @@
-import {arrivalPenalty} from './quest-engine.js?v=2';
-import {reviewBond,reviewHistory} from './review-engine.js';
-import {reconcileGrowth,sessionTotals} from './growth-engine.js';
-import {studentGrowth} from './student-growth.js';
+import {allocatedTargets} from './linked-study.js?v=20261110';
+import {arrivalPenalty} from './quest-engine.js?v=20261110';
+import {reviewBond,reviewHistory} from './review-engine.js?v=20261110';
+import {reconcileGrowth,sessionTotals} from './growth-engine.js?v=20261110';
+import {studentGrowth} from './student-growth.js?v=20261110';
 import {koreanDate,shiftDate} from './game-state.js';
 export function unifiedRecords(study,planner){
  const records=[],ids=new Set(),signatures=new Set();
@@ -17,7 +18,7 @@ export function analyzeStatistics({study,planner,growth,bond,quiz,reviews={runs:
  const students=catalog.map(s=>{const entries=selected.filter(r=>r.student===s.id),lifetime=all.filter(r=>r.student===s.id),g=s.id==='haru'?{...growth,scope:[1,2,6].flatMap(id=>['Wiki','J','JBL'].map(t=>`${id}:${t}`)),bond}:studentGrowth(planner.records,s);
   g.bond=Math.max(0,g.bond+reviewBond(reviews,s.id)+arrivalPenalty(quests,s.id,now));const reviewEntries=[...reviewHistory(reviews).filter(a=>a.student===s.id),...(s.id==='haru'?quiz.history||[]:[])].filter(a=>koreanDate(a.at)>=from&&koreanDate(a.at)<=to);
   const plans=planner.plans.filter(p=>p.student===s.id&&p.date>=from&&p.date<=to&&p.status!=='canceled');
-  return {...s,entries,lifetime,growth:g,review:{total:reviewEntries.length,correct:reviewEntries.filter(a=>a.correct).length,delta:reviewEntries.reduce((n,a)=>n+a.delta,0)},time:entries.reduce((n,r)=>n+r.duration,0),lifetimeTime:lifetime.reduce((n,r)=>n+r.duration,0),count:entries.length,lastAt:lifetime.at(-1)?.at||0,tracks:Object.fromEntries(['Wiki','J','JBL',''].map(t=>[t,entries.filter(r=>r.track===t).reduce((n,r)=>n+r.duration,0)])),preview:entries.reduce((n,r)=>n+(r.preview||0),0),plans:{total:plans.length,done:plans.filter(p=>p.status==='done').length}};
+  return {...s,entries,lifetime,growth:g,review:{total:reviewEntries.length,correct:reviewEntries.filter(a=>a.correct).length,delta:reviewEntries.reduce((n,a)=>n+a.delta,0)},time:entries.reduce((n,r)=>n+r.duration,0),lifetimeTime:lifetime.reduce((n,r)=>n+r.duration,0),count:entries.length,lastAt:lifetime.at(-1)?.at||0,tracks:Object.fromEntries(['Wiki','J','JBL',''].map(t=>[t,entries.reduce((n,r)=>n+(r.targets?.length?allocatedTargets(r).filter(x=>x.track===t).reduce((a,x)=>a+x.duration,0):r.track===t?r.duration:0),0)])),preview:entries.reduce((n,r)=>n+(r.preview||0),0),plans:{total:plans.length,done:plans.filter(p=>p.status==='done').length}};
  });
  const studying=selected.filter(r=>r.student);const days=new Map();for(const r of studying){const d=koreanDate(r.at);days.set(d,(days.get(d)||0)+r.duration);}
  const weekly=Array.from({length:7},(_,i)=>{const date=shiftDate(to,i-6);return {date,duration:date>=from?(days.get(date)||0):0};});

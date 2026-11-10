@@ -1,6 +1,6 @@
-import {normalizeQuests,mergeQuests,captureRun,checkAttendance,dailyQuests,weeklyQuests,weekStart,unionDuration,dayStart,dailyQuestPolicy,recordArrival,arrivalPenalty,takeLateArrival} from './quest-engine.js?v=2';
+import {normalizeQuests,mergeQuests,captureRun,checkAttendance,dailyQuests,weeklyQuests,weekStart,unionDuration,dayStart,dailyQuestPolicy,recordArrival,arrivalPenalty,takeLateArrival} from './quest-engine.js?v=20261110';
 import {koreanDate,shiftDate} from './game-state.js';
-import {durationText} from './statistics-engine.js';
+import {durationText} from './statistics-engine.js?v=20261110';
 const KEY='heart-companion-quests-v1';
 export function createQuestUI({getStudy,getPlanner,pauseStudy,pausePlanner,openModal,closeModal,onPlan,onLine,onChange,toast}){
  let state;try{state=normalizeQuests(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{state=normalizeQuests(null);}

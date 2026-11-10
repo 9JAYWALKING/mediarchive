@@ -1,7 +1,9 @@
+import {pickCharacterLine} from './character-dialogue.js?v=20261110';
+import {teacherName,personalize} from './teacher-profile.js?v=20261110';
 import {createDialogueVisibility} from './dialogue-visibility.js';
 import {expressionNames,expressionLabels} from './expressions.js';
 import {createDialoguePager} from './dialogue-pages.js';
-import {createCharacter} from './renderer.js?v=3';
+import {createCharacter} from './renderer.js?v=20261110';
 import {illustratedStudents} from './character-data.js';
 import {characterStories} from './character-stories.js';
 import {routineLine} from './routine-service.js';
@@ -18,7 +20,7 @@ export function createCharacterViewer(){
  const dialoguePages=createDialoguePager(58);let currentLine=null,greetingLine=null;
  const speechPanel=createDialogueVisibility($('.viewerDialogue'),{onHide:()=>{if($('.viewerDialogue').contains(document.activeElement))$('#viewerTouch').focus({preventScroll:true});}});
  function performLine(){speechPanel.show();if(expressionSelect.value==='auto')character?.speak(currentLine,dialoguePages.text);}
- function showLine(line){currentLine=typeof line==='string'?{text:line}:line;dialoguePages.set(currentLine.text);$('#viewerLine').textContent=dialoguePages.text;lastLineAt=Date.now();performLine();storyControls();}
+ function showLine(line){currentLine=typeof line==='string'?{text:line}:line;dialoguePages.set(personalize(currentLine.text));$('#viewerLine').textContent=dialoguePages.text;lastLineAt=Date.now();performLine();storyControls();}
  function timeLine(){return routineLine(active.id,{force:true})||active.greeting;}
  const nowButton=document.createElement('button');nowButton.className='viewerNow';nowButton.textContent='지금';nowButton.onclick=()=>{if(story)return;showLine(timeLine());character?.react();};$('.viewerDialogue').append(nowButton);
  const looks=document.createElement('div');looks.className='viewerLooks';$('.viewerFooter').append(looks);
@@ -39,7 +41,7 @@ export function createCharacterViewer(){
   stop();const current=generation;active=illustratedStudents.find(x=>x.id===id)||illustratedStudents[0];lineIndex=0;lastTouch=0;expressionSelect.value='auto';
   dialog.dataset.student=active.id;dialog.style.setProperty('--character-accent',active.color);
   $('#viewerSubject').textContent=`${active.grade}학년 · ${active.subject}`;$('#viewerName').textContent=active.name;
-  $('#viewerSpeaker').textContent=active.name;showLine(story?story.beats[beat].text:(greetingLine||routineLine(active.id)||active.greeting));greetingLine=null;storyControls();
+  $('#viewerSpeaker').textContent=active.name;showLine(story?story.beats[beat].text:(greetingLine||routineLine(active.id)||pickCharacterLine(active.id,'greeting',{teacher:teacherName()})));greetingLine=null;storyControls();
   fallback.src=appearanceFor(active.id,outfitSelect.value)?.portrait||active.portrait;fallback.alt=active.name;fallback.hidden=false;
   $('#viewerTouch').setAttribute('aria-label',active.name+'에게 말 걸기');
   for(const b of dialog.querySelectorAll('[data-character]'))b.setAttribute('aria-pressed',String(b.dataset.character===active.id));
@@ -64,7 +66,7 @@ export function createCharacterViewer(){
    if(entry.speaker!==active.id)select(entry.speaker,{preserveStory:true});else{showLine(entry.text);storyControls();character?.react();}
    return;
   }
-  showLine(active.lines[lineIndex++%active.lines.length]);character?.react();
+  showLine(pickCharacterLine(active.id,lineIndex++%4===0?'everyday':'touch',{teacher:teacherName(),index:lineIndex}));character?.react();
  }
  $('#viewerTouch').onclick=talk;$('#viewerNextLine').onclick=talk;
  $('.viewerStage').onpointermove=e=>{if(e.pointerType==='touch')return;const r=e.currentTarget.getBoundingClientRect();character?.look((e.clientX-r.left)/r.width*1.6-.8);};

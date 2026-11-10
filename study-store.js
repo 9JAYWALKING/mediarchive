@@ -1,5 +1,5 @@
 import {normalizeChoice} from './game-state.js';
-import {reconcileGrowth,mergeGrowth,sessionTotals,memoryKey,unitKey} from './growth-engine.js';
+import {reconcileGrowth,mergeGrowth,sessionTotals,memoryKey,unitKey} from './growth-engine.js?v=20261110';
 export function normalizeMemories(raw){
  const map=new Map();for(const m of Array.isArray(raw)?raw:[]){
   if(!m||!Number.isFinite(m.duration)||m.duration<0||m.duration>604800000||typeof m.date!=='string'||!Number.isFinite(Date.parse(m.date)))continue;

@@ -1,3 +1,4 @@
+import {allocatedTargets} from './linked-study.js?v=20261110';
 import {schedule} from './schedule-data.js';
 import {koreanDate,shiftDate,validDate} from './game-state.js';
 import {materialUnits} from './material-scope.js';
@@ -73,7 +74,7 @@ export function dailyQuests(state,date=koreanDate(),now=Date.now(),lessons=sched
 }
 export function weekStart(date){const day=new Date(date+'T12:00:00Z').getUTCDay();return shiftDate(date,-((day+6)%7));}
 export function weeklyQuests(study,planner,date=koreanDate(),now=Date.now(),lessons=schedule){
- const start=weekStart(date),end=shiftDate(start,7),events=[...(study.growth?.events||[]).filter(r=>r.complete).map(r=>({lecture:r.context?.lecture,track:r.context?.track,at:r.at,duration:r.duration,preview:r.preview||0})),...(planner.records||[]).filter(r=>r.unitComplete).map(r=>({lecture:r.lecture,track:r.track,at:r.at,duration:r.duration,preview:r.preview||0}))];
+ const start=weekStart(date),end=shiftDate(start,7),events=[...(study.growth?.events||[]).filter(r=>r.complete).map(r=>({lecture:r.context?.lecture,track:r.context?.track,at:r.at,duration:r.duration,preview:r.preview||0})),...(planner.records||[]).flatMap(r=>allocatedTargets(r).filter(t=>t.complete).map(t=>({...t,at:r.at})))];
  return {start,end:shiftDate(end,-1),lectures:lessons.filter(l=>l.date>=start&&l.date<end).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time)||a.id-b.id).map(l=>{
   const after=Date.parse(l.date+'T'+l.time+':00+09:00')+l.hours*HOUR;
   return {...l,after,student:planner.settings.students.find(s=>s.lectures.includes(l.id)),units:['Wiki','J','JBL'].map(track=>{

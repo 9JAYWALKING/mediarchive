@@ -1,13 +1,17 @@
+import {teacherAddress,teacherLevel} from './teacher-profile.js?v=20261110';
+import {studentGrowth} from './student-growth.js?v=20261110';
+import {linkedLabel} from './linked-study.js?v=20261110';
+import {accessoryFor} from './accessory-art.js?v=20261110';
 import {schedule} from './schedule-data.js';
 import {tracks,haruLessons,koreanDate,validDate,examCountdown,normalizePreferences,normalizeChoice,shiftDate} from './game-state.js';
 
 import {illustratedStudents} from './character-data.js';
-import {createCharacterViewer} from './character-viewer.js?v=2';
+import {createCharacterViewer} from './character-viewer.js?v=20261110';
 import {storiesFor} from './character-stories.js';
-import {createStatisticsUI} from './statistics-ui.js?v=2';
-import {unifiedRecords} from './statistics-engine.js';
+import {createStatisticsUI} from './statistics-ui.js?v=20261110';
+import {unifiedRecords} from './statistics-engine.js?v=20261110';
 const KEY='heart-companion-shell-v1';
-export function createGameUI({getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
+export function createGameUI({getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
  const $=s=>document.querySelector(s),screen=$('#screen'),body=$('#screenContent');
  const characterViewer=createCharacterViewer();
  let prefs;try{prefs=normalizePreferences(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{prefs=normalizePreferences(null);}
@@ -21,11 +25,13 @@ export function createGameUI({getState,getQuiz,getGrowth,reviews,momo,planner,qu
  function render(){body.replaceChildren();if(view==='students')renderStudents();else if(view==='schedule')renderSchedule();else if(view==='records')renderRecords();else if(view==='momo')momo.render(body,title);else if(view==='quests'){title('퀘스트');quests.render(body);}}
  function activeChoice(){return normalizeChoice(getState().session?.context||prefs.choice);}
  function update(){
-  const growth=getGrowth();$('.starLine>b').textContent='Lv. '+growth.level;$('.stars').textContent='★'.repeat(growth.stars)+'☆'.repeat(3-growth.stars);$('.stars').setAttribute('aria-label',`성급 ${growth.stars}성`);
+  const growth=getStudentGrowth(getLobby());$('.starLine>b').textContent='Lv. '+growth.level;$('.stars').textContent='★'.repeat(growth.stars)+'☆'.repeat(3-growth.stars);$('.stars').setAttribute('aria-label',`성급 ${growth.stars}성`);
   const now=Date.now(),today=koreanDate(now),d=examCountdown(prefs.examDate,now);$('#examButton').dataset.phase=d.days<0?'past':d.days===0?'today':d.days<=7?'near':'normal';$('#examCount').textContent=d.label;$('#examDate').textContent=prefs.examDate.slice(5).replace('-','.');$('#examButton').setAttribute('aria-label',`시험 ${d.label}, ${prefs.examDate}, 날짜 변경`);
   const st=getState(),sources=[st.growth,st.memories,planner.state.records,planner.state.plans,today];if(sources.some((v,i)=>v!==dailySources[i])){dailySources=sources;dailyCache=unifiedRecords(st,planner.state).filter(m=>m.student&&koreanDate(m.at)===today).reduce((a,b)=>a+b.duration,0);}$('#dailyTime').textContent=Math.floor(dailyCache/60000)+'분';
   const c=activeChoice(),l=schedule.find(x=>x.id===c.lecture),legacy=st.session&&!st.session.context;$('#contextName').textContent=legacy?'하루':l.title;$('#contextTrack').textContent=legacy?'자유':c.track;$('#eventContext').disabled=!!st.session;
   $('#eventContext').setAttribute('aria-label',st.session?(legacy?'하루 · 자유':`${l.title} ${c.track}`):'이벤트 선택');
+  $('#teacherDisplayName').textContent=teacherAddress();const rank=teacherLevel(planner.state.settings.students.map(s=>getStudentGrowth(s.id).level));$('#teacherLevel').textContent=rank;$('.teacherRank').dataset.digits=String(rank).length;
+  const owner=planner.state.settings.students.find(s=>s.id===getLobby()),f=planner.focus;if(f){$('#contextName').textContent=f.title;$('#contextTrack').textContent=linkedLabel(f)||'자유';}else if(!st.session&&getLobby()!=='haru'){const first=schedule.find(l=>l.id===owner?.lectures[0]);$('#contextName').textContent=first?.title||'자유';$('#contextTrack').textContent='선택';}$('#contextStudent').textContent=planner.state.settings.students.find(s=>s.id===(f?.student||(st.session?'haru':getLobby())))?.name||'개인 일정';$('#eventContext').disabled=!!st.session||!!f;
   statistics.updateLive();
   if(lastDate&&today!==lastDate&&view!=='home')render();lastDate=today;
  }
@@ -34,6 +40,7 @@ export function createGameUI({getState,getQuiz,getGrowth,reviews,momo,planner,qu
   $('#examInput').value=prefs.examDate;$('#examForm').onsubmit=e=>{e.preventDefault();const value=$('#examInput').value;if(!validDate(value)){$('#examError').textContent='날짜를 확인해 주세요.';return;}prefs.examDate=value;if(persist()){update();closeModal();}};
  }
  function launch(lecture,selectedTrack,planId){
+  if(!lecture&&getLobby()!=='haru'){if(getState().session||planner.focus){toast('진행 중인 이벤트를 먼저 마쳐 줘.');return;}planner.quick(getLobby());return;}
   if(quests.resting){quests.restOpen();return;}
   if(planner.focus){toast('진행 중인 약속을 먼저 마쳐 줘.');return;}
   if(getState().session){toast('진행 중인 이벤트를 먼저 종료해 주세요.');show('home');return;}
@@ -46,22 +53,15 @@ export function createGameUI({getState,getQuiz,getGrowth,reviews,momo,planner,qu
   $('#launchEvent').onclick=()=>{prefs.choice=choice;persist();closeModal();show('home');const linked=planner.state.plans.find(p=>p.id===planId);onStart(choice,mode,linked?.lecture===choice.lecture&&linked?.track===choice.track?planId:undefined);update();};
  }
  function renderStudents(){
-  const growth=getGrowth(),rating='★'.repeat(growth.stars)+'☆'.repeat(3-growth.stars);
-  title(studentDetail?(illustratedStudents.find(x=>x.id===studentDetail)?.name||'하루'):'학생');
-  if(!studentDetail){statistics.render(body,{historyOpen:false,mode:'students'});return;}
-  if(studentDetail!=='haru'){renderPortraitStudent(studentDetail);return;}
-  const q=getQuiz(),score=Math.max(0,q.score+reviews.delta('haru')+quests.penalty('haru')),level=1+Math.floor(score/100);
-  const banner=node('div',undefined,'studentBanner');banner.innerHTML='<span class="bannerCrest">'+icon('heart')+'</span><img src="./assets/haru-fresh-airy.png" alt="하루"><div><span>심장생리 · 1학년</span><h3>하루</h3><b>Lv. '+growth.level+'</b><div class="rating">'+rating+'</div></div>';body.append(banner);
-  appendPortraitAction('haru');
-  const growthButton=node('button',undefined,'growthProfileButton');growthButton.append(node('span','성장'),node('small',growth.cycles>=5?'완성':(growth.cycles<3?'학생 '+(growth.stars+1)+'성':'악세사리 '+(growth.accessory+1)+'성')+' · '+growth.done.length+'/9  ›'));growthButton.onclick=onGrowth;body.append(growthButton);
-  const bond=node('section',undefined,'infoCard bondCard');bond.innerHTML=`<div class="cardHeading">${icon('heart')}<h3>인연</h3><b>${level}</b></div><progress max="100" value="${score%100}" aria-label="인연 진행도"></progress><small>${score%100} / 100</small>`;body.append(bond);
-  const abilities=node('section',undefined,'infoCard abilitiesCard');abilities.append(node('h3','능력'));
-  ['이해','판단','응용'].forEach((name,i)=>{const ability=growth.abilities[tracks[i]];const row=node('div',undefined,'abilityRow');row.dataset.ability=i;const glyph=node('i',undefined,'abilityGlyph');glyph.innerHTML=icon(['insight','target','bolt'][i]);row.append(glyph,node('span',name));const meter=node('progress');meter.max=1;meter.value=ability.progress;meter.setAttribute('aria-label',name+' 레벨 진행도');row.append(meter,node('b','Lv. '+ability.level));abilities.append(row);});
-  const range=node('button','범위','textButton');range.onclick=onCoverage;abilities.append(range);body.append(abilities);
-  const accessory=node('section',undefined,'accessoryCard'+(growth.unlocked?' unlocked':''));accessory.innerHTML=`<span class="accessoryArt">${icon('pin')}<i>${icon('lock')}</i></span><div><b>하트 머리핀</b><small>${growth.unlocked?'고유 악세사리':'★★★ 해금'}</small></div><span aria-label="악세사리 성급 ${growth.accessory}성">${'★'.repeat(growth.accessory)+'☆'.repeat(2-growth.accessory)}</span>`;body.append(accessory);
-  const talk=node('div',undefined,'talkChoices');for(const [name,group] of [['일상','everyday'],['쌍둥이','sister'],['응원','encourage']]){const b=node('button',name);b.onclick=()=>{show('home');onTalk(group);};talk.append(b);}body.append(talk);
-  appendStories('haru');
+  const id=studentDetail,student=planner.state.settings.students.find(s=>s.id===id),art=illustratedStudents.find(s=>s.id===id);title(id?(student?.name||'학생'):'학생');
+  if(!id){statistics.render(body,{historyOpen:false,mode:'students'});return;}
+  statistics.renderStudent(body,id);const detail=body.querySelector('.academyStudentDetail');detail?.remove();
+  if(art){appendPortraitAction(id);const home=node('button','홈에 설정','portraitAction lobbySet');home.onclick=()=>{onLobby(id);show('home');};body.append(home);}
+  const accessory=accessoryFor(id),g=getStudentGrowth(id);if(accessory){const card=node('section',undefined,'accessoryCard refinedAccessory'),img=node('img');img.src=accessory.src;img.alt=accessory.name;const copy=node('div');copy.append(node('b',accessory.name),node('small',g.stars>=3?'고유 악세사리':'★★★ 해금'));card.append(img,copy,node('span','★'.repeat(g.accessory)+'☆'.repeat(2-g.accessory)));body.append(card);}
+  if(detail){detail.classList.add('infoCard');body.append(detail);}
+  if(art){for(const link of art.relations||[]){const b=node('button',undefined,'relationButton');b.append(node('span',illustratedStudents.find(s=>s.id===link.id)?.name||''),node('small',link.label+' ›'));b.onclick=()=>{studentDetail=link.id;render();body.scrollTop=0;};body.append(b);}const profile=node('section',undefined,'infoCard characterProfile');profile.append(node('h3','소개'),node('p',art.profile));body.append(profile);appendStories(id);}
  }
+
  function appendPortraitAction(id){const button=node('button',undefined,'portraitAction');button.innerHTML=icon('play')+'<span>감상</span>';button.onclick=()=>characterViewer.open(id);body.append(button);}
  function appendStories(id){
   const stories=storiesFor(id);if(!stories.length)return;

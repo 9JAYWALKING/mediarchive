@@ -1,3 +1,4 @@
+import {studyTargets} from './linked-study.js?v=20261110';
 import {reviewQuestions} from './review-data.js';
 const byId=new Map(reviewQuestions.map(q=>[q.id,q]));
 const finite=n=>Number.isFinite(n)&&n>=0&&n<8640000000000000;
@@ -6,14 +7,14 @@ const day=n=>new Date(n+32400000).toISOString().slice(0,10);
 export function normalizeReview(raw){
  const state={version:1,runs:[]},seen=new Set();
  for(const r of Array.isArray(raw?.runs)?raw.runs:[]){
-  if(!r||!text(r.id)||seen.has(r.id)||!text(r.student)||!finite(r.at)||!Array.isArray(r.qids)||r.qids.length<2||r.qids.length>3||new Set(r.qids).size!==r.qids.length||!r.qids.every(id=>byId.get(id)?.lecture===r.lecture))continue;
+  if(!r||!text(r.id)||seen.has(r.id)||!text(r.student)||!finite(r.at)||!Array.isArray(r.qids)||r.qids.length<2||r.qids.length>3||new Set(r.qids).size!==r.qids.length||!r.qids.every(id=>(Array.isArray(r.lectures)?r.lectures:[r.lecture]).includes(byId.get(id)?.lecture)))continue;
   const order=r.qids.map((id,i)=>Array.isArray(r.order?.[i])&&r.order[i].length===3&&new Set(r.order[i]).size===3&&r.order[i].every(n=>[0,1,2].includes(n))?r.order[i]:[0,1,2]);
   const answers=[];
   for(const a of Array.isArray(r.answers)?r.answers:[]){const q=byId.get(a?.qid);if(!q||!r.qids.includes(a.qid)||!finite(a.at)||![-1,0,1,2].includes(a.selected)||![-2,-1,0,1,2].includes(a.delta))continue;const prior=answers.filter(x=>x.qid===a.qid);if(prior.length>=2||prior.length&&prior[0].correct)continue;answers.push({qid:a.qid,selected:a.selected,at:a.at,correct:a.selected===q.answer,delta:a.delta,recovered:a.recovered===true});}
-  answers.sort((a,b)=>a.at-b.at);seen.add(r.id);state.runs.push({id:r.id,student:r.student,name:typeof r.name==='string'?r.name.slice(0,20):'',lecture:r.lecture,track:['Wiki','J','JBL'].includes(r.track)?r.track:'',at:r.at,qids:[...r.qids],order:order.map(x=>[...x]),answers});
+  answers.sort((a,b)=>a.at-b.at);seen.add(r.id);state.runs.push({id:r.id,student:r.student,name:typeof r.name==='string'?r.name.slice(0,20):'',lecture:r.lecture,lectures:[...new Set(Array.isArray(r.lectures)?r.lectures:[r.lecture])].filter(id=>Number.isInteger(id)&&byId.size&&[...byId.values()].some(q=>q.lecture===id)),track:['Wiki','J','JBL'].includes(r.track)?r.track:'',at:r.at,qids:[...r.qids],order:order.map(x=>[...x]),answers});
  }return state;
 }
-export function reviewHistory(state){return state.runs.flatMap(r=>r.answers.map((a,i)=>({...a,id:r.id+':'+i,student:r.student,lecture:r.lecture,runId:r.id}))).sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id));}
+export function reviewHistory(state){return state.runs.flatMap(r=>r.answers.map((a,i)=>({...a,id:r.id+':'+i,student:r.student,lecture:byId.get(a.qid)?.lecture||r.lecture,runId:r.id}))).sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id));}
 export function reviewBond(state,student){return reviewHistory(state).filter(a=>a.student===student).reduce((n,a)=>n+a.delta,0);}
 export const reviewQuestion=id=>byId.get(id);
 export function pendingQuestion(run){return run.qids.find(id=>!run.answers.some(a=>a.qid===id))||null;}
@@ -21,8 +22,8 @@ export function reviewSummary(run){const first=run.qids.map(id=>run.answers.find
 export function queueReview(state,event,random=Math.random){
  if(!event?.id||!event.student||event.duration<60000)return null;
  const existing=state.runs.find(r=>r.id===event.id);if(existing)return existing;
- const pool=reviewQuestions.filter(q=>q.lecture===Number(event.lecture));if(pool.length<2)return null;
- const chosen=pool.slice(0,(event.duration>=2700000||event.track==='JBL')?3:2),run={id:event.id,student:event.student,name:event.name||'',lecture:Number(event.lecture),track:event.track||'',at:event.at||Date.now(),qids:chosen.map(q=>q.id),order:chosen.map(()=>{const a=[0,1,2];for(let i=2;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}),answers:[]};state.runs.push(run);return run;
+ const lectures=[...new Set(studyTargets(event).map(t=>t.lecture))];if(!lectures.length)lectures.push(Number(event.lecture));const banks=lectures.map(id=>reviewQuestions.filter(q=>q.lecture===id)),pool=[];for(let i=0;i<3;i++)for(const bank of banks)if(bank[i])pool.push(bank[i]);if(pool.length<2)return null;
+ const chosen=pool.slice(0,(event.duration>=2700000||event.track==='JBL')?3:2),run={id:event.id,student:event.student,name:event.name||'',lecture:Number(event.lecture),lectures,track:studyTargets(event).length>1?'':event.track||'',at:event.at||Date.now(),qids:chosen.map(q=>q.id),order:chosen.map(()=>{const a=[0,1,2];for(let i=2;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}),answers:[]};state.runs.push(run);return run;
 }
 export function answerReview(state,runId,qid,selected,{now=Date.now(),bond=20,retry=false}={}){
  const run=state.runs.find(r=>r.id===runId),q=byId.get(qid);if(!run||!q||!run.qids.includes(qid)||![-1,0,1,2].includes(selected))return null;
