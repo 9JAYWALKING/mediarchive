@@ -1,3 +1,4 @@
+import {homePool} from './home-dialogue.js?v=20261110hometalk';
 import {dialogueGroups} from './dialogue.js';
 
 // Authored performances. The caller owns timing/history; this module never reads storage or the DOM.
@@ -412,8 +413,8 @@ export function personalizeDialogue(text,teacher=''){
  const name=String(teacher||'').trim().slice(0,20);
  return String(text).replaceAll('{teacher} 선생님',name?`${name} 선생님`:'선생님').replaceAll('{teacher}',name||'선생님');
 }
-export function pickCharacterLine(student,group='touch',{teacher='',recent=[],random=Math.random,index}={}){
- const bank=characterDialogueBanks[student]||characterDialogueBanks.haru,key=bank[group]?group:'touch',pool=bank[key];
+export function pickCharacterLine(student,group='touch',{teacher='',recent=[],random=Math.random,index,scene=''}={}){
+ const bank=characterDialogueBanks[student]||characterDialogueBanks.haru,home=scene==='home'?homePool(student,group):null,key=home?.key||(bank[group]?group:'touch'),pool=home?.lines||bank[key];
  const unused=pool.map((line,i)=>({line,i})).filter(({i})=>!recent.includes(i));
  const available=unused.length?unused:pool.map((line,i)=>({line,i}));
  const selected=Number.isInteger(index)?{line:pool[((index%pool.length)+pool.length)%pool.length],i:((index%pool.length)+pool.length)%pool.length}:available[Math.min(available.length-1,Math.max(0,Math.floor(random()*available.length)))];

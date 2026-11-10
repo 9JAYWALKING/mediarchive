@@ -1,4 +1,4 @@
-import {pickCharacterLine} from './character-dialogue.js?v=20261110';
+import {pickCharacterLine} from './character-dialogue.js?v=20261110hometalk';
 import {teacherName,personalize} from './teacher-profile.js?v=20261110';
 import {createDialogueVisibility} from './dialogue-visibility.js';
 import {expressionNames,expressionLabels} from './expressions.js';
@@ -6,7 +6,7 @@ import {createDialoguePager} from './dialogue-pages.js';
 import {createCharacter} from './renderer.js?v=20261110';
 import {illustratedStudents} from './character-data.js';
 import {characterStories} from './character-stories.js';
-import {routineLine} from './routine-service.js';
+import {routineLine} from './routine-service.js?v=20261110hometalk';
 import {appearanceFor} from './wardrobe-service.js';
 import {outfitLabels} from './wardrobe-engine.js';
 
@@ -41,7 +41,7 @@ export function createCharacterViewer(){
   stop();const current=generation;active=illustratedStudents.find(x=>x.id===id)||illustratedStudents[0];lineIndex=0;lastTouch=0;expressionSelect.value='auto';
   dialog.dataset.student=active.id;dialog.style.setProperty('--character-accent',active.color);
   $('#viewerSubject').textContent=`${active.grade}학년 · ${active.subject}`;$('#viewerName').textContent=active.name;
-  $('#viewerSpeaker').textContent=active.name;showLine(story?story.beats[beat].text:(greetingLine||routineLine(active.id)||pickCharacterLine(active.id,'greeting',{teacher:teacherName()})));greetingLine=null;storyControls();
+  $('#viewerSpeaker').textContent=active.name;showLine(story?story.beats[beat].text:(greetingLine||routineLine(active.id)||pickCharacterLine(active.id,'greeting',{scene:document.documentElement.dataset.dayphase,teacher:teacherName()})));greetingLine=null;storyControls();
   fallback.src=appearanceFor(active.id,outfitSelect.value)?.portrait||active.portrait;fallback.alt=active.name;fallback.hidden=false;
   $('#viewerTouch').setAttribute('aria-label',active.name+'에게 말 걸기');
   for(const b of dialog.querySelectorAll('[data-character]'))b.setAttribute('aria-pressed',String(b.dataset.character===active.id));
@@ -55,7 +55,7 @@ export function createCharacterViewer(){
   }catch(error){if(current!==generation||error.name==='AbortError')return;canvas.hidden=true;unavailable();}
  }
  for(const student of illustratedStudents){const b=document.createElement('button');b.dataset.character=student.id;b.textContent=student.name;b.onclick=()=>{if(active.id!==student.id||story)select(student.id);};$('.viewerSwitch').append(b);}
- function endStory(){story=null;storyControls();showLine(active.greeting);character?.react();}
+ function endStory(){story=null;storyControls();showLine(pickCharacterLine(active.id,'greeting',{scene:document.documentElement.dataset.dayphase,teacher:teacherName()}));character?.react();}
  function talk(){
   if(speechPanel.hidden){lastTouch=Date.now();performLine();character?.react();return;}
   if(Date.now()-lastTouch<250)return;lastTouch=Date.now();
@@ -66,7 +66,7 @@ export function createCharacterViewer(){
    if(entry.speaker!==active.id)select(entry.speaker,{preserveStory:true});else{showLine(entry.text);storyControls();character?.react();}
    return;
   }
-  showLine(pickCharacterLine(active.id,lineIndex++%4===0?'everyday':'touch',{teacher:teacherName(),index:lineIndex}));character?.react();
+  showLine(pickCharacterLine(active.id,lineIndex++%4===0?'everyday':'touch',{scene:document.documentElement.dataset.dayphase,teacher:teacherName(),index:lineIndex}));character?.react();
  }
  $('#viewerTouch').onclick=talk;$('#viewerNextLine').onclick=talk;
  $('.viewerStage').onpointermove=e=>{if(e.pointerType==='touch')return;const r=e.currentTarget.getBoundingClientRect();character?.look((e.clientX-r.left)/r.width*1.6-.8);};

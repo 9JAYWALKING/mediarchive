@@ -1,3 +1,5 @@
+import {homePool} from './home-dialogue.js?v=20261110hometalk';
+import {worldTime} from './world-time.js?v=20261110hometalk';
 import {classTime} from './class-time.js';
 import {routineContext,routineDue} from './routine-engine.js';
 import {routinePool} from './routine-dialogue.js';
@@ -9,10 +11,10 @@ export function configuredRoutineContext(now=Date.now()){return routineContext(n
 export function routineLine(student,{now=Date.now(),force=false,blocked=false}={}){
  const flags=getFlags(),ctx=routineContext(now,classTime.lessons(now),flags.meals);
  if(!force&&!routineDue(ctx,history,now,{...flags,blocked:blocked||flags.blocked}))return null;
- const pool=routinePool(student,ctx,flags.growth),key=`${student}:${pool.key}`,old=history.recent[key];
+ const pool=(flags.scene||worldTime(now).id)==='home'?homePool(student,'routine'):routinePool(student,ctx,flags.growth),key=`${student}:${pool.key}`,old=history.recent[key];
  const choices=pool.lines.map((text,i)=>({text,i})).filter(x=>pool.lines.length===1||x.i!==old);
  const selected=choices[Math.floor(Math.random()*choices.length)];
  history.recent[key]=selected.i;history.lastAt=now;history.seen=[...history.seen.filter(x=>x!==ctx.key),ctx.key].slice(-80);
  try{localStorage.setItem(KEY,JSON.stringify(history));}catch{}
- return {text:selected.text,group:'routine',phase:ctx.phase};
+ return {...(typeof selected.text==='string'?{text:selected.text}:selected.text),group:'routine',phase:ctx.phase};
 }

@@ -1,6 +1,6 @@
 import {createBondStoryUI} from './bond-story-ui.js?v=20261110stories';
 import {createLobbyController} from './lobby-controller.js?v=20261110b';
-import {pickCharacterLine,characterDialogueBanks} from './character-dialogue.js?v=20261110';
+import {pickCharacterLine,characterDialogueBanks} from './character-dialogue.js?v=20261110hometalk';
 import {teacherProfile,teacherName,teacherAddress,personalize,saveTeacher,teacherLevel,preventAppZoom} from './teacher-profile.js?v=20261110';
 import {linkedLabel} from './linked-study.js?v=20261110';
 preventAppZoom();
@@ -16,16 +16,16 @@ import {createLectureAdvice} from './lecture-advice.js';
 import {createClassCheckin} from './class-checkin.js';
 import {createCharacter} from './renderer.js?v=20261110';
 import {createQuizUI} from './quiz-ui.js';
-import {createGameUI} from './game-ui.js?v=20261110studentlevel';
+import {createGameUI} from './game-ui.js?v=20261110hometalk';
 import {normalizeChoice} from './game-state.js';
 import {createDialogueDirector} from './dialogue.js';
 import {sessionTotals,summarizeGrowth,normalizeGrowth,growthReminder} from './growth-engine.js?v=20261110';
 import {normalizeStudy,studySnapshot,mergeStudy} from './study-store.js';
 import {createGrowthUI} from './growth-ui.js';
-import {configureRoutine,routineLine,configuredRoutineContext} from './routine-service.js';
+import {configureRoutine,routineLine,configuredRoutineContext} from './routine-service.js?v=20261110hometalk';
 import {createMomoUI} from './momo-ui.js?v=20261110stories';
 import {createPlannerUI} from './planner-ui.js?v=20261110';
-import {startWorldTime} from './world-time.js?v=20261110home';
+import {startWorldTime} from './world-time.js?v=20261110hometalk';
 import {createQuestUI} from './quest-ui.js?v=2';
 const $=s=>document.querySelector(s),KEY='heart-companion-v1';let state=normalizeStudy(null),storageOK=true;
 try{state=normalizeStudy(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{storageOK=false;}
@@ -34,7 +34,7 @@ function haruExtras(){const events=state.growth.events;return (planner?.state.re
 function getHaruMemories(){return [...state.memories,...haruExtras().map(r=>({id:r.id,date:new Date(r.at).toISOString(),duration:r.duration}))];}
 function getGrowth(){const records=planner?.state.records;if(growthSource!==state.growth||growthPlannerSource!==records){growthSource=state.growth;growthPlannerSource=records;growthCache=summarizeGrowth({events:[...state.growth.events,...haruExtras().map(r=>({id:r.id,at:r.at,duration:r.duration,preview:r.preview||0,context:r.lecture&&r.track?{lecture:r.lecture,track:r.track}:undefined,targets:r.targets,completed:r.completed,complete:r.unitComplete===true,cycle:r.cycle||1}))]});}return growthCache;}
 let lobbyId=teacherProfile().lobby||'haru';const characterRecent={};
-function pickLine(group){if(!characterDialogueBanks[lobbyId])return {text:group==='start'?'준비됐어. 함께 시작하자.':group==='finish'?'고생했어. 잠깐 쉬어도 좋아.':teacherAddress()+', 여기 앉을래?',expression:'smile',group};const key=lobbyId+':'+group,line=pickCharacterLine(lobbyId,group,{teacher:teacherName(),recent:characterRecent[key]||[]});characterRecent[key]=[...(characterRecent[key]||[]),line.index].slice(-6);return line;}
+function pickLine(group){if(!characterDialogueBanks[lobbyId])return {text:group==='start'?'준비됐어. 함께 시작하자.':group==='finish'?'고생했어. 잠깐 쉬어도 좋아.':teacherAddress()+', 여기 앉을래?',expression:'smile',group};const scene=document.documentElement.dataset.dayphase,key=lobbyId+':'+scene+':'+group,line=pickCharacterLine(lobbyId,group,{scene,teacher:teacherName(),recent:characterRecent[key]||[]});characterRecent[key]=[...(characterRecent[key]||[]),line.index].slice(-6);return line;}
 function studentName(id=lobbyId){return planner?.state.settings.students.find(s=>s.id===id)?.name||'하루';}
 const studentGrowthCache=new Map();
 function selectedGrowth(id=lobbyId){if(id==='haru')return {...getGrowth(),bond:quiz?.score??20};const records=planner?.state.records||[],student=planner?.state.settings.students.find(s=>s.id===id)||{id,lectures:[]},cached=studentGrowthCache.get(id);if(cached?.records===records&&cached.student===student)return cached.value;const value=studentGrowth(records,student);studentGrowthCache.set(id,{records,student,value});return value;}
@@ -104,13 +104,14 @@ momo=createMomoUI({planner,bondEvents,getStudy:()=>state,getExamDate:()=>game?.e
 game=createGameUI({bondEvents,getLobby:()=>lobbyId,getStudentGrowth:selectedGrowth,onLobby:id=>lobby.select(id),reviews,getState:()=>state,getQuiz:()=>quiz,getGrowth,momo,planner,quests,openModal:modal,closeModal:()=>$('#modal').close(),onStart:startSession,onTalk:speak,onCoverage:()=>quiz.openProgress(),onGrowth:()=>growthUI.progress(),toast,format});
 planner.importLegacyMomo(momo.export());
 momo.tick();setInterval(()=>{if(!document.hidden)momo.tick();},60000);
-configureRoutine(()=>({meals:planner.state.meals,quiet,visible:!document.hidden,blocked:lobbyDialogue.hasNext||!!quiz.pending||!!quests?.resting,lastInteraction:Math.max(lastTouch,lastLineAt),growth:getGrowth()}));
+configureRoutine(()=>({scene:document.documentElement.dataset.dayphase,meals:planner.state.meals,quiet,visible:!document.hidden,blocked:lobbyDialogue.hasNext||!!quiz.pending||!!quests?.resting,lastInteraction:Math.max(lastTouch,lastLineAt),growth:getGrowth()}));
 classCheckin=createClassCheckin({openModal:modal,closeModal:()=>$('#modal').close(),onLine:say,
  onPause:()=>{if(state.session?.started){checkpoint();save();refresh();}planner.pauseForRest();},
  onReady:()=>{if(planner.focus){planner.resumeFocus();return;}if(state.session)resumeSession();else game.launch();},
  isBlocked:()=>document.hidden||!!document.querySelector('dialog[open]')||!!quiz.pending||!!quests?.resting});
 const routineButton=document.createElement('button');routineButton.className='routineNow';routineButton.textContent='지금';routineButton.setAttribute('aria-label','지금 일정');routineButton.onclick=()=>{if(lobbyId==='haru'&&quiz.pending){quiz.openQuestion();return;}say(routineLine(lobbyId,{force:true}));director.schedule(Date.now());character?.react();};$('.dialogue').append(routineButton);
 const hasDialog=()=>!!document.querySelector('dialog[open]');
+document.addEventListener('mediarchive:scenechange',event=>{if(event.detail.id==='home'&&!quiet&&!document.hidden&&!hasDialog()&&!lobbyDialogue.hasNext&&!quiz.pending&&!quests?.resting&&game.view==='home')speak('greeting');});
 function checkLateArrival(){if(document.hidden||hasDialog()||game.view!=='home')return false;const event=quests.takeArrival();if(!event)return false;game.showArrival(arrivalGreeting(event));return true;}
 function checkRoutine(){
  if(lobbyDialogue.hasNext||game.view!=='home'||hasDialog())return false;

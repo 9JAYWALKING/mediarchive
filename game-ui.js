@@ -7,7 +7,7 @@ import {schedule} from './schedule-data.js';
 import {tracks,haruLessons,koreanDate,validDate,examCountdown,normalizePreferences,normalizeChoice,shiftDate} from './game-state.js';
 
 import {illustratedStudents} from './character-data.js';
-import {createCharacterViewer} from './character-viewer.js?v=20261110';
+import {createCharacterViewer} from './character-viewer.js?v=20261110hometalk';
 import {storiesFor} from './character-stories.js';
 import {createStatisticsUI} from './statistics-ui.js?v=20261110studentlevel';
 import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261110rank';
