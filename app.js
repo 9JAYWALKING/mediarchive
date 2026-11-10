@@ -16,7 +16,7 @@ import {createLectureAdvice} from './lecture-advice.js';
 import {createClassCheckin} from './class-checkin.js';
 import {createCharacter} from './renderer.js?v=20261110';
 import {createQuizUI} from './quiz-ui.js';
-import {createGameUI} from './game-ui.js?v=20261110stories';
+import {createGameUI} from './game-ui.js?v=20261110rank';
 import {normalizeChoice} from './game-state.js';
 import {createDialogueDirector} from './dialogue.js';
 import {sessionTotals,summarizeGrowth,normalizeGrowth,growthReminder} from './growth-engine.js?v=20261110';

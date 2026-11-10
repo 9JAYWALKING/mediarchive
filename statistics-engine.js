@@ -11,11 +11,16 @@ export function unifiedRecords(study,planner){
  return records.sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id));
 }
 export function durationText(ms){const seconds=Math.floor(Math.max(0,ms)/1000);return seconds>=3600?`${Math.floor(seconds/3600)}시간 ${Math.floor(seconds/60)%60}분`:seconds>=60?`${Math.floor(seconds/60)}분 ${seconds%60}초`:`${seconds}초`;}
+// One lifetime roster feeds both the teacher rank and student cards.
+export function growthRoster(planner,haruGrowth){
+ const catalog=[...planner.settings.students];
+ for(const r of planner.records||[])if(r.student&&!catalog.some(s=>s.id===r.student))catalog.push({id:r.student,name:'이전 학생',subject:'이전 연결',lectures:[],color:'#92a4b1',archived:true});
+ return catalog.map(student=>({student,growth:student.id==='haru'?{...haruGrowth,scope:[1,2,6].flatMap(id=>['Wiki','J','JBL'].map(t=>`${id}:${t}`))}:studentGrowth(planner.records,student)}));
+}
 export function analyzeStatistics({study,planner,growth,bond,quiz,reviews={runs:[]},quests={}},options={},now=Date.now()){
  const today=koreanDate(now),all=unifiedRecords(study,planner),from=options.from||'2000-01-01',to=options.to||today;
  const selected=all.filter(r=>{const d=koreanDate(r.at);return d>=from&&d<=to;});
- const catalog=[...planner.settings.students];for(const r of all)if(r.student&&!catalog.some(s=>s.id===r.student))catalog.push({id:r.student,name:'이전 학생',subject:'이전 연결',lectures:[],color:'#92a4b1',archived:true});
- const students=catalog.map(s=>{const entries=selected.filter(r=>r.student===s.id),lifetime=all.filter(r=>r.student===s.id),g=s.id==='haru'?{...growth,scope:[1,2,6].flatMap(id=>['Wiki','J','JBL'].map(t=>`${id}:${t}`)),bond}:studentGrowth(planner.records,s);
+ const students=growthRoster(planner,growth).map(({student:s,growth:g})=>{const entries=selected.filter(r=>r.student===s.id),lifetime=all.filter(r=>r.student===s.id);if(s.id==='haru')g.bond=bond;
   g.bond=Math.max(0,g.bond+reviewBond(reviews,s.id)+arrivalPenalty(quests,s.id,now));const reviewEntries=[...reviewHistory(reviews).filter(a=>a.student===s.id),...(s.id==='haru'?quiz.history||[]:[])].filter(a=>koreanDate(a.at)>=from&&koreanDate(a.at)<=to);
   const plans=planner.plans.filter(p=>p.student===s.id&&p.date>=from&&p.date<=to&&p.status!=='canceled');
   return {...s,entries,lifetime,growth:g,review:{total:reviewEntries.length,correct:reviewEntries.filter(a=>a.correct).length,delta:reviewEntries.reduce((n,a)=>n+a.delta,0)},time:entries.reduce((n,r)=>n+r.duration,0),lifetimeTime:lifetime.reduce((n,r)=>n+r.duration,0),count:entries.length,lastAt:lifetime.at(-1)?.at||0,tracks:Object.fromEntries(['Wiki','J','JBL',''].map(t=>[t,entries.reduce((n,r)=>n+(r.targets?.length?allocatedTargets(r).filter(x=>x.track===t).reduce((a,x)=>a+x.duration,0):r.track===t?r.duration:0),0)])),preview:entries.reduce((n,r)=>n+(r.preview||0),0),plans:{total:plans.length,done:plans.filter(p=>p.status==='done').length}};
