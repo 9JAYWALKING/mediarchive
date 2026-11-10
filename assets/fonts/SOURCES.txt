@@ -14,3 +14,10 @@ Mediarchive typography · 2026-11-09
   https://github.com/google/fonts/tree/main/ofl/outfit
   LICENSE-Outfit.txt
 No glyph outlines or font family names were modified. All four families are served locally.
+
+Bond event typography · 2026-11-10
+NanumSquareRound Regular / Bold, original NAVER WOFF2.
+Copyright NAVER Corporation / NAVER Culture Foundation; design by Sandoll.
+https://hangeul.naver.com/font
+https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css
+LICENSE-NanumSquareRound.txt (SIL Open Font License 1.1).
