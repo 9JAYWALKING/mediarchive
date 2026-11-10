@@ -11,7 +11,7 @@ import {storiesFor} from './character-stories.js';
 import {createStatisticsUI} from './statistics-ui.js?v=20261110';
 import {unifiedRecords} from './statistics-engine.js?v=20261110';
 const KEY='heart-companion-shell-v1';
-export function createGameUI({getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
+export function createGameUI({bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
  const $=s=>document.querySelector(s),screen=$('#screen'),body=$('#screenContent');
  const characterViewer=createCharacterViewer();
  let prefs;try{prefs=normalizePreferences(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{prefs=normalizePreferences(null);}
@@ -59,7 +59,7 @@ export function createGameUI({getLobby=()=> 'haru',getStudentGrowth,onLobby,getS
   if(art){appendPortraitAction(id);const home=node('button','홈에 설정','portraitAction lobbySet');home.onclick=()=>{onLobby(id);show('home');};body.append(home);}
   const accessory=accessoryFor(id),g=getStudentGrowth(id);if(accessory){const card=node('section',undefined,'accessoryCard refinedAccessory'),img=node('img');img.src=accessory.src;img.alt=accessory.name;const copy=node('div');copy.append(node('b',accessory.name),node('small',g.stars>=3?'고유 악세사리':'★★★ 해금'));card.append(img,copy,node('span','★'.repeat(g.accessory)+'☆'.repeat(2-g.accessory)));body.append(card);}
   if(detail){detail.classList.add('infoCard');body.append(detail);}
-  if(art){for(const link of art.relations||[]){const b=node('button',undefined,'relationButton');b.append(node('span',illustratedStudents.find(s=>s.id===link.id)?.name||''),node('small',link.label+' ›'));b.onclick=()=>{studentDetail=link.id;render();body.scrollTop=0;};body.append(b);}const profile=node('section',undefined,'infoCard characterProfile');profile.append(node('h3','소개'),node('p',art.profile));body.append(profile);appendStories(id);}
+  if(art){for(const link of art.relations||[]){const b=node('button',undefined,'relationButton');b.append(node('span',illustratedStudents.find(s=>s.id===link.id)?.name||''),node('small',link.label+' ›'));b.onclick=()=>{studentDetail=link.id;render();body.scrollTop=0;};body.append(b);}const profile=node('section',undefined,'infoCard characterProfile');profile.append(node('h3','소개'),node('p',art.profile));body.append(profile);appendStories(id);bondEvents?.gallery(body,id);}
  }
 
  function appendPortraitAction(id){const button=node('button',undefined,'portraitAction');button.innerHTML=icon('play')+'<span>감상</span>';button.onclick=()=>characterViewer.open(id);body.append(button);}
