@@ -48,6 +48,7 @@ iPhone Safari에서 사이트를 연 뒤 공유 → 홈 화면에 추가합니�
 - UI: Wanted Sans
 - 제목·학생 이름: LINE Seed Sans KR
 - 대사: 고운돋움
+- 인연 이야기·답장: 나눔스퀘어라운드
 - 숫자·영문 로고: Outfit
 
 각 글꼴의 출처와 라이선스는 `assets/fonts/`에, 모델 생성 코드의 라이선스는 `scripts/LICENSE-stretchystudio.txt`에 포함되어 있습니다.

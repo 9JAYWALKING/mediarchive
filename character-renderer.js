@@ -1,4 +1,4 @@
-import {expressionRigs,expressionNames,expressionPose,faceTransform,expressionFragment} from './expressions.js?v=20261110ritsu';
+import {expressionRigs,expressionNames,expressionPose,faceTransform,expressionFragment} from './expressions.js?v=20261110bondpolish';
 import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261110ritsu';
 import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261110ritsu';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
@@ -53,6 +53,8 @@ export async function createCharacter(canvas, options={}){
   function alignFace(outfit){
    const rig=faceRig?{...faceRig,...faceRig.outfits?.[outfit]}:null;
    gl.uniform2fv(gl.getUniformLocation(program,'u_artSize'),rig?.size||[1199,1312]);
+   gl.uniform1f(gl.getUniformLocation(program,'u_preserveHair'),rig?.preserveHair?1:0);
+   if(rig?.eyes)for(const [i,side] of ['Left','Right'].entries()){const [a,b,c,d,x,y]=rig.eyes[i];gl.uniform3fv(gl.getUniformLocation(program,'u_eye'+side+'X'),[a,b,x]);gl.uniform3fv(gl.getUniformLocation(program,'u_eye'+side+'Y'),[c,d,y]);}
    if(rig){const map=faceTransform(rig);gl.uniform3fv(gl.getUniformLocation(program,'u_mapX'),map[0]);gl.uniform3fv(gl.getUniformLocation(program,'u_mapY'),map[1]);for(const [i,name] of ['u_left','u_right','u_mouth'].entries())gl.uniform2fv(gl.getUniformLocation(program,name),rig.target[i]);const [left,right]=rig.target;gl.uniform4fv(gl.getUniformLocation(program,'u_fringe'),[left[0]-85,Math.min(left[1],right[1])-125,right[0]+85,Math.max(left[1],right[1])+20]);}
    gl.uniform4fv(gl.getUniformLocation(program,'u_protect'),rig?.protect||[0,0,0,0]);
   }
