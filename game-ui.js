@@ -9,7 +9,7 @@ import {tracks,haruLessons,koreanDate,validDate,examCountdown,normalizePreferenc
 import {illustratedStudents} from './character-data.js';
 import {createCharacterViewer} from './character-viewer.js?v=20261110';
 import {storiesFor} from './character-stories.js';
-import {createStatisticsUI} from './statistics-ui.js?v=20261110roster';
+import {createStatisticsUI} from './statistics-ui.js?v=20261110studentlevel';
 import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261110rank';
 const KEY='heart-companion-shell-v1';
 export function createGameUI({bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
@@ -26,7 +26,7 @@ export function createGameUI({bondEvents,getLobby=()=> 'haru',getStudentGrowth,o
  function render(){body.replaceChildren();if(view==='students')renderStudents();else if(view==='schedule')renderSchedule();else if(view==='records')renderRecords();else if(view==='momo')momo.render(body,title);else if(view==='quests'){title('퀘스트');quests.render(body);}}
  function activeChoice(){return normalizeChoice(getState().session?.context||prefs.choice);}
  function update(){
-  const growth=getStudentGrowth(getLobby());paintLevelBadge($('.starLine>b'),growth.level);$('.stars').textContent='★'.repeat(growth.stars)+'☆'.repeat(3-growth.stars);$('.stars').setAttribute('aria-label',`성급 ${growth.stars}성`);
+  const growth=getStudentGrowth(getLobby());$('.starLine>b').textContent='Lv. '+growth.level;$('.stars').textContent='★'.repeat(growth.stars)+'☆'.repeat(3-growth.stars);$('.stars').setAttribute('aria-label',`성급 ${growth.stars}성`);
   const now=Date.now(),today=koreanDate(now),d=examCountdown(prefs.examDate,now);$('#examButton').dataset.phase=d.days<0?'past':d.days===0?'today':d.days<=7?'near':'normal';$('#examCount').textContent=d.label;$('#examDate').textContent=prefs.examDate.slice(5).replace('-','.');$('#examButton').setAttribute('aria-label',`시험 ${d.label}, ${prefs.examDate}, 날짜 변경`);
   const st=getState(),sources=[st.growth,st.memories,planner.state.records,planner.state.plans,today];if(sources.some((v,i)=>v!==dailySources[i])){dailySources=sources;dailyCache=unifiedRecords(st,planner.state).filter(m=>m.student&&koreanDate(m.at)===today).reduce((a,b)=>a+b.duration,0);}$('#dailyTime').textContent=Math.floor(dailyCache/60000)+'분';
   const c=activeChoice(),l=schedule.find(x=>x.id===c.lecture),legacy=st.session&&!st.session.context;$('#contextName').textContent=legacy?'하루':l.title;$('#contextTrack').textContent=legacy?'자유':c.track;$('#eventContext').disabled=!!st.session;

@@ -24,10 +24,6 @@ html,body{touch-action:pan-x pan-y}button,a,input,select,textarea{touch-action:m
 .gameHeader .teacherRank[data-digits="3"] .levelDigits{font-size:23px;letter-spacing:-1.2px}
 .gameHeader .teacherRank[data-digits="4"] .levelDigits{font-size:18px;letter-spacing:-1px}
 .gameHeader .teacherRank[data-digits="5"] .levelDigits{font-size:15px;letter-spacing:-.8px}
-.starLine>b.levelMark{min-height:27px;padding:5px 9px 5px 8px;border:1px solid #ffffffb0;border-radius:6px 10px 6px 10px;background:#315c71e8;color:#f4ffff;box-shadow:0 2px 6px #34566816}
-.starLine>b.levelMark .levelDigits{font-size:18px}
-.academyLevel.levelMark{min-height:28px;padding:6px 8px;gap:4px;border:1px solid #ffffffdc;border-radius:6px 10px 6px 10px;background:#fafffff2;color:#365d70;box-shadow:0 2px 8px #36586712;backdrop-filter:blur(8px)}
-.academyLevel.levelMark .levelDigits{font-size:17px}.academyLevel.levelMark .levelLabel{font-size:7px;letter-spacing:.7px}
 @media(max-width:360px){.gameHeader .teacherRank{flex-basis:40px;width:40px;min-width:40px;height:42px}.gameHeader .teacherRank .levelDigits{font-size:25px}}
 
 .academyStats[data-mode=students] .academySummary{min-height:62px;box-sizing:border-box;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding:14px 17px;margin-bottom:14px}
