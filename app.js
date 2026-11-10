@@ -1,4 +1,4 @@
-import {createLobbyController} from './lobby-controller.js?v=20261110';
+import {createLobbyController} from './lobby-controller.js?v=20261110b';
 import {pickCharacterLine,characterDialogueBanks} from './character-dialogue.js?v=20261110';
 import {teacherProfile,teacherName,teacherAddress,personalize,saveTeacher,teacherLevel,preventAppZoom} from './teacher-profile.js?v=20261110';
 import {linkedLabel} from './linked-study.js?v=20261110';
