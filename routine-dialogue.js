@@ -1,7 +1,9 @@
 import {schedule} from './schedule-data.js';
-import {mealPool} from './meal-dialogue.js';
+import {mealPool} from './meal-dialogue.js?v=20261110ritsu';
 // Character voices for the user's 05:00–24:00 routine. No attendance or meal is assumed.
+import {ritsuRoutine} from './ritsu-dialogue.js?v=20261110ritsu';
 export const routineLines={
+ ritsu:ritsuRoutine,
  haru:{
   sleep:['하루는 이제 눈이 감겨… 우리 자고 나서 다시 만나자.','아직 깨어 있었어? 남은 건 아침의 우리한테 맡기자. 잘 자!'],
   wake:['일어났어? 헤헤, 나도 일어났어. 물 한 잔 마시고 천천히 준비하자!','좋은 아침! 아직 눈 안 떠지지? 아침밥부터 챙기고 여섯 시 반에 만나자.'],
@@ -78,7 +80,7 @@ export function routinePool(student,ctx,growth){
  const lines=[...bank[special||ctx.phase]];
  if(ctx.phase==='morning'&&ctx.next){
   const title=ctx.next.title,time=ctx.next.time;
-  lines.push({haru:`오늘 첫 수업은 ${time}, 「${title}」이네! 시작 전에 낯선 말만 살짝 보고 갈까?`,nagi:`첫 수업이 ${time}에 있네. 「${title}」… 제목부터 천천히 훑어볼까?`,shiori:`첫 수업은 ${time}, 「${title}」야. 지금은 미리 훑고 궁금한 곳만 표시해 둬.`,rei:`${time}에 「${title}」 수업이 있네. 먼저 훑어보고, 무엇을 확인할지 정해 보자.`}[student]||lines[0]);
+  lines.push({ritsu:`첫 수업은 ${time}, 「${title}」네. 시작 전에 궁금한 것만 표시해 두자.`,haru:`오늘 첫 수업은 ${time}, 「${title}」이네! 시작 전에 낯선 말만 살짝 보고 갈까?`,nagi:`첫 수업이 ${time}에 있네. 「${title}」… 제목부터 천천히 훑어볼까?`,shiori:`첫 수업은 ${time}, 「${title}」야. 지금은 미리 훑고 궁금한 곳만 표시해 둬.`,rei:`${time}에 「${title}」 수업이 있네. 먼저 훑어보고, 무엇을 확인할지 정해 보자.`}[student]||lines[0]);
  }
  if(student==='haru'&&['review','evening'].includes(ctx.phase)&&growth?.totalDuration>0&&growth.cycles<5){
   const done=new Set(growth.done||[]),candidate=[1,2,6].flatMap(lecture=>['Wiki','J','JBL'].map(track=>({lecture,track}))).find(x=>!done.has(`${x.lecture}:${x.track}`));

@@ -1,6 +1,6 @@
-import {illustratedStudents} from './character-data.js';
-import {createCharacter} from './renderer.js?v=20261110';
-import {appearanceFor} from './wardrobe-service.js';
+import {illustratedStudents} from './character-data.js?v=20261110ritsu';
+import {createCharacter} from './renderer.js?v=20261110ritsu';
+import {appearanceFor} from './wardrobe-service.js?v=20261110ritsu';
 import {teacherProfile,saveTeacher} from './teacher-profile.js?v=20261110';
 export function createLobbyController({getStudents,onSelect,onReady,onMotionChange,openModal,closeModal}){
  const $=s=>document.querySelector(s);let selected=teacherProfile().lobby,model=null,controller=null,generation=0,lastSwipe=0,presented=false;

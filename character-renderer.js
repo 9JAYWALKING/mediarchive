@@ -1,6 +1,6 @@
-import {expressionRigs,expressionNames,expressionPose,faceTransform,expressionFragment} from './expressions.js?v=8';
-import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js';
-import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js';
+import {expressionRigs,expressionNames,expressionPose,faceTransform,expressionFragment} from './expressions.js?v=20261110ritsu';
+import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261110ritsu';
+import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261110ritsu';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
 export async function createCharacter(canvas, options={}){
@@ -50,9 +50,13 @@ export async function createCharacter(canvas, options={}){
   faceTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);
   gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.activeTexture(gl.TEXTURE0);
-  if(faceRig){const map=faceTransform(faceRig);gl.uniform3fv(gl.getUniformLocation(program,'u_mapX'),map[0]);gl.uniform3fv(gl.getUniformLocation(program,'u_mapY'),map[1]);for(const [i,name] of ['u_left','u_right','u_mouth'].entries())gl.uniform2fv(gl.getUniformLocation(program,name),faceRig.target[i]);}
-  if(faceRig){const [left,right]=faceRig.target;gl.uniform4fv(gl.getUniformLocation(program,'u_fringe'),[left[0]-85,Math.min(left[1],right[1])-125,right[0]+85,Math.max(left[1],right[1])+20]);}
-  gl.uniform4fv(gl.getUniformLocation(program,'u_protect'),faceRig?.protect||[0,0,0,0]);
+  function alignFace(outfit){
+   const rig=faceRig?{...faceRig,...faceRig.outfits?.[outfit]}:null;
+   gl.uniform2fv(gl.getUniformLocation(program,'u_artSize'),rig?.size||[1199,1312]);
+   if(rig){const map=faceTransform(rig);gl.uniform3fv(gl.getUniformLocation(program,'u_mapX'),map[0]);gl.uniform3fv(gl.getUniformLocation(program,'u_mapY'),map[1]);for(const [i,name] of ['u_left','u_right','u_mouth'].entries())gl.uniform2fv(gl.getUniformLocation(program,name),rig.target[i]);const [left,right]=rig.target;gl.uniform4fv(gl.getUniformLocation(program,'u_fringe'),[left[0]-85,Math.min(left[1],right[1])-125,right[0]+85,Math.max(left[1],right[1])+20]);}
+   gl.uniform4fv(gl.getUniformLocation(program,'u_protect'),rig?.protect||[0,0,0,0]);
+  }
+  alignFace(appearance?.id||'uniform');
   let faceLoad=null;
   function loadFaces(){if(!faceRig)return Promise.resolve(false);if(faceLoad)return faceLoad;faceLoad=(async()=>{try{const art=new Image();art.src=new URL(`expressions/${options.personality||'haru'}-v1.png`,manifestURL).href;await art.decode();if(disposed||contextLost)return false;gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.activeTexture(gl.TEXTURE0);facesReady=true;canvas.dataset.expressions='ready';requestDraw();return true;}catch{canvas.dataset.expressions='unavailable';return false;}})();return faceLoad;}
   function setExpression(name,{duration=0}={}){if(!expressionNames.includes(name)||disposed)return;acting.set(name,activeTime,duration);loadFaces().then(requestDraw);requestDraw();}
@@ -60,6 +64,7 @@ export async function createCharacter(canvas, options={}){
   function autoExpression(){acting.auto(activeTime);requestDraw();}
   gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.disable(gl.DEPTH_TEST);
   const profiles={
+   ritsu:{speed:.56,breath:1.12,head:.29,body:.34,hair:.56,lag:2.4,damping:3.8,look:.48,react:.65,hold:1.8,blink:4,open:.18},
    haru:{speed:.72,breath:1.45,head:.34,body:.55,hair:.68,lag:2.5,damping:4.5,look:.65,react:.9,hold:1.5,blink:3.2,open:.16},
    nagi:{speed:.57,breath:1.12,head:.34,body:.55,hair:.68,lag:2.5,damping:3.1,look:.48,react:.7,hold:2,blink:4,open:.20},
    shiori:{speed:.76,breath:1.30,head:.29,body:.36,hair:.5,lag:3.4,damping:5.1,look:.60,react:.76,hold:1.4,blink:3.5,open:.15},
@@ -78,7 +83,7 @@ export async function createCharacter(canvas, options={}){
     if(disposed||contextLost||request!==appearanceRequest)return false;
     if(art.naturalWidth!==img.naturalWidth||art.naturalHeight!==img.naturalHeight)throw Error('복장 크기가 맞지 않아요.');
     const replacement=makeTexture(art),oldTexture=texture;texture=replacement;gl.deleteTexture(oldTexture);
-    img=art;textureURL=url;appearance=next;
+    img=art;textureURL=url;appearance=next;alignFace(next.id);
     canvas.dataset.outfit=next.id;canvas.dataset.outfitLoading='false';delete canvas.dataset.outfitError;
     options.onAppearanceChange?.(next);requestDraw();return true;
    }catch{

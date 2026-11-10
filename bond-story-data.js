@@ -1,3 +1,4 @@
+import {ritsuStories} from './ritsu-stories.js?v=20261110ritsu';
 // Authored, converging conversations. Choices change the reply, never rewards or ending.
 const line=(speaker,text,expression='smile')=>({speaker,text,expression});
 const narration=text=>line('narrator',text,'calm');
@@ -11,6 +12,7 @@ const S=(text,expression)=>line('shiori',text,expression);
 const R=(text,expression)=>line('rei',text,expression);
 
 export const bondStories=[
+ ...ritsuStories,
  event('haru',10,'지우개를 돌려주는 방법','morning','left',{
   intro:['네 지우개, 내 필통에 들어 있었어!','교실에 있어. 찾으러 올래?'],
   choices:[{text:'어쩐지 안 보이더라. 지금 갈게.',reply:['내가 챙길 때 같이 넣었나 봐. 미안!','대신 깨끗하게 닦아 놨어.']},{text:'응, 가는 김에 같이 좀 앉아 있어도 돼?',reply:['당연하지! 옆자리 비어 있어.','지우개도, 나도 기다리는 중!']}],

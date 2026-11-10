@@ -30,4 +30,5 @@ export const illustratedStudents=[
   '그렇게 빤히 보면 나도 신경 쓰이는데.',
   '여기서는… 그렇게 격식 차리지 않아도 돼.'
  ]}
+ ,{id:'ritsu',name:'리츠',roman:'RITSU',subject:'심전도·전도·기기',grade:2,role:'방송부 · 음향 담당',color:'#6e9fbe',portrait:'./assets/ritsu-v1.png',model:'./assets/ritsu.model3.json',accessory:'박자 이어커프',trait:'정확한 간격',relation:'이부키 · 방송부',relations:[{id:'ibuki',label:'방송부 콤비'},{id:'haru',label:'기초와 해석'}],profile:'작은 차이를 먼저 알아채는 2학년 방송부원. 조용히 웃긴 말을 하고, 상대가 웃을 때까지 조금 기다린다. 오래된 노래와 손수 고친 이어폰을 아낀다.',greeting:'왔어? …의자 소리로 알았어.',lines:['이어커프? 가까이서 보면 작은 파란 선이 있어.','방금 농담이었어. 늦게 웃어도 괜찮아.','조용하다고 안 삐지는 건 아니거든.','이부키가 떠들면 나는 소리를 맞춰. 서로 할 일이 있는 거지.','네 발소리는 이제 구별돼. 오늘도 맞혔어.','잠깐 더 앉아 있다 가자. 꼭 할 얘기가 있어야 하는 건 아니잖아.']}
 ];

@@ -1,4 +1,4 @@
-import {illustratedStudents} from './character-data.js';
+import {illustratedStudents} from './character-data.js?v=20261110ritsu';
 import {outfitLabels} from './wardrobe-engine.js';
 
 export function outfitFor(studentId,id='uniform'){

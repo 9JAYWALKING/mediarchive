@@ -1,6 +1,8 @@
+import {ritsuHome} from './ritsu-dialogue.js?v=20261110ritsu';
 // Home-only performances; explicit study actions retain their own acknowledgement.
 const lines=text=>text.trim().split('\n').map(row=>{const at=row.indexOf('|');return Object.freeze({expression:row.slice(0,at),text:row.slice(at+1)});});
 export const homeDialogue={
+ ritsu:ritsuHome,
  haru:{
   greeting:lines(`happy|왔어? 가방부터 내려놔! 오늘은 여기서 뒹굴뒹굴할 거야.
 smile|집에 오니까 갑자기 졸려… 아까까진 멀쩡했는데!

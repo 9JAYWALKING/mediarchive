@@ -1,8 +1,9 @@
-import {bondStories} from './bond-story-data.js?v=20261110stories';
-import {bondStory,bondStudents,bondLevel,normalizeBondStories,mergeBondStories,unlockBondStories,changeBondStory,storyTimeline,storyUnread} from './bond-story-engine.js?v=20261110stories';
-import {illustratedStudents} from './character-data.js';
+import {bondStories} from './bond-story-data.js?v=20261110ritsu';
+import {outfitFor} from './wardrobe-data.js?v=20261110ritsu';
+import {bondStory,bondStudents,bondLevel,normalizeBondStories,mergeBondStories,unlockBondStories,changeBondStory,storyTimeline,storyUnread} from './bond-story-engine.js?v=20261110ritsu';
+import {illustratedStudents} from './character-data.js?v=20261110ritsu';
 import {sceneAssets} from './scene-assets.js';
-import {createCharacter} from './renderer.js?v=20261110';
+import {createCharacter} from './renderer.js?v=20261110ritsu';
 import {splitDialogue} from './dialogue-pages.js';
 import {teacherAddress,personalize} from './teacher-profile.js?v=20261110';
 
@@ -40,7 +41,7 @@ export function createBondStoryUI({getBond,beforeOpen=()=>{},onChange=()=>{},toa
   const s=student(story.student);dialog.style.setProperty('--bond-accent',s.color);dialog.setAttribute('aria-label',s.name+' 인연 이야기');
   dialog.innerHTML='<div class="bondBackdrop"></div><div class="bondPortrait"><img alt=""><canvas aria-label="학생 표정"></canvas></div><div class="bondPanorama" hidden><img alt=""><button class="bondPanControl" aria-label="장면 움직임 멈추기">Ⅱ</button><div class="bondArtError" hidden><p>그림을 불러오지 못했어.</p><button>다시 시도</button></div></div><header class="bondHeader"><span></span><button class="bondClose" aria-label="나중에">×</button></header><section class="bondDialogue"><div class="bondSpeaker"></div><p class="bondLine" aria-live="polite"></p><div class="bondOptions"></div><button class="bondNext" aria-label="다음 대사">›</button></section><div class="bondBlackout" aria-hidden="true"></div>';
   $('.bondBackdrop').style.backgroundImage=`url("${sceneAssets[story.scene].src}")`;
-  $('.bondPortrait img').src=s.portrait;$('.bondPortrait img').alt=s.name;$('.bondHeader span').textContent=s.name;
+  $('.bondPortrait img').src=outfitFor(s.id,story.outfit||'uniform')?.portrait||s.portrait;$('.bondPortrait img').alt=s.name;$('.bondHeader span').textContent=s.name;
   $('.bondClose').onclick=()=>dialog.close();$('.bondNext').onclick=next;$('.bondLine').onclick=next;
   $('.bondPanControl').onclick=()=>{const img=$('.bondPanorama>img'),paused=img.style.animationPlayState==='paused';img.style.animationPlayState=paused?'running':'paused';$('.bondPanControl').textContent=paused?'Ⅱ':'▷';$('.bondPanControl').setAttribute('aria-label',paused?'장면 움직임 멈추기':'장면 움직임 재개');};
   artReady=false;const art=$('.bondPanorama>img');art.onload=()=>{artReady=true;measureArt();$('.bondArtError').hidden=true;};art.onerror=()=>{$('.bondArtError').hidden=false;};$('.bondArtError button').onclick=()=>{art.src=story.art+'?retry='+Date.now();};art.src=story.art;art.alt=s.name+'와의 추억'+story.index;art.style.animationDirection=story.pan==='right'?'reverse':'normal';
@@ -50,7 +51,7 @@ export function createBondStoryUI({getBond,beforeOpen=()=>{},onChange=()=>{},toa
  async function open(id){
   const e=entry(id),story=bondStory(id);if(!e||e.dmChoice===null||e.completedAt||!story)return;
   beforeOpen();if(!act(id,'start'))return;opener=document.activeElement;stop();active=id;page=0;currentBeat=null;build(story);dialog.showModal();dialog.classList.add('is-entering');const gen=generation;setTimeout(()=>{if(gen===generation)dialog.classList.remove('is-entering');},550);renderBeat();$('.bondClose').focus();
-  controller=new AbortController();try{const instance=await createCharacter($('.bondPortrait canvas'),{manifest:student(story.student).model,personality:story.student,outfit:'uniform',framing:'portrait',visibilityRoot:dialog,isVisible:()=>dialog.open&&!dialog.classList.contains('is-highlight')&&!dialog.classList.contains('is-award')&&generation===gen,signal:controller.signal,releaseContext:true,onError:()=>{if(generation===gen){$('.bondPortrait img').hidden=false;$('.bondPortrait canvas').hidden=true;}}});if(gen!==generation||!dialog.open){instance.destroy();return;}model=instance;$('.bondPortrait img').hidden=true;perform();}catch(error){if(gen===generation&&dialog.open)$('.bondPortrait canvas').hidden=true;}
+  controller=new AbortController();try{const instance=await createCharacter($('.bondPortrait canvas'),{manifest:student(story.student).model,personality:story.student,outfit:story.outfit||'uniform',framing:'portrait',visibilityRoot:dialog,isVisible:()=>dialog.open&&!dialog.classList.contains('is-highlight')&&!dialog.classList.contains('is-award')&&generation===gen,signal:controller.signal,releaseContext:true,onError:()=>{if(generation===gen){$('.bondPortrait img').hidden=false;$('.bondPortrait canvas').hidden=true;}}});if(gen!==generation||!dialog.open){instance.destroy();return;}model=instance;$('.bondPortrait img').hidden=true;perform();}catch(error){if(gen===generation&&dialog.open)$('.bondPortrait canvas').hidden=true;}
  }
  function pages(){return splitDialogue(personalize(currentBeat?.text||''),62);}
  function perform(){if(!currentBeat)return;if(['teacher','narrator'].includes(currentBeat.speaker)){model?.setExpression(currentBeat.expression||'smile');return;}model?.speak({text:pages()[page],expression:currentBeat.expression||'smile'},pages()[page]);}
@@ -83,5 +84,5 @@ export function createBondStoryUI({getBond,beforeOpen=()=>{},onChange=()=>{},toa
  }
  function viewArt(story){if(!entry(story.id)?.completedAt)return;opener=document.activeElement;stop();active=null;dialog.innerHTML='';dialog.classList.add('is-gallery');dialog.setAttribute('aria-label',student(story.student).name+'와의 추억'+story.index);const close=node('button','×','bondClose');close.setAttribute('aria-label','닫기');close.onclick=()=>dialog.close();const img=node('img',undefined,'bondGalleryArt');img.src=story.art;img.alt=student(story.student).name+'와의 추억'+story.index;dialog.append(img,close);dialog.showModal();close.focus();}
  window.addEventListener('storage',event=>{if(event.key!==KEY||!event.newValue)return;try{state=mergeBondStories(state,JSON.parse(event.newValue));onChange();}catch{}});
- return {tick,entries,latest,markRead,renderMessages,gallery,open,unread:id=>state.events.filter(e=>!id||bondStory(e.id).student===id).reduce((n,e)=>n+storyUnread(e),0),export:()=>structuredClone(state),import(raw){if(!raw)return true;if(raw.version!==1||!Array.isArray(raw.events)||raw.events.length>12)return false;return save(mergeBondStories(state,raw));},get state(){return state;}};
+ return {tick,entries,latest,markRead,renderMessages,gallery,open,unread:id=>state.events.filter(e=>!id||bondStory(e.id).student===id).reduce((n,e)=>n+storyUnread(e),0),export:()=>structuredClone(state),import(raw){if(!raw)return true;if(raw.version!==1||!Array.isArray(raw.events)||raw.events.length>bondStories.length)return false;return save(mergeBondStories(state,raw));},get state(){return state;}};
 }

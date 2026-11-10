@@ -1,6 +1,6 @@
-import {bondStories} from './bond-story-data.js?v=20261110stories';
+import {bondStories} from './bond-story-data.js?v=20261110ritsu';
 
-export const bondStudents=['haru','nagi','shiori','rei'];
+export const bondStudents=['haru','nagi','shiori','rei','ritsu'];
 const stamp=n=>Number.isFinite(n)&&n>0?Math.floor(n):0;
 export const bondStory=id=>bondStories.find(s=>s.id===id);
 export const bondLevel=score=>1+Math.floor(Math.max(0,Number(score)||0)/100);

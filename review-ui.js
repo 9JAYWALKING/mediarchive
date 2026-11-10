@@ -1,10 +1,10 @@
 import {normalizeReview,queueReview,answerReview,pendingQuestion,reviewQuestion,reviewSummary,mergeReview} from './review-engine.js?v=20261110';
-import {reviewReaction} from './review-dialogue.js';
-import {illustratedStudents} from './character-data.js';
+import {reviewReaction} from './review-dialogue.js?v=20261110ritsu';
+import {illustratedStudents} from './character-data.js?v=20261110ritsu';
 import {defaultStudents} from './planner-catalog.js';
 import {splitDialogue} from './dialogue-pages.js';
-import {appearanceFor} from './wardrobe-service.js';
-import {createCharacter} from './renderer.js?v=20261110';
+import {appearanceFor} from './wardrobe-service.js?v=20261110ritsu';
+import {createCharacter} from './renderer.js?v=20261110ritsu';
 const KEY='heart-companion-v1-reviews';
 export function createReviewUI({getBond,onChange=()=>{},onReaction=()=>{},beforeOpen=()=>{},toast}){
  let state;try{state=normalizeReview(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{state=normalizeReview(null);}

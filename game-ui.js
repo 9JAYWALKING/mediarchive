@@ -6,10 +6,10 @@ import {accessoryFor} from './accessory-art.js?v=20261110';
 import {schedule} from './schedule-data.js';
 import {tracks,haruLessons,koreanDate,validDate,examCountdown,normalizePreferences,normalizeChoice,shiftDate} from './game-state.js';
 
-import {illustratedStudents} from './character-data.js';
-import {createCharacterViewer} from './character-viewer.js?v=20261110hometalk';
+import {illustratedStudents} from './character-data.js?v=20261110ritsu';
+import {createCharacterViewer} from './character-viewer.js?v=20261110ritsu';
 import {storiesFor} from './character-stories.js';
-import {createStatisticsUI} from './statistics-ui.js?v=20261110studentlevel';
+import {createStatisticsUI} from './statistics-ui.js?v=20261110ritsu';
 import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261110rank';
 const KEY='heart-companion-shell-v1';
 export function createGameUI({bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
@@ -60,7 +60,7 @@ export function createGameUI({bondEvents,getLobby=()=> 'haru',getStudentGrowth,o
   if(art){appendPortraitAction(id);const home=node('button','홈에 설정','portraitAction lobbySet');home.onclick=()=>{onLobby(id);show('home');};body.append(home);}
   const accessory=accessoryFor(id),g=getStudentGrowth(id);if(accessory){const card=node('section',undefined,'accessoryCard refinedAccessory'),img=node('img');img.src=accessory.src;img.alt=accessory.name;const copy=node('div');copy.append(node('b',accessory.name),node('small',g.stars>=3?'고유 악세사리':'★★★ 해금'));card.append(img,copy,node('span','★'.repeat(g.accessory)+'☆'.repeat(2-g.accessory)));body.append(card);}
   if(detail){detail.classList.add('infoCard');body.append(detail);}
-  if(art){for(const link of art.relations||[]){const b=node('button',undefined,'relationButton');b.append(node('span',illustratedStudents.find(s=>s.id===link.id)?.name||''),node('small',link.label+' ›'));b.onclick=()=>{studentDetail=link.id;render();body.scrollTop=0;};body.append(b);}const profile=node('section',undefined,'infoCard characterProfile');profile.append(node('h3','소개'),node('p',art.profile));body.append(profile);appendStories(id);bondEvents?.gallery(body,id);}
+  if(art){for(const link of art.relations||[]){const b=node('button',undefined,'relationButton');b.append(node('span',planner.state.settings.students.find(s=>s.id===link.id)?.name||link.id),node('small',link.label+' ›'));b.onclick=()=>{studentDetail=link.id;render();body.scrollTop=0;};body.append(b);}const profile=node('section',undefined,'infoCard characterProfile');profile.append(node('h3','소개'),node('p',art.profile));body.append(profile);appendStories(id);bondEvents?.gallery(body,id);}
  }
 
  function appendPortraitAction(id){const button=node('button',undefined,'portraitAction');button.innerHTML=icon('play')+'<span>감상</span>';button.onclick=()=>characterViewer.open(id);body.append(button);}
@@ -75,7 +75,7 @@ export function createGameUI({bondEvents,getLobby=()=> 'haru',getStudentGrowth,o
   const profile=node('section',undefined,'infoCard characterProfile');profile.append(node('h3','소개'),node('p',student.profile),node('p',student.trait,'profileTrait'));body.append(profile);
   const shapes={ribbon:'<path d="M23 18C8 3 1 16 6 22c5 5 12 0 17-4Zm2 0C40 3 47 16 42 22c-5 5-12 0-17-4ZM20 22l-5 15 7-3 2-13 2 13 7 3-5-15"/><path d="M24 32c-9 10-6 14 0 14s9-4 0-14Z"/>',bookmark:'<path d="M15 7h18v35l-9-7-9 7Z"/><circle cx="24" cy="14" r="4"/><path d="M20 24h8"/>',frame:'<rect x="9" y="5" width="30" height="38" rx="3"/><rect x="14" y="10" width="20" height="28" rx="2"/><path d="m17 32 7-8 8 8"/>'};
   const accessory=node('section',undefined,'infoCard profileAccessory');accessory.style.setProperty('--character-accent',student.color);accessory.innerHTML='<svg class="profileAccessoryIcon" aria-hidden="true" viewBox="0 0 48 48">'+shapes[student.accessoryIcon]+'</svg><div><b>'+student.accessory+'</b><small>고유 악세사리</small></div>';body.append(accessory);
-  for(const link of student.relations||[]){const relation=node('button',undefined,'relationButton');relation.append(node('span',illustratedStudents.find(x=>x.id===link.id).name),node('small',link.label+'  ›'));relation.onclick=()=>{studentDetail=link.id;render();body.scrollTop=0;};body.append(relation);}
+  for(const link of student.relations||[]){const relation=node('button',undefined,'relationButton');relation.append(node('span',planner.state.settings.students.find(x=>x.id===link.id)?.name||link.id),node('small',link.label+'  ›'));relation.onclick=()=>{studentDetail=link.id;render();body.scrollTop=0;};body.append(relation);}
   appendStories(id);
  }
  function renderSchedule(){

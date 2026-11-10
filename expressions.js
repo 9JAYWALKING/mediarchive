@@ -10,6 +10,7 @@ export function expressionPose(name){
  return {brow:i,eyes:i,mouth:i};
 }
 export const expressionRigs={
+ ritsu:{size:[1108,1420],protect:[738,355,35,52],target:[[473,365],[628,342],[562,453]],source:[[208,302],[337,287],[280,385]],outfits:{casual:{target:[[489,365],[642,342],[577,453]],protect:[755,354,36,52]},sleep:{target:[[475,365],[630,342],[565,453]],protect:[738,355,35,52]}}},
  haru:{target:[[495,353],[650,312],[590,444]],source:[[190,290],[313,258],[264,357]]},
  nagi:{target:[[519,334],[665,303],[608,408]],source:[[198,290],[326,271],[272,365]]},
  shiori:{target:[[525,347],[676,325],[614,430]],source:[[208,269],[327,253],[276,341]]},
@@ -21,7 +22,7 @@ export function faceTransform(rig){
  return [0,1].map(k=>{const [a,b,c]=rig.source.map(p=>p[k]);return [(a*(y2-y3)+b*(y3-y1)+c*(y1-y2))/d,(a*(x3-x2)+b*(x1-x3)+c*(x2-x1))/d,(a*(x2*y3-x3*y2)+b*(x3*y1-x1*y3)+c*(x1*y2-x2*y1))/d];});
 }
 export const expressionFragment=`precision mediump float;
-varying vec2 v_uv; uniform sampler2D u_texture; uniform sampler2D u_faces;
+varying vec2 v_uv; uniform sampler2D u_texture; uniform sampler2D u_faces; uniform vec2 u_artSize;
 uniform vec3 u_mapX; uniform vec3 u_mapY; uniform vec2 u_left; uniform vec2 u_right; uniform vec2 u_mouth;
 uniform vec4 u_fringe; uniform vec4 u_protect;
 uniform float u_browPose; uniform float u_eyePose; uniform float u_mouthPose; uniform float u_blink;
@@ -44,7 +45,7 @@ vec4 paint(float e,vec4 base,vec2 p,float mask){
 }
 void main(){
  vec4 base=texture2D(u_texture,v_uv);
- vec2 p=vec2(v_uv.x,1.0-v_uv.y)*vec2(1199.0,1312.0);
+ vec2 p=vec2(v_uv.x,1.0-v_uv.y)*u_artSize;
  float tear=step(4.5,u_browPose);
  // One continuous forehead region prevents split patches through the fringe.
  float fringe=smoothstep(u_fringe.x,u_fringe.x+22.0,p.x)*(1.0-smoothstep(u_fringe.z-22.0,u_fringe.z,p.x))*smoothstep(u_fringe.y,u_fringe.y+28.0,p.y)*(1.0-smoothstep(u_fringe.w-22.0,u_fringe.w,p.y));

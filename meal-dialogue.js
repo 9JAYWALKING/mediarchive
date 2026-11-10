@@ -1,5 +1,7 @@
 // Meal dialogue follows the configured schedule; it does not assert that the user ate.
+import {ritsuMeals} from './ritsu-dialogue.js?v=20261110ritsu';
 export const mealLines={
+ ritsu:ritsuMeals,
  haru:{
   before:['슬슬 밥 먹으러 갈까? 나 벌써 메뉴 고민 중이야!','십 분쯤 남았네. 여기까지만 보고 같이 나가자!','배에서 꼬르륵했지? …나였어. 곧 밥 먹으러 가자!'],
   during:['밥 먹는 동안엔 나 말고 접시 봐, 우우. 천천히 먹어!','네 자리 맡아 둘게! 밥부터 든든하게 챙기고 와.'],

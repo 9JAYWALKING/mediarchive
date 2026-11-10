@@ -1,7 +1,7 @@
 import {dialogueGroups} from './dialogue.js';
-import {routineLines} from './routine-dialogue.js';
-import {mealLines} from './meal-dialogue.js';
-import {illustratedStudents} from './character-data.js';
+import {routineLines} from './routine-dialogue.js?v=20261110ritsu';
+import {mealLines} from './meal-dialogue.js?v=20261110ritsu';
+import {illustratedStudents} from './character-data.js?v=20261110ritsu';
 import {characterStories} from './character-stories.js';
 
 const names={s:'smile',h:'happy',a:'angry',d:'disappointed',c:'cry',f:'soft',z:'sleepy',n:'calm'};
@@ -15,19 +15,21 @@ export const lobbyCues={
  sister:'s a h h f d n h',everyday:'h s s a a h h s',
  bond:'f s f d f s d f',encourage:'s n s s f s n s'
 };
-export const studentCues={haru:'a s h h',nagi:'s d f s s f',shiori:'n s f s d a a s s n s f',rei:'n a d a n s s f d s a f'};
+export const studentCues={haru:'a s h h',nagi:'s d f s s f',shiori:'n s f s d a a s s n s f',rei:'n a d a n s s f d s a f',ritsu:'s h a n f f'};
 export const storyCues={
  'lost-snack':'n h n n d n d a',
  'rabbit-stamp':'n n a f a s s f',
  'one-empty-slot':'n s n s n s s h d'
 };
 const routineCues={
+ ritsu:{sleep:'z z',wake:'s n',morning:'n s',class:'n n',lunch:'s f',break:'s n',review:'n n',dinner:'s n',evening:'s n',home:'n f',bed:'z f',pathology:'n',lateDinner:'n',firstEvening:'s',dayOff:'s'},
  haru:{sleep:'z s',wake:'h z',morning:'s h',class:'n a',lunch:'h s',break:'h s',review:'h s',dinner:'h a',evening:'s n',home:'s s',bed:'z f',pathology:'s',lateDinner:'s',firstEvening:'h',dayOff:'h'},
  nagi:{sleep:'z n',wake:'f z',morning:'s s',class:'n s',lunch:'s f',break:'s s',review:'n s',dinner:'s f',evening:'s z',home:'n s',bed:'z f',pathology:'n',lateDinner:'n',firstEvening:'s',dayOff:'s'},
  shiori:{sleep:'a n',wake:'s n',morning:'n a',class:'n a',lunch:'a s',break:'n s',review:'n n',dinner:'n s',evening:'n s',home:'n s',bed:'z n',pathology:'n',lateDinner:'n',firstEvening:'s',dayOff:'s'},
  rei:{sleep:'n z',wake:'s n',morning:'n s',class:'n n',lunch:'s n',break:'s n',review:'n n',dinner:'s f',evening:'n s',home:'n s',bed:'n f',pathology:'n',lateDinner:'n',firstEvening:'n',dayOff:'s'}
 };
 const mealCues={
+ ritsu:{before:'s n s',during:'n s',ending:'h n s',after1:'a z n',after2:'f n z'},
  haru:{before:'h s f',during:'a s',ending:'h s f',after1:'a z s',after2:'s a s'},
  nagi:{before:'s s n',during:'s f',ending:'f s s',after1:'z n s',after2:'s z s'},
  shiori:{before:'n a s',during:'n s',ending:'f n s',after1:'a n z',after2:'z n s'},
@@ -58,7 +60,7 @@ export function dialogueExpression(student,line){
  return 'smile';
 }
 
-const idleChoices={haru:['soft','calm','soft'],nagi:['soft','sleepy','soft'],shiori:['calm','soft','calm'],rei:['calm','soft','calm']};
+const idleChoices={haru:['soft','calm','soft'],nagi:['soft','sleepy','soft'],shiori:['calm','soft','calm'],rei:['calm','soft','calm'],ritsu:['calm','soft','calm']};
 export function createExpressionPerformance(student,{random=Math.random}={}){
  let cue=null,pinned=null,nextIdle=12000+random()*6000,idleUntil=0,idle='smile';
  function defer(now){idleUntil=0;nextIdle=now+12000+random()*8000;}

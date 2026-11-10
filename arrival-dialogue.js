@@ -1,4 +1,5 @@
 const lines={
+ ritsu:{expression:'disappointed',text:'…이제 왔네. 복도에서 소리 날 때마다 봤는데. 다음엔 기다리게 하지 마.'},
  haru:{expression:'angry',text:'왜 이제 와! 나 기다렸는데… 다음엔 조금만 일찍 와 줘.'},
  nagi:{expression:'cry',text:'나… 계속 기다렸어. 안 오는 줄 알고… 조금 울 뻔했어.'},
  shiori:{expression:'angry',text:'시계를 몇 번이나 봤는지 알아? 네 자리까지 정리해 뒀는데. …늦었어.'},

@@ -1,6 +1,6 @@
-import {wardrobeSettings,saveWardrobe,currentOutfit} from './wardrobe-service.js';
+import {wardrobeSettings,saveWardrobe,currentOutfit} from './wardrobe-service.js?v=20261110ritsu';
 import {wardrobeSettingsError,outfitLabels} from './wardrobe-engine.js';
-import {outfitFor} from './wardrobe-data.js';
+import {outfitFor} from './wardrobe-data.js?v=20261110ritsu';
 
 export function openWardrobeSettings({openModal,closeModal,toast}){
  const settings=wardrobeSettings();
