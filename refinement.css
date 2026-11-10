@@ -29,3 +29,7 @@ html,body{touch-action:pan-x pan-y}button,a,input,select,textarea{touch-action:m
 .academyLevel.levelMark{min-height:28px;padding:6px 8px;gap:4px;border:1px solid #ffffffdc;border-radius:6px 10px 6px 10px;background:#fafffff2;color:#365d70;box-shadow:0 2px 8px #36586712;backdrop-filter:blur(8px)}
 .academyLevel.levelMark .levelDigits{font-size:17px}.academyLevel.levelMark .levelLabel{font-size:7px;letter-spacing:.7px}
 @media(max-width:360px){.gameHeader .teacherRank{flex-basis:40px;width:40px;min-width:40px;height:42px}.gameHeader .teacherRank .levelDigits{font-size:25px}}
+
+.academyStats[data-mode=students] .academySummary{min-height:62px;box-sizing:border-box;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding:14px 17px;margin-bottom:14px}
+.academyStats[data-mode=students] .academySummary>small{flex-shrink:0;font-size:12px}
+.academyStats[data-mode=students] .academySummary>strong{min-width:0;font-size:25px;line-height:1.2;text-align:right;overflow-wrap:anywhere}

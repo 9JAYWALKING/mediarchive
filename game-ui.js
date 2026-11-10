@@ -9,7 +9,7 @@ import {tracks,haruLessons,koreanDate,validDate,examCountdown,normalizePreferenc
 import {illustratedStudents} from './character-data.js';
 import {createCharacterViewer} from './character-viewer.js?v=20261110';
 import {storiesFor} from './character-stories.js';
-import {createStatisticsUI} from './statistics-ui.js?v=20261110rank';
+import {createStatisticsUI} from './statistics-ui.js?v=20261110roster';
 import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261110rank';
 const KEY='heart-companion-shell-v1';
 export function createGameUI({bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
