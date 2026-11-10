@@ -1,5 +1,5 @@
-import {sceneAssets} from './scene-assets.js';
-export const dayPhases=[{id:'dawn',label:'새벽',start:300},{id:'morning',label:'아침',start:420},{id:'noon',label:'점심',start:660},{id:'afternoon',label:'오후',start:840},{id:'evening',label:'저녁',start:1020},{id:'night',label:'심야',start:1260}];
+import {sceneAssets} from './scene-assets.js?v=20261110home';
+export const dayPhases=[{id:'dawn',label:'새벽',start:300},{id:'morning',label:'아침',start:420},{id:'noon',label:'점심',start:660},{id:'afternoon',label:'오후',start:840},{id:'evening',label:'저녁',start:1020},{id:'night',label:'심야',start:1200},{id:'home',label:'휴식',start:1380}];
 export function worldTime(now=Date.now()){
  const local=new Date(now+9*3600000),minute=local.getUTCHours()*60+local.getUTCMinutes(),phase=[...dayPhases].reverse().find(x=>minute>=x.start)||dayPhases.at(-1);
  return {...phase,clock:`${String(local.getUTCHours()).padStart(2,'0')}:${String(local.getUTCMinutes()).padStart(2,'0')}`};

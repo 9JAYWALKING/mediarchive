@@ -5,6 +5,7 @@ export const sceneAssets={
  afternoon:{name:'온실',src:'./assets/scenes/garden-afternoon-v1.jpg'},
  evening:{name:'정원',src:'./assets/scenes/courtyard-evening-v1.jpg'},
  night:{name:'도서실',src:'./assets/scenes/library-night-v1.jpg'},
+ home:{name:'집',src:'./assets/scenes/home-night-v3.png'},
  desk:{name:'서기실',src:'./assets/scenes/quest-desk-v1.jpg'}
 };
 export function sceneStrip(id,className=''){

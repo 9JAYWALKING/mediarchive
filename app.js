@@ -25,7 +25,7 @@ import {createGrowthUI} from './growth-ui.js';
 import {configureRoutine,routineLine,configuredRoutineContext} from './routine-service.js';
 import {createMomoUI} from './momo-ui.js?v=20261110stories';
 import {createPlannerUI} from './planner-ui.js?v=20261110';
-import {startWorldTime} from './world-time.js?v=20261110';
+import {startWorldTime} from './world-time.js?v=20261110home';
 import {createQuestUI} from './quest-ui.js?v=2';
 const $=s=>document.querySelector(s),KEY='heart-companion-v1';let state=normalizeStudy(null),storageOK=true;
 try{state=normalizeStudy(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{storageOK=false;}
