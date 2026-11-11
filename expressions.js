@@ -1,3 +1,4 @@
+import {ritsuFaceRig} from './ritsu-face-rig.js?v=20261111ritsuExpressions';
 // Facial atlas registration: source eye/mouth landmarks align with the approved portrait.
 export const expressionNames=['neutral','smile','happy','angry','disappointed','cry','soft','sleepy','calm'];
 export const expressionLabels=['평소','미소','활짝','삐침','실망','울먹','눈웃음','나른','차분'];
@@ -9,8 +10,13 @@ export function expressionPose(name){
  if(i===8)return {brow:0,eyes:0,mouth:0};
  return {brow:i,eyes:i,mouth:i};
 }
+export function facialParts(student,name,{talking=false,blink='open'}={}){
+ const face=expressionPose(name),positive=['smile','happy','soft'].includes(name);
+ const mouth=talking?(student==='haru'?-1:student==='ritsu'&&!positive?face.mouth:2):face.mouth;
+ return {...face,mouth,blink:face.eyes===2||blink==='open'?-1:blink==='closed'?2:4,mouthScale:student==='ritsu'&&talking&&positive&&name!=='happy'?.76:1};
+}
 export const expressionRigs={
- ritsu:{size:[1108,1420],protect:[738,355,35,52],target:[[473,365],[628,342],[562,453]],source:[[208,302],[337,287],[280,385]],outfits:{casual:{target:[[489,365],[642,342],[577,453]],protect:[755,354,36,52]},sleep:{target:[[475,365],[630,342],[565,453]],protect:[738,355,35,52]}}},
+ ritsu:{size:[1108,1420],preserveHair:true,registered:true,protect:[738,355,35,52],...ritsuFaceRig.uniform,source:[[208,302],[337,287],[280,385]],outfits:{casual:{...ritsuFaceRig.casual,protect:[755,354,36,52]},sleep:{...ritsuFaceRig.sleep,protect:[738,355,35,52]}}},
  haru:{target:[[495,353],[650,312],[590,444]],source:[[190,290],[313,258],[264,357]]},
  nagi:{target:[[519,334],[665,303],[608,408]],source:[[198,290],[326,271],[272,365]]},
  shiori:{preserveHair:true,eyes:[[.790032,-.01309,.024466,.790127,209.5,272.1],[.786832,-.00909,-.006334,.770527,326.5,256.5]],target:[[525,347],[676,325],[614,430]],source:[[208,269],[327,253],[276,341]]},
@@ -27,6 +33,8 @@ uniform vec3 u_mapX; uniform vec3 u_mapY; uniform vec2 u_left; uniform vec2 u_ri
 uniform vec4 u_fringe; uniform vec4 u_protect;
 uniform float u_preserveHair;
 uniform vec3 u_eyeLeftX,u_eyeLeftY,u_eyeRightX,u_eyeRightY;
+uniform float u_registered,u_mouthScale;
+uniform vec3 u_browLeftX,u_browLeftY,u_browRightX,u_browRightY,u_mouthX,u_mouthY;
 uniform float u_browPose; uniform float u_eyePose; uniform float u_mouthPose; uniform float u_blink;
 float oval(vec2 p,vec2 c,vec2 r){return 1.0-smoothstep(.68,1.0,length((p-c)/r));}
 // Replace the original eyebrow as well as the eyelid. Keep the feathered edge
@@ -37,12 +45,17 @@ float eyePatch(vec2 p,vec2 c,float tear){
  float tears=tear*oval(p,c+vec2(0.0,30.0),vec2(57.0,57.0));
  return max(max(brow,eye),tears);
 }
-vec4 paint(float e,vec4 base,vec2 p,float mask,bool eyeFeature){
+vec4 paint(float e,vec4 base,vec2 p,float mask,int part){
  if(e<0.0)return base;
  vec2 at=vec2(dot(u_mapX,vec3(p,1.0)),dot(u_mapY,vec3(p,1.0)));
- bool feature=u_preserveHair>.5&&eyeFeature;
+ bool feature=u_preserveHair>.5&&part<2;
  vec2 eye=distance(p,u_left)<distance(p,u_right)?u_left:u_right;
  if(feature){vec3 local=vec3(p-eye,1.0);at=distance(p,u_left)<distance(p,u_right)?vec2(dot(u_eyeLeftX,local),dot(u_eyeLeftY,local)):vec2(dot(u_eyeRightX,local),dot(u_eyeRightY,local));}
+ if(u_registered>.5){
+  if(e==1.0)return base;
+  if(part==0){vec3 local=vec3(p-eye,1.0);at=distance(p,u_left)<distance(p,u_right)?vec2(dot(u_browLeftX,local),dot(u_browLeftY,local)):vec2(dot(u_browRightX,local),dot(u_browRightY,local));}
+  if(part==2){vec3 local=vec3((p-u_mouth)/u_mouthScale,1.0);at=vec2(dot(u_mouthX,local),dot(u_mouthY,local));}
+ }
  vec2 cell=vec2(mod(e,3.0),floor(e/3.0));
  vec2 uv=(at+cell*512.0)/vec2(1536.0,1024.0);uv.y=1.0-uv.y;
  vec4 ink=texture2D(u_faces,uv);
@@ -59,17 +72,22 @@ void main(){
  if(u_preserveHair>.5)faceMask=max(eyePatch(p,u_left,tear),eyePatch(p,u_right,tear));
  if(u_protect.z>0.0)faceMask*=smoothstep(.75,1.0,length((p-u_protect.xy)/u_protect.zw));
  
- vec4 face=paint(u_browPose,base,p,faceMask,u_preserveHair>.5);
+ vec4 face=paint(u_browPose,base,p,faceMask,0);
  float lids=max(1.0-smoothstep(.8,1.0,length((p-u_left)/vec2(78.0,39.0))),1.0-smoothstep(.8,1.0,length((p-u_right)/vec2(78.0,39.0))));
  float eyes=u_blink>=0.0?u_blink:u_eyePose;
  if(u_preserveHair>.5){
   if(u_blink<0.0&&(u_eyePose==1.0||u_eyePose==0.0))eyes=-1.0;
   lids=max(1.0-smoothstep(.9,1.0,length((p-u_left)/vec2(90.0,46.0))),1.0-smoothstep(.9,1.0,length((p-u_right)/vec2(90.0,46.0))));
 
-  if(u_browPose>4.5)lids=max(lids,max(oval(p,u_left+vec2(0.0,29.0),vec2(63.0,53.0)),oval(p,u_right+vec2(0.0,29.0),vec2(63.0,53.0))));
+  if(u_browPose>4.5&&u_blink<0.0)lids=max(lids,max(oval(p,u_left+vec2(0.0,29.0),vec2(63.0,53.0)),oval(p,u_right+vec2(0.0,29.0),vec2(63.0,53.0))));
  }
- face=paint(eyes,face,p,lids,true);
+ face=paint(eyes,face,p,lids,1);
+ // A blink replaces eyelids, not the tear tracks beneath them.
+ if(u_registered>.5&&u_browPose>4.5&&u_blink>=0.0){
+  float tears=max(oval(p,u_left+vec2(0.0,45.0),vec2(48.0,42.0))*smoothstep(u_left.y+27.0,u_left.y+31.0,p.y),oval(p,u_right+vec2(0.0,45.0),vec2(48.0,42.0))*smoothstep(u_right.y+27.0,u_right.y+31.0,p.y));
+  face=paint(u_browPose,face,p,tears,0);
+ }
  // A single mouth replaces the old one; jaw pixels always belong to the portrait.
  float mouth=1.0-smoothstep(.86,1.0,length((p-u_mouth)/vec2(70.0,42.0)));
- gl_FragColor=paint(u_mouthPose,face,p,mouth,false);
+ gl_FragColor=paint(u_mouthPose,face,p,mouth,2);
 }`;

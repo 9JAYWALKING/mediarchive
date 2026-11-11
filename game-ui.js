@@ -7,7 +7,7 @@ import {schedule} from './schedule-data.js';
 import {tracks,haruLessons,koreanDate,validDate,examCountdown,normalizePreferences,normalizeChoice,shiftDate} from './game-state.js';
 
 import {illustratedStudents} from './character-data.js?v=20261110ritsu';
-import {createCharacterViewer} from './character-viewer.js?v=20261110bondpolish';
+import {createCharacterViewer} from './character-viewer.js?v=20261111ritsuExpressions';
 import {storiesFor} from './character-stories.js';
 import {createStatisticsUI} from './statistics-ui.js?v=20261110ritsu';
 import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261110rank';

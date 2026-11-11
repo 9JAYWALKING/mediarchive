@@ -1,4 +1,4 @@
-import {expressionRigs,expressionNames,expressionPose,faceTransform,expressionFragment} from './expressions.js?v=20261110bondpolish';
+import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261111ritsuExpressions';
 import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261110ritsu';
 import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261110ritsu';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
@@ -50,8 +50,13 @@ export async function createCharacter(canvas, options={}){
   faceTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);
   gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.activeTexture(gl.TEXTURE0);
+  let rig=null;
+  const featureLocations=Object.fromEntries(['browLeft','browRight','eyeLeft','eyeRight','mouth'].flatMap(name=>['X','Y'].map(axis=>[name+axis,gl.getUniformLocation(program,'u_'+name+axis)])));
+  const mouthScaleLocation=gl.getUniformLocation(program,'u_mouthScale');
+  function featureMap(name,map){if(!map)return;const[a,b,c,d,x,y]=map;gl.uniform3f(featureLocations[name+'X'],a,b,x);gl.uniform3f(featureLocations[name+'Y'],c,d,y);}
   function alignFace(outfit){
-   const rig=faceRig?{...faceRig,...faceRig.outfits?.[outfit]}:null;
+   rig=faceRig?{...faceRig,...faceRig.outfits?.[outfit]}:null;
+   gl.uniform1f(gl.getUniformLocation(program,'u_registered'),rig?.registered?1:0);
    gl.uniform2fv(gl.getUniformLocation(program,'u_artSize'),rig?.size||[1199,1312]);
    gl.uniform1f(gl.getUniformLocation(program,'u_preserveHair'),rig?.preserveHair?1:0);
    if(rig?.eyes)for(const [i,side] of ['Left','Right'].entries()){const [a,b,c,d,x,y]=rig.eyes[i];gl.uniform3fv(gl.getUniformLocation(program,'u_eye'+side+'X'),[a,b,x]);gl.uniform3fv(gl.getUniformLocation(program,'u_eye'+side+'Y'),[c,d,y]);}
@@ -121,11 +126,13 @@ export async function createCharacter(canvas, options={}){
    set('ParamHairSway',motion?Math.max(-1,Math.min(1,hair)):0);
    // The baked eye compression stretched skin/eyelashes. Keep that mesh open.
    set('ParamEyeLOpen',1);model.update();
-   const face=expressionPose(pose.expression);
-   const blinkArt=face.eyes===2||blink==='open'?-1:blink==='closed'?2:4;
+   const face=facialParts(studentId,pose.expression,{talking:pose.talking,blink});
+   const blinkArt=face.blink;
+   if(rig?.registered){const eye=blinkArt>=0?blinkArt:face.eyes;for(const[i,side]of ['Left','Right'].entries()){featureMap('brow'+side,rig.features[i][face.brow]);featureMap('eye'+side,rig.features[i][eye]);}featureMap('mouth',rig.features[2][face.mouth]);}
+   gl.uniform1f(mouthScaleLocation,face.mouthScale);
    gl.uniform1f(faceLocations.browPose,facesReady?face.brow:-1);
    gl.uniform1f(faceLocations.eyePose,facesReady?face.eyes:-1);
-   gl.uniform1f(faceLocations.mouthPose,facesReady?(pose.talking?(studentId==='haru'?-1:2):face.mouth):-1);
+   gl.uniform1f(faceLocations.mouthPose,facesReady?face.mouth:-1);
    gl.uniform1f(faceLocations.blink,facesReady?blinkArt:-1);
    canvas.dataset.blink=blink;
    const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
