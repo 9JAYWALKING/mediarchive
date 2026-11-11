@@ -1,3 +1,4 @@
+import {createRecallUI} from './recall-ui.js?v=20261111recall';
 import {paintLevelBadge} from './level-badge.js?v=20261110rank';
 import {teacherAddress,teacherLevel} from './teacher-profile.js?v=20261110';
 import {studentGrowth} from './student-growth.js?v=20261110';
@@ -12,9 +13,10 @@ import {storiesFor} from './character-stories.js';
 import {createStatisticsUI} from './statistics-ui.js?v=20261110ritsu';
 import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261110rank';
 const KEY='heart-companion-shell-v1';
-export function createGameUI({bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
+export function createGameUI({beforeRecall=()=>{},bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
  const $=s=>document.querySelector(s),screen=$('#screen'),body=$('#screenContent');
  const characterViewer=createCharacterViewer();
+ const recall=createRecallUI({beforeOpen:beforeRecall,toast});
  let prefs;try{prefs=normalizePreferences(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{prefs=normalizePreferences(null);}
  let view='home',selectedDate=koreanDate(),studentDetail=false,lastDate='',dailySources=[],dailyCache=0,rankSources=[],rankCache=1;
  const statistics=createStatisticsUI({getLiveData:()=>({study:getState(),planner:planner.state}),getData:()=>({study:getState(),planner:planner.state,growth:getGrowth(),bond:getQuiz().score,quiz:getQuiz().export(),reviews:reviews.export(),quests:quests.state}),onProfile:id=>{show('students');studentDetail=id;render();body.scrollTop=0;},onPlan:id=>planner.edit({student:id})});
@@ -23,7 +25,7 @@ export function createGameUI({bondEvents,getLobby=()=> 'haru',getStudentGrowth,o
  function node(tag,text,className){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(className)el.className=className;return el;}
  function show(next){view=next;studentDetail=false;$('.phone').dataset.view=next;screen.hidden=next==='home';for(const b of document.querySelectorAll('[data-nav]')){const active=b.dataset.nav===next;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}if(next!=='home'){render();body.scrollTop=0;$('#screenTitle').focus();}}
  function title(text){$('#screenTitle').textContent=text;screen.dataset.section=view;}
- function render(){body.replaceChildren();if(view==='students')renderStudents();else if(view==='schedule')renderSchedule();else if(view==='records')renderRecords();else if(view==='momo')momo.render(body,title);else if(view==='quests'){title('퀘스트');quests.render(body);}}
+ function render(){body.classList.remove('recallPage');body.replaceChildren();if(view==='students')renderStudents();else if(view==='schedule')renderSchedule();else if(view==='recall')recall.render(body,title);else if(view==='records')renderRecords();else if(view==='momo')momo.render(body,title);else if(view==='quests'){title('퀘스트');quests.render(body);}}
  function activeChoice(){return normalizeChoice(getState().session?.context||prefs.choice);}
  function update(){
   const growth=getStudentGrowth(getLobby());$('.starLine>b').textContent='Lv. '+growth.level;$('.stars').textContent='★'.repeat(growth.stars)+'☆'.repeat(3-growth.stars);$('.stars').setAttribute('aria-label',`성급 ${growth.stars}성`);
@@ -91,9 +93,9 @@ export function createGameUI({bondEvents,getLobby=()=> 'haru',getStudentGrowth,o
  }
  function renderRecords(){title('기록');statistics.render(body,{historyOpen:true,mode:'records'});const list=document.createElement('details');list.className='reviewHistory';list.append(node('summary','마지막 질문'));for(const r of [...reviews.state.runs].reverse()){const first=r.qids.map(id=>r.answers.find(a=>a.qid===id)).filter(Boolean),b=node('button',`${r.name||'학생'} · ${r.lecture}강 · ${first.filter(a=>a.correct).length}/${r.qids.length}`,'reviewRetry');b.setAttribute('aria-label',b.textContent);b.onclick=()=>reviews.open(r.id);list.append(b);}body.append(list);}
  for(const b of document.querySelectorAll('[data-nav]'))b.onclick=()=>{if(b.dataset.nav==='momo')momo.reset();show(b.dataset.nav);};
- $('#screenBack').onclick=()=>{if(view==='momo'&&momo.back())return;if(view==='students'&&studentDetail){studentDetail=false;render();}else show('home');};
+ $('#screenBack').onclick=()=>{if(view==='momo'&&momo.back())return;if(view==='recall'&&recall.back())return;if(view==='students'&&studentDetail){studentDetail=false;render();}else show('home');};
  $('#examButton').onclick=examEditor;$('#eventContext').onclick=()=>launch();$('#quickQuest').onclick=()=>{quests.resetDate();show('quests');};$('#quickRest').onclick=()=>quests.restOpen();$('#quickSchedule').onclick=()=>show('schedule');
  update();
- return {show,update,launch,examEditor,showArrival:greeting=>characterViewer.open(greeting.student,null,greeting),openSchedule(date){if(validDate(date))selectedDate=date;show('schedule');},refreshPanel(){if(view!=='home'){const scroll=body.scrollTop;render();body.scrollTop=scroll;}},get view(){return view;},get examDate(){return prefs.examDate;},export:()=>structuredClone(prefs),import(raw){prefs=normalizePreferences(raw);persist();update();if(view!=='home')render();}};
+ return {recall,show,update,launch,examEditor,showArrival:greeting=>characterViewer.open(greeting.student,null,greeting),openSchedule(date){if(validDate(date))selectedDate=date;show('schedule');},refreshPanel(){if(view!=='home'){const scroll=body.scrollTop;render();body.scrollTop=scroll;}},get view(){return view;},get examDate(){return prefs.examDate;},export:()=>structuredClone(prefs),import(raw){prefs=normalizePreferences(raw);persist();update();if(view!=='home')render();}};
 }
 
