@@ -1,4 +1,4 @@
-import {overtimeState,overtimeLine} from './overtime-dialogue.js?v=20261111overtime';
+import {overtimeState,overtimeLine} from './overtime-dialogue.js?v=20261111nagiPromise';
 import {bondStories} from './bond-story-data.js?v=20261110ritsu';
 import {createBondStoryUI} from './bond-story-ui.js?v=20261111ritsuExpressions';
 import {createLobbyController} from './lobby-controller.js?v=20261111ritsuExpressions';
