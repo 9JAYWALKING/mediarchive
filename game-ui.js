@@ -1,4 +1,4 @@
-import {createRecallUI} from './recall-ui.js?v=20261111recall';
+import {createRecallUI} from './recall-ui.js?v=20261111walk';
 import {paintLevelBadge} from './level-badge.js?v=20261110rank';
 import {teacherAddress,teacherLevel} from './teacher-profile.js?v=20261110';
 import {studentGrowth} from './student-growth.js?v=20261110';
