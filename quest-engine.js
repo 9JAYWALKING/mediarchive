@@ -12,6 +12,7 @@ export function dailyQuestPolicy(date,lessons=schedule){
   [['morning','오전 공부',0,14,3],['afternoon','오후 공부',14,19,2],['evening','저녁 공부',19,24,3]]};
 }
 export function normalizeQuests(raw,now=Date.now()){
+ const overtime=new Map();for(const r of raw?.overtime||[]){if(typeof r?.key==='string'&&r.key.length<=240&&typeof r.student==='string'&&r.student.length<=100&&[2,4].includes(r.stage)&&Number.isFinite(r.at))overtime.set(r.key+':'+r.stage,{key:r.key,student:r.student,stage:r.stage,at:r.at});}
  const runs=new Map(),attendance={};
  for(const r of raw?.runs||[]){if(typeof r?.id!=='string'||r.id.length>220||!Number.isFinite(r.start)||!Number.isFinite(r.end)||r.end<r.start||r.end-r.start>7*24*HOUR)continue;const old=runs.get(r.id);runs.set(r.id,{id:r.id,start:Math.min(old?.start??r.start,r.start),end:Math.max(old?.end??r.end,r.end)});}
  for(const [date,at] of Object.entries(raw?.attendance||{}))if(validDate(date)&&Number.isFinite(at)&&koreanDate(at)===date&&at<dayStart(date)+dailyQuestPolicy(date).attendanceHour*HOUR)attendance[date]=at;
@@ -24,12 +25,12 @@ export function normalizeQuests(raw,now=Date.now()){
   const students=Array.isArray(r.students)?[...new Set(r.students.filter(id=>typeof id==='string'&&id.length>0&&id.length<=100))]:[];
   arrivals[date]={at:r.at,late,students:late?students:[],greeted:r.greeted===true};
  }
- return {version:1,arrivals,enabledAt:Number.isFinite(raw?.enabledAt)?raw.enabledAt:now,runs:[...runs.values()],attendance,rest,rests:[...rests.values()]};
+ return {version:1,arrivals,overtime:[...overtime.values()],enabledAt:Number.isFinite(raw?.enabledAt)?raw.enabledAt:now,runs:[...runs.values()],attendance,rest,rests:[...rests.values()]};
 }
 export function mergeQuests(a,b,now=Date.now()){
  const right=normalizeQuests(b,now),attendance={...a.attendance};for(const [d,t] of Object.entries(right.attendance))attendance[d]=Math.min(attendance[d]??t,t);
  const arrivals={...a.arrivals};for(const [d,r]of Object.entries(right.arrivals)){const old=arrivals[d];arrivals[d]=old?{...r,at:Math.min(old.at,r.at),students:[...new Set([...old.students,...r.students])],greeted:old.greeted||r.greeted}:r;}
- const result=normalizeQuests({arrivals,enabledAt:Math.min(a.enabledAt,right.enabledAt),runs:[...a.runs,...right.runs],attendance,rests:[...a.rests,...right.rests]},now);
+ const result=normalizeQuests({arrivals,overtime:[...(a.overtime||[]),...right.overtime],enabledAt:Math.min(a.enabledAt,right.enabledAt),runs:[...a.runs,...right.runs],attendance,rests:[...a.rests,...right.rests]},now);
  return {...result,rest:a.rest}; // Backups never start a rest or timer.
 }
 
@@ -40,6 +41,14 @@ export function recordArrival(state,students,now=Date.now()){
 }
 export function arrivalPenalty(state,student,now=Date.now()){
  const count=Object.entries(state?.arrivals||{}).filter(([date,r])=>date>=latePenaltyStarts&&r.late&&r.at<=now&&r.students.includes(student)).length;return count?-count:0;
+}
+export function recordOvertimePenalty(state,value,now=Date.now()){
+ if(!value||state.rest)return state;let overtime=state.overtime||[];
+ for(const stage of [2,4])if(value.stage>=stage&&!overtime.some(r=>r.key===value.key&&r.stage===stage))overtime=[...overtime,{key:value.key,student:value.student,stage,at:now}];
+ return overtime===state.overtime?state:{...state,overtime};
+}
+export function bondPenalty(state,student,now=Date.now()){
+ return arrivalPenalty(state,student,now)-(state.overtime||[]).filter(r=>r.student===student&&r.at<=now).reduce((n,r)=>n+(r.stage===2?1:2),0);
 }
 export function takeLateArrival(state,now=Date.now()){
  const date=koreanDate(now),arrival=state.arrivals?.[date];

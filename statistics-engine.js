@@ -1,5 +1,5 @@
 import {allocatedTargets} from './linked-study.js?v=20261110';
-import {arrivalPenalty} from './quest-engine.js?v=20261110';
+import {bondPenalty as arrivalPenalty} from './quest-engine.js?v=20261111overtime';
 import {reviewBond,reviewHistory} from './review-engine.js?v=20261110';
 import {reconcileGrowth,sessionTotals} from './growth-engine.js?v=20261110';
 import {studentGrowth} from './student-growth.js?v=20261110';

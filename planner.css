@@ -10,3 +10,5 @@
 .plannerNextRemaining{color:#36859a}
 
 .plannerNext .plannerNextMeta{align-items:center;gap:3px 10px}.plannerNext .plannerNextRemaining{font:700 16px/1.4 var(--numbers),var(--ui);letter-spacing:0}.plannerNext[data-overtime=true] .plannerNextRemaining{color:#b47b59;font-size:20px}.plannerNext .plannerNextRange{font-size:11px}
+
+.bottom .plannerNext{padding:5px 10px;min-height:30px;margin-bottom:6px;gap:8px}.plannerNext .plannerNextMeta{margin-top:0;gap:1px 8px}.plannerNext .plannerNextRemaining{line-height:1.2}.plannerNext[data-overtime=true] .plannerNextRemaining{font-weight:400;font-size:18px}.plannerNext .plannerNextTitle{line-height:1.25}

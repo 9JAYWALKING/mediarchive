@@ -1,4 +1,4 @@
-import {analyzeStatistics,durationText} from './statistics-engine.js?v=20261110rank';
+import {analyzeStatistics,durationText} from './statistics-engine.js?v=20261111overtime';
 import {illustratedStudents} from './character-data.js?v=20261110ritsu';
 import {schedule} from './schedule-data.js';
 import {koreanDate,shiftDate,validDate} from './game-state.js';

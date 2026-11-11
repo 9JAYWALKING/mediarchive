@@ -1,6 +1,6 @@
-import {normalizeQuests,mergeQuests,captureRun,checkAttendance,dailyQuests,weeklyQuests,weekStart,unionDuration,dayStart,dailyQuestPolicy,recordArrival,arrivalPenalty,takeLateArrival} from './quest-engine.js?v=20261110';
+import {normalizeQuests,mergeQuests,captureRun,checkAttendance,dailyQuests,weeklyQuests,weekStart,unionDuration,dayStart,dailyQuestPolicy,recordArrival,bondPenalty,recordOvertimePenalty,takeLateArrival} from './quest-engine.js?v=20261111overtime';
 import {koreanDate,shiftDate} from './game-state.js';
-import {durationText} from './statistics-engine.js?v=20261110';
+import {durationText} from './statistics-engine.js?v=20261111overtime';
 const KEY='heart-companion-quests-v1';
 export function createQuestUI({getStudy,getPlanner,pauseStudy,pausePlanner,openModal,closeModal,onPlan,onLine,onChange,toast}){
  let state;try{state=normalizeQuests(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{state=normalizeQuests(null);}
@@ -56,5 +56,5 @@ export function createQuestUI({getStudy,getPlanner,pauseStudy,pausePlanner,openM
  if(state.rest){pauseStudy();pausePlanner();}
  capture(Date.now(),true);setInterval(tick,1000);
  window.addEventListener('pagehide',()=>capture(Date.now(),true));document.addEventListener('visibilitychange',()=>capture(Date.now(),true));
- return {recordWalk(event){state=captureRun(state,event,event.student,event.at);persist();},render,restOpen,capture,tick,penalty:id=>arrivalPenalty(state,id),takeArrival(){const next=takeLateArrival(state);if(!next.event)return null;const previous=state;state=next.state;if(!persist()){state=previous;return null;}return next.event;},get resting(){return !!state.rest;},get state(){return state;},export(){capture(Date.now(),true);return structuredClone(state);},import(raw){if(!raw||raw.version!==1||!Array.isArray(raw.runs)||!raw.attendance)return false;state=mergeQuests(state,raw);const ok=persist();onChange();return ok;},resetDate(){followToday=true;date=koreanDate();}};
+ return {recordOvertime(value){const next=recordOvertimePenalty(state,value);if(next===state)return;const previous=state;state=next;if(!persist())state=previous;},recordWalk(event){state=captureRun(state,event,event.student,event.at);persist();},render,restOpen,capture,tick,penalty:id=>bondPenalty(state,id),takeArrival(){const next=takeLateArrival(state);if(!next.event)return null;const previous=state;state=next.state;if(!persist()){state=previous;return null;}return next.event;},get resting(){return !!state.rest;},get state(){return state;},export(){capture(Date.now(),true);return structuredClone(state);},import(raw){if(!raw||raw.version!==1||!Array.isArray(raw.runs)||!raw.attendance)return false;state=mergeQuests(state,raw);const ok=persist();onChange();return ok;},resetDate(){followToday=true;date=koreanDate();}};
 }
