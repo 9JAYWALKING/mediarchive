@@ -17,7 +17,7 @@ import {createLectureAdvice} from './lecture-advice.js?v=20261110ritsu';
 import {createClassCheckin} from './class-checkin.js?v=20261110ritsu';
 import {createCharacter} from './renderer.js?v=20261111ritsuExpressions';
 import {createQuizUI} from './quiz-ui.js';
-import {createGameUI} from './game-ui.js?v=20261111walkTime';
+import {createGameUI} from './game-ui.js?v=20261111rest';
 import {normalizeChoice} from './game-state.js';
 import {createDialogueDirector} from './dialogue.js';
 import {sessionTotals,summarizeGrowth,normalizeGrowth,growthReminder} from './growth-engine.js?v=20261110';
@@ -25,7 +25,7 @@ import {normalizeStudy,studySnapshot,mergeStudy} from './study-store.js';
 import {createGrowthUI} from './growth-ui.js';
 import {configureRoutine,routineLine,configuredRoutineContext} from './routine-service.js?v=20261110ritsu';
 import {createMomoUI} from './momo-ui.js?v=20261110ritsu';
-import {createPlannerUI} from './planner-ui.js?v=20261111walkTime';
+import {createPlannerUI} from './planner-ui.js?v=20261111rest';
 import {startWorldTime} from './world-time.js?v=20261110hometalk';
 import {createQuestUI} from './quest-ui.js?v=20261111walkTime';
 const $=s=>document.querySelector(s),KEY='heart-companion-v1';let state=normalizeStudy(null),storageOK=true;
@@ -54,13 +54,13 @@ function elapsed(){const f=planner?.focus;return f?f.elapsed+(f.started?Math.max
 function save(){try{localStorage.setItem(KEY,JSON.stringify(studySnapshot(state)));storageOK=true;return true;}catch{if(storageOK)toast('저장 공간 부족. 설정에서 기록을 내보내세요.');storageOK=false;return false;}}
 function checkpoint(){quests?.capture(Date.now(),true);if(state.session){const totals=sessionTotals(state.session);state.session.elapsed=totals.duration;state.session.previewElapsed=totals.preview;state.session.started=null;}}
 function format(ms){const seconds=Math.floor(ms/1000);return (seconds>=3600?String(Math.floor(seconds/3600)).padStart(2,'0')+':':'')+String(Math.floor(seconds/60)%60).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');}
-function refresh(){const session=state.session||planner?.focus,active=!!session;$('#start').hidden=active;$('#sessionActions').hidden=!active;$('#timer').textContent=format(elapsed());$('#sessionLabel').textContent=active?(session.started?'진행 중':'일시정지'):'대기';$('#pause').textContent=session?.started?'일시정지':'재개';renderBond();game?.update();bondEvents?.tick();}
+function refresh(){const session=state.session||planner?.focus,active=!!session;$('#start').hidden=active;$('#sessionActions').hidden=!active;$('#timer').textContent=format(elapsed());$('#sessionLabel').textContent=active?(session.started?'진행 중':'일시정지'):'대기';$('#pause').textContent=quests?.resting?'휴식 중':session?.started?'일시정지':'재개';renderBond();game?.update();bondEvents?.tick();}
 function selectStudying(id){if(!id)return;saveTeacher({lastStudy:id,lobby:id});if(lobby)lobby.select(id,{greet:false});game?.show('home');}
 
 function startSession(context,mode='new',planId,briefed=false){if(!canStudy(()=>startSession(context,mode,planId,briefed)))return;if(!briefed&&lectureAdviceUI.open(context,()=>startSession(context,mode,planId,true)))return;selectStudying('haru');state.session={id:crypto.randomUUID(),elapsed:0,previewElapsed:0,started:Date.now(),context:normalizeChoice(context),planId,cycle:getGrowth().cycle,mode};director.schedule(Date.now());save();refresh();speak('start');}
 $('#start').onclick=()=>game.launch();
 function resumeSession(){if(!state.session||!canStudy(resumeSession))return;state.session.started=Date.now();director.schedule(Date.now());save();refresh();speak('resume');}
-$('#pause').onclick=()=>{if(planner?.focus){if(planner.focus.started){planner.pauseForRest();speak('pause');}else{planner.resumeFocus();speak('resume');}refresh();return;}if(!state.session)return;if(state.session.started){checkpoint();speak('pause');save();refresh();}else resumeSession();};
+$('#pause').onclick=()=>{if(quests?.resting){quests.restOpen();return;}if(planner?.focus){if(planner.focus.started){planner.pauseForRest();speak('pause');quests.restOpen();}else{planner.resumeFocus();speak('resume');}refresh();return;}if(!state.session)return;if(state.session.started){checkpoint();speak('pause');save();refresh();quests.restOpen();}else resumeSession();};
 function canStudy(continuation,student='haru'){if(quests?.resting){quests.restOpen();return false;}return classCheckin?.allow(continuation,student)??true;}
 $('#finish').onclick=()=>{if(planner?.focus){planner.focusModal();return;}if(!state.session)return;checkpoint();save();refresh();growthUI.finish();};
 function commitEvent(event){
@@ -96,7 +96,7 @@ reviews=createReviewUI({beforeOpen:()=>{if(state.session?.started){checkpoint();
 lectureAdviceUI=createLectureAdvice({openModal:modal,closeModal:()=>$('#modal').close(),onLine:say});
 quiz=createQuizUI({onExpression:name=>{currentLobbyLine={...currentLobbyLine,expression:name};character?.speak(currentLobbyLine,lobbyDialogue.text);},getMemories:getHaruMemories,onLine:text=>{say(text);director.schedule(Date.now());character?.react();},onBondChange:renderBond,openModal:modal,closeModal:()=>$('#modal').close(),toast});
 growthUI=createGrowthUI({getState:()=>state,getGrowth,openModal:modal,closeModal:()=>$('#modal').close(),onCommit:commitEvent,onReview:id=>reviews.open(id),onContinue:resumeSession,onLaunch:(lecture,track)=>game.launch(lecture,track),format});
-planner=createPlannerUI({getHaruGrowth:getGrowth,onStudyStarted:id=>{selectStudying(id);speak('start');refresh();},onStudyFinished:event=>{selectStudying(event.student);speak('finish');refresh();const id=reviews.enqueue(event);if(id)reviews.open(id);},beforeTimerChange:()=>quests?.capture(Date.now(),true),canStudy,beforeStudy:(context,next)=>lectureAdviceUI.open(context,next),openModal:modal,closeModal:()=>$('#modal').close(),toast,getSession:()=>state.session,onChange:()=>{game?.refreshPanel();refreshWardrobe();refresh();},onSchedule:date=>game.openSchedule(date),onLaunch:(lecture,track,id)=>game.launch(lecture,track,id)});
+planner=createPlannerUI({onPause:()=>{refresh();quests?.restOpen();},getHaruGrowth:getGrowth,onStudyStarted:id=>{selectStudying(id);speak('start');refresh();},onStudyFinished:event=>{selectStudying(event.student);speak('finish');refresh();const id=reviews.enqueue(event);if(id)reviews.open(id);},beforeTimerChange:()=>quests?.capture(Date.now(),true),canStudy,beforeStudy:(context,next)=>lectureAdviceUI.open(context,next),openModal:modal,closeModal:()=>$('#modal').close(),toast,getSession:()=>state.session,onChange:()=>{game?.refreshPanel();refreshWardrobe();refresh();},onSchedule:date=>game.openSchedule(date),onLaunch:(lecture,track,id)=>game.launch(lecture,track,id)});
 quests=createQuestUI({getStudy:()=>state,getPlanner:()=>planner.state,pauseStudy:()=>{if(state.session?.started){checkpoint();save();refresh();}},pausePlanner:()=>planner.pauseForRest(),openModal:modal,closeModal:()=>$('#modal').close(),onPlan:seed=>planner.edit(seed),onLine:say,onChange:()=>{refresh();game?.refreshPanel();},toast});
 configureWardrobe(()=>planner.state.meals);
 startWorldTime({openModal:modal});

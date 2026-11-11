@@ -8,3 +8,5 @@
 .plannerNextMeta{display:flex;flex-wrap:wrap;gap:2px 9px;margin-top:3px;font:600 10px/1.5 var(--ui);font-variant-numeric:tabular-nums;letter-spacing:0;color:#728b99}
 .plannerNextRange,.plannerNextRemaining{white-space:nowrap}
 .plannerNextRemaining{color:#36859a}
+
+.plannerNext .plannerNextMeta{align-items:center;gap:3px 10px}.plannerNext .plannerNextRemaining{font:700 16px/1.4 var(--numbers),var(--ui);letter-spacing:0}.plannerNext[data-overtime=true] .plannerNextRemaining{color:#b47b59;font-size:20px}.plannerNext .plannerNextRange{font-size:11px}

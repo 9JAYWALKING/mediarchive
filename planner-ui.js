@@ -3,14 +3,14 @@ import {createDayPicker} from './day-picker.js?v=20261110';
 import {schedule} from './schedule-data.js';
 import {createMealEditor} from './meals-ui.js';
 import {mealsForDate} from './meals-engine.js';
-import {agendaItem,agendaTiming} from './agenda-engine.js?v=20261111agendaTime';
+import {agendaItem,agendaTiming} from './agenda-engine.js?v=20261111rest';
 import {illustratedStudents} from './character-data.js?v=20261110ritsu';
 import {koreanDate,shiftDate} from './game-state.js';
 import {suggestPlan} from './momo-engine.js?v=20261110ritsu';
 import {studentGrowth,recordSnapshot,focusPreview} from './student-growth.js?v=20261110';
 import {normalizePlanner,mergePlanner,plannerSnapshot,focusElapsed,buildPlans,legacyMomoPlans,startOf,endOf,nextPlan} from './planner-engine.js?v=20261111walkTime';
 const KEY='heart-companion-planner-v1';
-export function createPlannerUI({getHaruGrowth=()=>null,openModal,closeModal,toast,onChange,onSchedule,onLaunch,getSession,beforeTimerChange=()=>{},canStudy=()=>true,beforeStudy=()=>false,onStudyFinished=()=>{},onStudyStarted=()=>{}}){
+export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal,closeModal,toast,onChange,onSchedule,onLaunch,getSession,beforeTimerChange=()=>{},canStudy=()=>true,beforeStudy=()=>false,onStudyFinished=()=>{},onStudyStarted=()=>{}}){
  let state=normalizePlanner(null),filter='all';try{state=normalizePlanner(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{}
  const $=s=>document.querySelector(s),node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
  const student=id=>state.settings.students.find(s=>s.id===id),lecture=id=>schedule.find(l=>l.id===id);
@@ -91,7 +91,7 @@ export function createPlannerUI({getHaruGrowth=()=>null,openModal,closeModal,toa
   openModal('<div id="focusStudent" class="sheetEyebrow"></div><h2 id="focusTitle"></h2><p id="focusLink"></p><div id="focusPortrait" class="focusPortrait"></div><time id="focusTimer" class="focusTimer"></time><button id="focusPause" class="action"></button><label class="plannerCheck"><input id="focusComplete" type="checkbox">약속 완료</label><div id="focusUnits" class="focusUnits"></div><p id="focusUnitHint" class="plannerHint"></p><button id="focusFinish" class="action solid">저장</button>');
   $('#focusStudent').textContent=s?.name||'개인 일정';$('#focusTitle').textContent=p.title;$('#modal').setAttribute('aria-label',p.title);$('#focusLink').textContent=linkedLabel(f);$('#focusPortrait').append(portrait(p.student));
   for(const t of studyTargets(f)){const label=node('label',undefined,'plannerCheck'),input=node('input');input.type='checkbox';input.dataset.unit=targetKey(t);input.setAttribute('aria-label',`${t.lecture}강 ${t.track} 완료`);label.append(input,node('span',`${t.lecture}강 · ${t.track} 완료`));$('#focusUnits').append(label);}
-  $('#focusPause').onclick=()=>{if(state.focus?.started){pauseForRest();tick();}else resumeFocus();};
+  $('#focusPause').onclick=()=>{if(state.focus?.started){pauseForRest();tick();onPause();}else resumeFocus();};
   $('#focusFinish').onclick=()=>{const focus=state.focus;if(!focus)return;beforeTimerChange();const duration=focusElapsed(focus);if(duration<1000){toast('조금 뒤에 저장해 줘.');return;}const now=Date.now(),records=[...state.records,{id:focus.id,planId:focus.planId,at:now,duration,...recordSnapshot(focus),preview:focusPreview(focus,p,now),cycle:focus.cycle||1,scope:focus.scope||[],completed:[...document.querySelectorAll('#focusUnits input:checked:not(:disabled)')].map(x=>x.dataset.unit),unitComplete:false}],plans=state.plans.map(x=>x.id===p.id&&$('#focusComplete').checked?{...x,status:'done',updatedAt:now}:x);if(save({...state,focus:null,records,plans})){closeModal();changed();toast('기록했어.');onStudyFinished({...records.at(-1),name:s?.name||''});}};tick();
  }
  const nextButton=node('button',undefined,'plannerNext');document.querySelector('.session').before(nextButton);
@@ -101,7 +101,7 @@ export function createPlannerUI({getHaruGrowth=()=>null,openModal,closeModal,toa
   if(!p){nextSignature='';return;}
   const timing=agendaTiming(p,now),signature=JSON.stringify([p.id,p.kind,p.label,p.title,p.date,timing]);
   if(signature===nextSignature)return;nextSignature=signature;
-  nextButton.dataset.kind=p.kind;const body=node('span',undefined,'plannerNextBody');body.append(node('span',p.title,'plannerNextTitle'));
+  nextButton.dataset.kind=p.kind;nextButton.dataset.overtime=String(timing?.remaining?.startsWith('+')||false);const body=node('span',undefined,'plannerNextBody');body.append(node('span',p.title,'plannerNextTitle'));
   if(timing){const meta=node('span',undefined,'plannerNextMeta');meta.append(node('span',timing.range,'plannerNextRange'));if(timing.remaining)meta.append(node('span',timing.remaining,'plannerNextRemaining'));body.append(meta);}
   nextButton.replaceChildren(node('b',p.label),body,node('i','›'));
   nextButton.setAttribute('aria-label',[p.label,p.title,timing?.range,timing?.remaining].filter(Boolean).join(' · '));

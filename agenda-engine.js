@@ -19,6 +19,8 @@ export function agendaTiming(item,now=Date.now()){
  const range=item.time+'–'+(endTime==='00:00'&&end>start?'24:00':endTime);
  if(item.kind!=='focus'&&now<start)return {range,remaining:''};
  const minutes=Math.ceil((end-now)/60000),hours=Math.floor(minutes/60),rest=minutes%60;
- const remaining=minutes<=0?'예정 시간 종료':end-now<60000?'완료까지 1분 미만':'완료까지 '+(hours?hours+'시간'+(rest?' ':''):'')+(rest?rest+'분':'');
+ const seconds=Math.floor(Math.max(0,now-end)/1000),overHours=Math.floor(seconds/3600);
+ const overtime='+'+(overHours?String(overHours).padStart(2,'0')+':':'')+String(Math.floor(seconds/60)%60).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+ const remaining=now>=end?overtime:end-now<60000?'완료까지 1분 미만':'완료까지 '+(hours?hours+'시간'+(rest?' ':''):'')+(rest?rest+'분':'');
  return {range,remaining};
 }
