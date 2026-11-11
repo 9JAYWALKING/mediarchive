@@ -1,4 +1,4 @@
-import {createRecallUI} from './recall-ui.js?v=20261111walk';
+import {createRecallUI} from './recall-ui.js?v=20261111walkTime';
 import {paintLevelBadge} from './level-badge.js?v=20261110rank';
 import {teacherAddress,teacherLevel} from './teacher-profile.js?v=20261110';
 import {studentGrowth} from './student-growth.js?v=20261110';
@@ -13,10 +13,10 @@ import {storiesFor} from './character-stories.js';
 import {createStatisticsUI} from './statistics-ui.js?v=20261110ritsu';
 import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261110rank';
 const KEY='heart-companion-shell-v1';
-export function createGameUI({beforeRecall=()=>{},bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
+export function createGameUI({beforeRecall=()=>{},onRecallTime=()=>{},bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
  const $=s=>document.querySelector(s),screen=$('#screen'),body=$('#screenContent');
  const characterViewer=createCharacterViewer();
- const recall=createRecallUI({beforeOpen:beforeRecall,toast});
+ const recall=createRecallUI({beforeOpen:beforeRecall,onStudyTime:onRecallTime,toast});
  let prefs;try{prefs=normalizePreferences(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{prefs=normalizePreferences(null);}
  let view='home',selectedDate=koreanDate(),studentDetail=false,lastDate='',dailySources=[],dailyCache=0,rankSources=[],rankCache=1;
  const statistics=createStatisticsUI({getLiveData:()=>({study:getState(),planner:planner.state}),getData:()=>({study:getState(),planner:planner.state,growth:getGrowth(),bond:getQuiz().score,quiz:getQuiz().export(),reviews:reviews.export(),quests:quests.state}),onProfile:id=>{show('students');studentDetail=id;render();body.scrollTop=0;},onPlan:id=>planner.edit({student:id})});
