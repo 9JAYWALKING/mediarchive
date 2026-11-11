@@ -3,3 +3,8 @@
 @media(max-width:350px){.plannerCard{gap:8px;padding:12px 9px}.plannerWhen{min-width:38px}.plannerCardBody h3{font-size:15px}.plannerCardActions{gap:5px}.plannerCardActions button{padding:6px 9px}.plannerSettings{padding:0 10px}}
 .plannerArchive{margin:12px 0 25px;color:#8298a7;font:600 12px var(--ui)}.plannerArchive summary{padding:10px 0;cursor:pointer}.plannerArchive>div{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:9px 0}.plannerArchive button{border:1px solid #d6e5ee;background:white;color:#62849a;border-radius:7px;padding:8px;white-space:nowrap}.plannerForm input:not([type=checkbox]),.plannerForm select,.plannerForm textarea{font-size:16px}.plannerFilter{box-sizing:border-box}
 .plannerPair:has(#planTime){grid-template-columns:minmax(0,1.55fr) minmax(0,.8fr)}
+.plannerNext .plannerNextBody{display:block;min-width:0;white-space:normal}
+.plannerNextTitle{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4}
+.plannerNextMeta{display:flex;flex-wrap:wrap;gap:2px 9px;margin-top:3px;font:600 10px/1.5 var(--ui);font-variant-numeric:tabular-nums;letter-spacing:0;color:#728b99}
+.plannerNextRange,.plannerNextRemaining{white-space:nowrap}
+.plannerNextRemaining{color:#36859a}

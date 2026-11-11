@@ -25,7 +25,7 @@ import {normalizeStudy,studySnapshot,mergeStudy} from './study-store.js';
 import {createGrowthUI} from './growth-ui.js';
 import {configureRoutine,routineLine,configuredRoutineContext} from './routine-service.js?v=20261110ritsu';
 import {createMomoUI} from './momo-ui.js?v=20261110ritsu';
-import {createPlannerUI} from './planner-ui.js?v=20261110ritsu';
+import {createPlannerUI} from './planner-ui.js?v=20261111agendaTime';
 import {startWorldTime} from './world-time.js?v=20261110hometalk';
 import {createQuestUI} from './quest-ui.js?v=2';
 const $=s=>document.querySelector(s),KEY='heart-companion-v1';let state=normalizeStudy(null),storageOK=true;

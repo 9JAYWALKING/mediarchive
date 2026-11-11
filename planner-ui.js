@@ -3,7 +3,7 @@ import {createDayPicker} from './day-picker.js?v=20261110';
 import {schedule} from './schedule-data.js';
 import {createMealEditor} from './meals-ui.js';
 import {mealsForDate} from './meals-engine.js';
-import {agendaItem} from './agenda-engine.js';
+import {agendaItem,agendaTiming} from './agenda-engine.js?v=20261111agendaTime';
 import {illustratedStudents} from './character-data.js?v=20261110ritsu';
 import {koreanDate,shiftDate} from './game-state.js';
 import {suggestPlan} from './momo-engine.js?v=20261110ritsu';
@@ -95,10 +95,21 @@ export function createPlannerUI({getHaruGrowth=()=>null,openModal,closeModal,toa
   $('#focusFinish').onclick=()=>{const focus=state.focus;if(!focus)return;beforeTimerChange();const duration=focusElapsed(focus);if(duration<1000){toast('조금 뒤에 저장해 줘.');return;}const now=Date.now(),records=[...state.records,{id:focus.id,planId:focus.planId,at:now,duration,...recordSnapshot(focus),preview:focusPreview(focus,p,now),cycle:focus.cycle||1,scope:focus.scope||[],completed:[...document.querySelectorAll('#focusUnits input:checked:not(:disabled)')].map(x=>x.dataset.unit),unitComplete:false}],plans=state.plans.map(x=>x.id===p.id&&$('#focusComplete').checked?{...x,status:'done',updatedAt:now}:x);if(save({...state,focus:null,records,plans})){closeModal();changed();toast('기록했어.');onStudyFinished({...records.at(-1),name:s?.name||''});}};tick();
  }
  const nextButton=node('button',undefined,'plannerNext');document.querySelector('.session').before(nextButton);
- function updateNext(){const p=agendaItem(state);nextButton.hidden=!p;if(!p)return;nextButton.dataset.kind=p.kind;nextButton.replaceChildren(node('b',p.label),node('span',p.title),node('i','›'));nextButton.setAttribute('aria-label',p.label+' · '+p.title);nextButton.onclick=()=>p.kind==='focus'?focusModal():onSchedule(p.date);}
+ let nextSignature='';
+ function updateNext(){
+  const now=Date.now(),p=agendaItem(state,now,undefined,getSession?.());nextButton.hidden=!p;
+  if(!p){nextSignature='';return;}
+  const timing=agendaTiming(p,now),signature=JSON.stringify([p.id,p.kind,p.label,p.title,p.date,timing]);
+  if(signature===nextSignature)return;nextSignature=signature;
+  nextButton.dataset.kind=p.kind;const body=node('span',undefined,'plannerNextBody');body.append(node('span',p.title,'plannerNextTitle'));
+  if(timing){const meta=node('span',undefined,'plannerNextMeta');meta.append(node('span',timing.range,'plannerNextRange'));if(timing.remaining)meta.append(node('span',timing.remaining,'plannerNextRemaining'));body.append(meta);}
+  nextButton.replaceChildren(node('b',p.label),body,node('i','›'));
+  nextButton.setAttribute('aria-label',[p.label,p.title,timing?.range,timing?.remaining].filter(Boolean).join(' · '));
+  nextButton.onclick=()=>p.kind==='focus'&&state.focus?focusModal():onSchedule(p.date);
+ }
  function pauseForRest(){const f=state.focus;if(!f?.started)return;beforeTimerChange();save({...state,focus:{...f,elapsed:focusElapsed(f),previewElapsed:focusPreview(f,state.plans.find(p=>p.id===f.planId)),started:null}});tick();}
  function resumeFocus(){const f=state.focus;if(!f||f.started)return;const p=state.plans.find(p=>p.id===f.planId);if(!canStudy(resumeFocus,p?.student))return;beforeTimerChange();if(save({...state,focus:{...f,started:Date.now()}}))focusModal();}
  function tick(){const f=state.focus;if(f&&$('#focusTimer')){const seconds=Math.floor(focusElapsed(f)/1000);$('#focusTimer').textContent=`${String(Math.floor(seconds/3600)).padStart(2,'0')}:${String(Math.floor(seconds/60)%60).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;$('#focusPause').textContent=f.started?'일시정지':'재개';const eligible=focusElapsed(f)>=60000;for(const input of document.querySelectorAll('#focusUnits input')){input.disabled=!eligible||!f.scope?.includes(input.dataset.unit);if(input.disabled)input.checked=false;}$('#focusUnitHint').textContent=!eligible?'1분부터 선택할 수 있어.':'마친 자료를 각각 체크해 줘.';}}
- setInterval(tick,1000);setInterval(()=>{if(state.focus)save(state);else updateNext();},5000);window.addEventListener('pagehide',()=>{if(state.focus)save(state);});document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.focus)save(state);});updateNext();
+ setInterval(()=>{tick();if(!document.hidden)updateNext();},1000);setInterval(()=>{if(state.focus)save(state);},5000);window.addEventListener('pagehide',()=>{if(state.focus)save(state);});document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.focus)save(state);if(!document.hidden)updateNext();});updateNext();
  return {edit,quick:id=>edit({student:id,quick:true,lecture:student(id)?.lectures[0]||null,track:'Wiki'}),focusModal,start,editMeals,renderDay,studentSettings,sourcePlan,pauseForRest,resumeFocus,get focus(){return state.focus;},get state(){return state;},count:date=>state.plans.filter(p=>p.date===date&&p.status!=='canceled').length,export:()=>plannerSnapshot(state),import(raw){if(!raw||raw.version!==1||!Array.isArray(raw.plans)||raw.plans.length>10000)return false;const ok=save(mergePlanner(state,raw));if(ok)changed();return ok;},importLegacyMomo(raw){const migrated=legacyMomoPlans(raw).filter(p=>!sourcePlan(p.sourceId)||sourcePlan(p.sourceId).updatedAt<p.updatedAt).map(p=>({...p,id:sourcePlan(p.sourceId)?.id||p.id}));return save(mergePlanner(state,{plans:migrated}));},record(planId,event){if(!planId||!event||!state.plans.some(p=>p.id===planId)||state.records.some(r=>r.id===event.id))return;save({...state,records:[...state.records,{id:event.id,planId,at:event.at,duration:event.duration,...recordSnapshot(state.plans.find(p=>p.id===planId)),preview:event.preview||0}]});changed();},momoPlans(){return state.plans.filter(p=>p.sourceId).map(p=>({...p,id:`plan:${p.sourceId}`,messageId:p.sourceId}));}};
 }
