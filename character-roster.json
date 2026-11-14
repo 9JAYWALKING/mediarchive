@@ -655,7 +655,7 @@
       "accessory": "토끼 매듭 핀",
       "trait": "익숙한 놀이",
       "traitMeaning": "반복 속의 패턴을 먼저 알아채는 여유.",
-      "status": "implemented-illustration",
+      "status": "implemented-live2d",
       "subject": "소아심장",
       "lectureIds": [
         24,
@@ -694,21 +694,19 @@
         "estimateOnly": true
       },
       "art": {
-        "renderer": "illustration",
-        "portrait": "./assets/illustrations/momo-uniform.png",
-        "model": null,
+        "renderer": "live2d",
+        "portrait": "./assets/momo-live-v1.png",
+        "model": "./assets/momo.model3.json",
+        "expressionAtlas": "./assets/expressions/momo-live-v2.png",
         "outfits": {
           "uniform": {
-            "portrait": "./assets/illustrations/momo-uniform.png",
-            "atlas": "./assets/illustrations/momo-uniform-atlas.png"
+            "portrait": "./assets/momo-live-v1.png"
           },
           "casual": {
-            "portrait": "./assets/illustrations/momo-casual.png",
-            "atlas": "./assets/illustrations/momo-casual-atlas.png"
+            "portrait": "./assets/wardrobe/momo-casual-live-v1.png"
           },
           "sleep": {
-            "portrait": "./assets/illustrations/momo-sleep.png",
-            "atlas": "./assets/illustrations/momo-sleep-atlas.png"
+            "portrait": "./assets/wardrobe/momo-sleep-live-v1.png"
           }
         }
       },

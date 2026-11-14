@@ -1,7 +1,7 @@
 import {dialogueGroups} from './dialogue.js';
 import {routineLines} from './routine-dialogue.js?v=20261114studentVoices';
 import {mealLines} from './meal-dialogue.js?v=20261114studentVoices';
-import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
+import {illustratedStudents} from './character-data.js?v=20261114momoLive4';
 import {characterStories} from './character-stories.js';
 
 const names={s:'smile',h:'happy',a:'angry',d:'disappointed',c:'cry',f:'soft',z:'sleepy',n:'calm'};

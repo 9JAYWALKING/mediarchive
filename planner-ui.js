@@ -4,7 +4,7 @@ import {schedule} from './schedule-data.js';
 import {createMealEditor} from './meals-ui.js';
 import {mealsForDate} from './meals-engine.js';
 import {agendaItem,agendaTiming} from './agenda-engine.js?v=20261111rest';
-import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
+import {illustratedStudents} from './character-data.js?v=20261114momoLive4';
 import {koreanDate,shiftDate} from './game-state.js';
 import {suggestPlan} from './momo-engine.js?v=20261114studentVoices';
 import {studentGrowth,recordSnapshot,focusPreview} from './student-growth.js?v=20261110';

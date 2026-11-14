@@ -1,6 +1,6 @@
-import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261111ritsuExpressions';
-import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261114senaBlack6';
-import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261114senaBlack6';
+import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261114momoLive4';
+import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261114momoLive4';
+import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261114momoLive4';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
 export async function createCharacter(canvas, options={}){
@@ -43,6 +43,7 @@ export async function createCharacter(canvas, options={}){
   function makeTexture(art){const value=gl.createTexture();gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,value);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);return value;}
   texture=makeTexture(img);
   const faceRig=expressionRigs[options.personality||'haru'];
+  if(faceRig?.size&&(img.naturalWidth!==faceRig.size[0]||img.naturalHeight!==faceRig.size[1]))throw Error('원화와 표정 크기가 맞지 않아요. 새로고침해 주세요.');
   let expression=1,expressionStarted=0,facesReady=false,activeTime=0;
   const acting=createExpressionPerformance(studentId);
   const faceLocations=Object.fromEntries(['browPose','eyePose','mouthPose','blink'].map(name=>[name,gl.getUniformLocation(program,'u_'+name)]));
@@ -59,18 +60,20 @@ export async function createCharacter(canvas, options={}){
    gl.uniform1f(gl.getUniformLocation(program,'u_registered'),rig?.registered?1:0);
    gl.uniform2fv(gl.getUniformLocation(program,'u_artSize'),rig?.size||[1199,1312]);
    gl.uniform1f(gl.getUniformLocation(program,'u_preserveHair'),rig?.preserveHair?1:0);
+   gl.uniform1f(gl.getUniformLocation(program,'u_hairGuard'),rig?.hairGuard?1:0);
    if(rig?.eyes)for(const [i,side] of ['Left','Right'].entries()){const [a,b,c,d,x,y]=rig.eyes[i];gl.uniform3fv(gl.getUniformLocation(program,'u_eye'+side+'X'),[a,b,x]);gl.uniform3fv(gl.getUniformLocation(program,'u_eye'+side+'Y'),[c,d,y]);}
    if(rig){const map=faceTransform(rig);gl.uniform3fv(gl.getUniformLocation(program,'u_mapX'),map[0]);gl.uniform3fv(gl.getUniformLocation(program,'u_mapY'),map[1]);for(const [i,name] of ['u_left','u_right','u_mouth'].entries())gl.uniform2fv(gl.getUniformLocation(program,name),rig.target[i]);const [left,right]=rig.target;gl.uniform4fv(gl.getUniformLocation(program,'u_fringe'),[left[0]-85,Math.min(left[1],right[1])-125,right[0]+85,Math.max(left[1],right[1])+20]);}
    gl.uniform4fv(gl.getUniformLocation(program,'u_protect'),rig?.protect||[0,0,0,0]);
   }
   alignFace(appearance?.id||'uniform');
   let faceLoad=null;
-  function loadFaces(){if(!faceRig)return Promise.resolve(false);if(faceLoad)return faceLoad;faceLoad=(async()=>{try{const art=new Image();art.src=new URL(`expressions/${options.personality||'haru'}-v1.png`,manifestURL).href;await art.decode();if(disposed||contextLost)return false;gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.activeTexture(gl.TEXTURE0);facesReady=true;canvas.dataset.expressions='ready';requestDraw();return true;}catch{canvas.dataset.expressions='unavailable';return false;}})();return faceLoad;}
+  function loadFaces(){if(!faceRig)return Promise.resolve(false);if(faceLoad)return faceLoad;faceLoad=(async()=>{try{const art=new Image();art.src=new URL(faceRig.atlas||`expressions/${options.personality||'haru'}-v1.png`,manifestURL).href;await art.decode();if(disposed||contextLost)return false;gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.activeTexture(gl.TEXTURE0);facesReady=true;canvas.dataset.expressions='ready';requestDraw();return true;}catch{canvas.dataset.expressions='unavailable';return false;}})();return faceLoad;}
   function setExpression(name,{duration=0}={}){if(!expressionNames.includes(name)||disposed)return;acting.set(name,activeTime,duration);loadFaces().then(requestDraw);requestDraw();}
   function speak(line,pageText){if(disposed)return;const text=typeof line==='string'?line:line?.text||'';acting.speak({text:pageText||text,expression:dialogueExpression(studentId,line)},activeTime);loadFaces().then(requestDraw);requestDraw();}
   function autoExpression(){acting.auto(activeTime);requestDraw();}
   gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.disable(gl.DEPTH_TEST);
   const profiles={
+   momo:{speed:.68,breath:1.28,head:.32,body:.42,hair:.70,lag:2.5,damping:4.1,look:.60,react:.85,hold:1.6,blink:3.6,open:.17},
    ritsu:{speed:.56,breath:1.12,head:.29,body:.34,hair:.56,lag:2.4,damping:3.8,look:.48,react:.65,hold:1.8,blink:4,open:.18},
    haru:{speed:.72,breath:1.45,head:.34,body:.55,hair:.68,lag:2.5,damping:4.5,look:.65,react:.9,hold:1.5,blink:3.2,open:.16},
    nagi:{speed:.57,breath:1.12,head:.34,body:.55,hair:.68,lag:2.5,damping:3.1,look:.48,react:.7,hold:2,blink:4,open:.20},
@@ -135,13 +138,13 @@ export async function createCharacter(canvas, options={}){
    gl.uniform1f(faceLocations.mouthPose,facesReady?face.mouth:-1);
    gl.uniform1f(faceLocations.blink,facesReady?blinkArt:-1);
    canvas.dataset.blink=blink;
-   const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+   const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,studentId==='momo'?3:2);
    if(rect.width<=0||rect.height<=0)return;
    const w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
    const imageH=options.framing==='face'?rect.height*2.5:options.framing==='review'?rect.height*1.65:options.framing==='portrait'?Math.min(rect.height*.99,rect.width*(img.height/img.width)*1.25):Math.max(rect.height*.99,rect.width*1.34);
    gl.uniform2f(scale,imageH/rect.width*2,imageH/rect.height*2);gl.uniform1f(offset,1-imageH/rect.height+(['face','review'].includes(options.framing)?0:-.025));
    gl.bindBuffer(gl.ARRAY_BUFFER,posBuffer);gl.bufferData(gl.ARRAY_BUFFER,model.drawables.vertexPositions[0],gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);gl.drawElements(gl.TRIANGLES,model.drawables.indexCounts[0],gl.UNSIGNED_SHORT,0);model.drawables.resetDynamicFlags();
-   canvas.dataset.live2d='ready';if(motion||acting.active)raf=requestAnimationFrame(draw);
+   canvas.dataset.live2d='ready';canvas.dataset.renderer='live2d';options.onFrame?.({canvas,expression:pose.expression,talking:pose.talking,blink});if(motion||acting.active)raf=requestAnimationFrame(draw);
   }
   function requestDraw(){if(!raf&&!disposed&&!contextLost&&!offstage())raf=requestAnimationFrame(draw);}
   function visibility(){if(offstage()){cancelAnimationFrame(raf);raf=0;}else{last=performance.now();if(appearanceSelection==='auto'&&canvas.dataset.outfitError)setOutfit('auto');requestDraw();}}

@@ -1,5 +1,5 @@
 import {sceneStrip} from './scene-assets.js';
-import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
+import {illustratedStudents} from './character-data.js?v=20261114momoLive4';
 import {schedule} from './schedule-data.js';
 import {koreanDate} from './game-state.js';
 import {normalizeMomo,mergeMomo,deliverMomo,scheduleMomo,suggestPlan,planStart,momoCopy} from './momo-engine.js?v=20261114studentVoices';

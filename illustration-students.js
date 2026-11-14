@@ -216,21 +216,18 @@ export const illustrationStudents=[
   "grade": 3,
   "role": "놀이부 · 부장",
   "color": "#d99dad",
-  "portrait": "./assets/illustrations/momo-uniform.png",
-  "model": null,
-  "renderer": "illustration",
+  "portrait": "./assets/momo-live-v1.png",
+  "model": "./assets/momo.model3.json",
+  "renderer": "live2d",
   "outfits": {
    "uniform": {
-    "portrait": "./assets/illustrations/momo-uniform.png",
-    "atlas": "./assets/illustrations/momo-uniform-atlas.png"
+    "portrait": "./assets/momo-live-v1.png"
    },
    "casual": {
-    "portrait": "./assets/illustrations/momo-casual.png",
-    "atlas": "./assets/illustrations/momo-casual-atlas.png"
+    "portrait": "./assets/wardrobe/momo-casual-live-v1.png"
    },
    "sleep": {
-    "portrait": "./assets/illustrations/momo-sleep.png",
-    "atlas": "./assets/illustrations/momo-sleep-atlas.png"
+    "portrait": "./assets/wardrobe/momo-sleep-live-v1.png"
    }
   },
   "accessory": "토끼 매듭 핀",

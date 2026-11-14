@@ -1,15 +1,15 @@
 import {pickCharacterLine} from './character-dialogue.js?v=20261114studentVoices';
 import {teacherName,personalize} from './teacher-profile.js?v=20261110';
 import {createDialogueVisibility} from './dialogue-visibility.js';
-import {expressionNames,expressionLabels} from './expressions.js?v=20261111ritsuExpressions';
+import {expressionNames,expressionLabels} from './expressions.js?v=20261114momoLive4';
 import {createDialoguePager} from './dialogue-pages.js';
-import {createCharacter} from './renderer.js?v=20261114framing';
-import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
+import {createCharacter} from './renderer.js?v=20261114momoLive4';
+import {illustratedStudents} from './character-data.js?v=20261114momoLive4';
 import {characterStories} from './character-stories.js';
 import {routineLine} from './routine-service.js?v=20261114studentVoices';
-import {appearanceFor} from './wardrobe-service.js?v=20261114senaBlack6';
+import {appearanceFor} from './wardrobe-service.js?v=20261114momoLive4';
 import {outfitLabels} from './wardrobe-engine.js';
-import {positionIllustrationFallback} from './illustration-layout.js?v=20261114framing';
+import {positionIllustrationFallback} from './illustration-layout.js?v=20261114momoLive4';
 
 export function createCharacterViewer(){
  const dialog=document.createElement('dialog');dialog.id='characterViewer';dialog.className='characterViewer';

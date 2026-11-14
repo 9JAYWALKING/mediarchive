@@ -1,4 +1,5 @@
 import {ritsuFaceRig} from './ritsu-face-rig.js?v=20261111ritsuExpressions';
+import {momoFaceRig} from './momo-face-rig.js?v=20261114momoLive4';
 // Facial atlas registration: source eye/mouth landmarks align with the approved portrait.
 export const expressionNames=['neutral','smile','happy','angry','disappointed','cry','soft','sleepy','calm'];
 export const expressionLabels=['평소','미소','활짝','삐침','실망','울먹','눈웃음','나른','차분'];
@@ -12,10 +13,11 @@ export function expressionPose(name){
 }
 export function facialParts(student,name,{talking=false,blink='open'}={}){
  const face=expressionPose(name),positive=['smile','happy','soft'].includes(name);
- const mouth=talking?(student==='haru'?-1:student==='ritsu'&&!positive?face.mouth:2):face.mouth;
+ const mouth=talking?(student==='haru'?-1:student==='momo'?(positive?0:face.mouth):student==='ritsu'&&!positive?face.mouth:2):face.mouth;
  return {...face,mouth,blink:face.eyes===2||blink==='open'?-1:blink==='closed'?2:4,mouthScale:student==='ritsu'&&talking&&positive&&name!=='happy'?.76:1};
 }
 export const expressionRigs={
+ momo:{size:[1024,1536],atlas:'expressions/momo-live-v2.png',preserveHair:true,registered:true,hairGuard:true,...momoFaceRig.uniform,source:[[214,288],[365,255],[307,370]],outfits:{casual:momoFaceRig.casual,sleep:momoFaceRig.sleep}},
  ritsu:{size:[1108,1420],preserveHair:true,registered:true,protect:[738,355,35,52],...ritsuFaceRig.uniform,source:[[208,302],[337,287],[280,385]],outfits:{casual:{...ritsuFaceRig.casual,protect:[755,354,36,52]},sleep:{...ritsuFaceRig.sleep,protect:[738,355,35,52]}}},
  haru:{target:[[495,353],[650,312],[590,444]],source:[[190,290],[313,258],[264,357]]},
  nagi:{target:[[519,334],[665,303],[608,408]],source:[[198,290],[326,271],[272,365]]},
@@ -31,7 +33,7 @@ export const expressionFragment=`precision mediump float;
 varying vec2 v_uv; uniform sampler2D u_texture; uniform sampler2D u_faces; uniform vec2 u_artSize;
 uniform vec3 u_mapX; uniform vec3 u_mapY; uniform vec2 u_left; uniform vec2 u_right; uniform vec2 u_mouth;
 uniform vec4 u_fringe; uniform vec4 u_protect;
-uniform float u_preserveHair;
+uniform float u_preserveHair,u_hairGuard;
 uniform vec3 u_eyeLeftX,u_eyeLeftY,u_eyeRightX,u_eyeRightY;
 uniform float u_registered,u_mouthScale;
 uniform vec3 u_browLeftX,u_browLeftY,u_browRightX,u_browRightY,u_mouthX,u_mouthY;
@@ -70,6 +72,12 @@ void main(){
  float faceMask=max(fringe,max(eyePatch(p,u_left,tear),eyePatch(p,u_right,tear)));
  // Register each eye/brow locally; never replace a rectangular fringe region.
  if(u_preserveHair>.5)faceMask=max(eyePatch(p,u_left,tear),eyePatch(p,u_right,tear));
+ // Momo's opaque pink fringe stays attached to the original mesh, including
+ // strands crossing the brow. Only exposed skin and brow ink can change.
+ vec2 nearEye=distance(p,u_left)<distance(p,u_right)?u_left:u_right;
+ float pinkHair=smoothstep(.0,.025,base.b-base.g)*smoothstep(.12,.23,base.r-base.g);
+ float hairCover=u_hairGuard*pinkHair*(1.0-smoothstep(-18.0,-5.0,p.y-nearEye.y));
+ faceMask*=1.0-hairCover;
  if(u_protect.z>0.0)faceMask*=smoothstep(.75,1.0,length((p-u_protect.xy)/u_protect.zw));
  
  vec4 face=paint(u_browPose,base,p,faceMask,0);
@@ -81,13 +89,16 @@ void main(){
 
   if(u_browPose>4.5&&u_blink<0.0)lids=max(lids,max(oval(p,u_left+vec2(0.0,29.0),vec2(63.0,53.0)),oval(p,u_right+vec2(0.0,29.0),vec2(63.0,53.0))));
  }
- face=paint(eyes,face,p,lids,1);
+ face=paint(eyes,face,p,lids*(1.0-hairCover),1);
  // A blink replaces eyelids, not the tear tracks beneath them.
  if(u_registered>.5&&u_browPose>4.5&&u_blink>=0.0){
   float tears=max(oval(p,u_left+vec2(0.0,45.0),vec2(48.0,42.0))*smoothstep(u_left.y+27.0,u_left.y+31.0,p.y),oval(p,u_right+vec2(0.0,45.0),vec2(48.0,42.0))*smoothstep(u_right.y+27.0,u_right.y+31.0,p.y));
   face=paint(u_browPose,face,p,tears,0);
  }
  // A single mouth replaces the old one; jaw pixels always belong to the portrait.
- float mouth=1.0-smoothstep(.86,1.0,length((p-u_mouth)/vec2(70.0,42.0)));
+ // Momo's laugh extends below the resting smile; keep the feathered edge
+ // outside the entire mouth while ending safely above her original chin.
+ vec2 mouthRadius=mix(vec2(70.0,42.0),vec2(76.0,p.y<u_mouth.y?42.0:62.0),u_hairGuard);
+ float mouth=1.0-smoothstep(.86,1.0,length((p-u_mouth)/mouthRadius));
  gl_FragColor=paint(u_mouthPose,face,p,mouth,2);
 }`;
