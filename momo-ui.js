@@ -15,7 +15,7 @@ export function createMomoUI({getStudy,getExamDate,planner,bondEvents,openModal,
  function visible(){return $('.phone').dataset.view==='momo';}
  function refresh(){if(visible()&&host)render(host,setTitle);}
  function tick(){const next=deliverMomo({...state,plans:planner.momoPlans()},getStudy(),getExamDate());if(next.messages.length!==state.messages.length&&save(next))refresh();}
- function avatar(s){const wrap=node('span',undefined,'momoAvatar'),img=node('img');img.src=s.portrait;img.alt='';wrap.style.setProperty('--student-color',s.color);wrap.append(img);return wrap;}
+ function avatar(s){const wrap=node('span',undefined,'momoAvatar'),img=node('img');img.src=s.portrait;img.alt='';wrap.dataset.renderer=s.renderer||'live2d';wrap.style.setProperty('--student-color',s.color);wrap.append(img);return wrap;}
  function bubble(text,self=false){return node('p',text,'momoBubble'+(self?' is-self':''));}
  function planFor(m){return planner.sourcePlan(m.id)||state.plans.find(p=>p.messageId===m.id); }
  function openThread(id){const next=normalizeMomo({...state,messages:state.messages.map(m=>m.student===id?{...m,readAt:m.readAt||Date.now()}:m)});save(next);active=id;bondEvents?.markRead(id);render(host,setTitle);host.scrollTop=host.scrollHeight;}

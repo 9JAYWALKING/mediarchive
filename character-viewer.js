@@ -3,12 +3,13 @@ import {teacherName,personalize} from './teacher-profile.js?v=20261110';
 import {createDialogueVisibility} from './dialogue-visibility.js';
 import {expressionNames,expressionLabels} from './expressions.js?v=20261111ritsuExpressions';
 import {createDialoguePager} from './dialogue-pages.js';
-import {createCharacter} from './renderer.js?v=20261114senaBlack6';
+import {createCharacter} from './renderer.js?v=20261114framing';
 import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
 import {characterStories} from './character-stories.js';
 import {routineLine} from './routine-service.js?v=20261114studentVoices';
 import {appearanceFor} from './wardrobe-service.js?v=20261114senaBlack6';
 import {outfitLabels} from './wardrobe-engine.js';
+import {positionIllustrationFallback} from './illustration-layout.js?v=20261114framing';
 
 export function createCharacterViewer(){
  const dialog=document.createElement('dialog');dialog.id='characterViewer';dialog.className='characterViewer';
@@ -16,6 +17,8 @@ export function createCharacterViewer(){
  dialog.setAttribute('aria-labelledby','viewerName');document.body.append(dialog);
  const storyBar=document.createElement('div');storyBar.className='viewerStoryBar';storyBar.hidden=true;storyBar.innerHTML='<span id="viewerStoryTitle"></span><small id="viewerStoryStep"></small><button id="viewerEndStory" aria-label="이야기 닫기">닫기</button>';dialog.querySelector('.viewerFooter').prepend(storyBar);
  const $=s=>dialog.querySelector(s),motionButton=$('#viewerMotion'),host=$('#viewerCanvasHost'),fallback=$('#viewerFallback');
+ const placeFallback=look=>positionIllustrationFallback(fallback,active.id,look?.id||appearanceFor(active.id,outfitSelect.value)?.id||'uniform',host,'portrait');
+ window.addEventListener('resize',()=>{if(dialog.open)placeFallback();});
  let active=illustratedStudents[0],character=null,generation=0,controller=null,lineIndex=0,lastTouch=0,opener=null,story=null,beat=0,motionEnabled=null,routineTimer=null,lastLineAt=0,outfitRequest=0;
  const dialoguePages=createDialoguePager(58);let currentLine=null,greetingLine=null;
  const speechPanel=createDialogueVisibility($('.viewerDialogue'),{onHide:()=>{if($('.viewerDialogue').contains(document.activeElement))$('#viewerTouch').focus({preventScroll:true});}});
@@ -43,13 +46,14 @@ export function createCharacterViewer(){
   $('#viewerSubject').textContent=`${active.grade}학년 · ${active.subject}`;$('#viewerName').textContent=active.name;
   $('#viewerSpeaker').textContent=active.name;showLine(story?story.beats[beat].text:(greetingLine||routineLine(active.id)||pickCharacterLine(active.id,'greeting',{scene:document.documentElement.dataset.dayphase,teacher:teacherName()})));greetingLine=null;storyControls();
   fallback.src=appearanceFor(active.id,outfitSelect.value)?.portrait||active.portrait;fallback.alt=active.name;fallback.hidden=false;
+  placeFallback();
   $('#viewerTouch').setAttribute('aria-label',active.name+'에게 말 걸기');
   for(const b of dialog.querySelectorAll('[data-character]'))b.setAttribute('aria-pressed',String(b.dataset.character===active.id));
   $('#viewerStatus').textContent='불러오는 중…';$('#viewerRetry').hidden=true;motionButton.disabled=true;outfitSelect.disabled=true;
   const canvas=document.createElement('canvas');canvas.setAttribute('aria-hidden','true');host.append(canvas);
   controller=new AbortController();
   try{
-   const instance=await createCharacter(canvas,{manifest:active.model,personality:active.id,outfit:outfitSelect.value,framing:'portrait',visibilityRoot:dialog,isVisible:()=>dialog.open&&generation===current,signal:controller.signal,releaseContext:true,onError:unavailable,onAppearanceChange:look=>{if(look&&generation===current){fallback.src=look.portrait;dialog.dataset.outfit=look.id;}},onAppearanceError:()=>{if(generation===current)$('#viewerStatus').textContent='복장을 불러오지 못했어요. 다시 골라 주세요.';},onMotionChange:value=>{motionEnabled=value;updateMotion();}});
+   const instance=await createCharacter(canvas,{manifest:active.model,personality:active.id,outfit:outfitSelect.value,framing:'portrait',visibilityRoot:dialog,isVisible:()=>dialog.open&&generation===current,signal:controller.signal,releaseContext:true,onError:unavailable,onAppearanceChange:look=>{if(look&&generation===current){fallback.src=look.portrait;placeFallback(look);dialog.dataset.outfit=look.id;}},onAppearanceError:()=>{if(generation===current)$('#viewerStatus').textContent='복장을 불러오지 못했어요. 다시 골라 주세요.';},onMotionChange:value=>{motionEnabled=value;updateMotion();}});
    if(current!==generation||!dialog.open){instance.destroy();return;}
    character=instance;performLine();if(motionEnabled!==null)character.setMotion(motionEnabled);fallback.hidden=true;$('#viewerStatus').textContent='';motionButton.disabled=false;outfitSelect.disabled=false;updateMotion();
   }catch(error){if(current!==generation||error.name==='AbortError')return;canvas.hidden=true;unavailable();}

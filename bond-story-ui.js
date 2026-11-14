@@ -3,7 +3,7 @@ import {outfitFor} from './wardrobe-data.js?v=20261114senaBlack6';
 import {bondStory,bondStudents,bondLevel,normalizeBondStories,mergeBondStories,unlockBondStories,changeBondStory,storyTimeline,storyUnread} from './bond-story-engine.js?v=20261110ritsu';
 import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
 import {sceneAssets} from './scene-assets.js';
-import {createCharacter} from './renderer.js?v=20261114senaBlack6';
+import {createCharacter} from './renderer.js?v=20261114framing';
 import {splitDialogue} from './dialogue-pages.js';
 import {accessoryFor} from './accessory-art.js';
 import {teacherAddress,personalize} from './teacher-profile.js?v=20261110';

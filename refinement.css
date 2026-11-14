@@ -29,3 +29,8 @@ html,body{touch-action:pan-x pan-y}button,a,input,select,textarea{touch-action:m
 .academyStats[data-mode=students] .academySummary{min-height:62px;box-sizing:border-box;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding:14px 17px;margin-bottom:14px}
 .academyStats[data-mode=students] .academySummary>small{flex-shrink:0;font-size:12px}
 .academyStats[data-mode=students] .academySummary>strong{min-width:0;font-size:25px;line-height:1.2;text-align:right;overflow-wrap:anywhere}
+
+/* Keep each illustration head centered independently of hair or canvas margins. */
+.academyCardButton .academyPortrait[data-renderer="illustration"] img{transform:translateX(calc(-1 * var(--head-x,50%)))}
+.academyCardButton .academyPortrait[data-student="sena"] img{width:150%;top:2px}
+.is-detail .academyCardButton .academyPortrait[data-student="sena"] img{width:125%;top:4px}

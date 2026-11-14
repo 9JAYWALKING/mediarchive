@@ -1,10 +1,13 @@
 import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
-import {createCharacter} from './renderer.js?v=20261114senaBlack6';
+import {createCharacter} from './renderer.js?v=20261114framing';
 import {appearanceFor} from './wardrobe-service.js?v=20261114senaBlack6';
 import {teacherProfile,saveTeacher} from './teacher-profile.js?v=20261110';
+import {positionIllustrationFallback} from './illustration-layout.js?v=20261114framing';
 export function createLobbyController({getStudents,onSelect,onReady,onMotionChange,openModal,closeModal}){
  const $=s=>document.querySelector(s);let selected=teacherProfile().lobby,model=null,controller=null,generation=0,lastSwipe=0,presented=false;
  const stage=$('#stage'),reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+ const placeFallback=look=>positionIllustrationFallback($('#fallback'),selected,look?.id||appearanceFor(selected)?.id||'uniform',stage);
+ window.addEventListener('resize',()=>placeFallback());
  const initial=document.createElement('div');initial.className='lobbyInitial';initial.hidden=true;$('#stage').append(initial);
  function ids(){return illustratedStudents.map(s=>s.id);}
  function cycle(delta){const list=ids();select(list[(Math.max(0,list.indexOf(selected))+delta+list.length)%list.length]);}
@@ -20,7 +23,8 @@ export function createLobbyController({getStudents,onSelect,onReady,onMotionChan
   $('.phone').dataset.student=id;$('.phone').style.setProperty('--student-accent',student.color);$('#motionToggle').hidden=!art;$('#fallback').hidden=!art;initial.hidden=!!art;initial.textContent=student.name.slice(0,1);initial.style.setProperty('--student-color',student.color);
   const old=$('#character'),canvas=document.createElement('canvas');canvas.id='character';canvas.setAttribute('aria-hidden','true');old.replaceWith(canvas);canvas.hidden=!art;$('#loadStatus').textContent=art?'불러오는 중…':'';$('#loadStatus').onclick=null;onSelect(id,greet);if(!art){reveal();return;}
   $('#fallback').src=appearanceFor(id)?.portrait||art.portrait;
-  try{const instance=await createCharacter(canvas,{manifest:art.model,personality:id,signal:controller.signal,releaseContext:true,onMotionChange,onAppearanceChange:look=>{if(look&&gen===generation)$('#fallback').src=look.portrait;}});if(gen!==generation){instance.destroy();return;}model=instance;onReady(instance);$('#fallback').hidden=true;$('#loadStatus').textContent='';reveal();}catch(error){if(gen!==generation||error.name==='AbortError')return;canvas.hidden=true;$('#loadStatus').textContent='다시 불러오기';$('#loadStatus').onclick=()=>select(id,{greet:false});reveal();}
+  placeFallback();
+  try{const instance=await createCharacter(canvas,{manifest:art.model,personality:id,signal:controller.signal,releaseContext:true,onMotionChange,onAppearanceChange:look=>{if(look&&gen===generation){$('#fallback').src=look.portrait;placeFallback(look);}}});if(gen!==generation){instance.destroy();return;}model=instance;onReady(instance);$('#fallback').hidden=true;$('#loadStatus').textContent='';reveal();}catch(error){if(gen!==generation||error.name==='AbortError')return;canvas.hidden=true;$('#loadStatus').textContent='다시 불러오기';$('#loadStatus').onclick=()=>select(id,{greet:false});reveal();}
  }
  let origin=null;const touch=$('#touch');touch.style.touchAction='pan-y';touch.addEventListener('pointerdown',e=>{origin={x:e.clientX,y:e.clientY};});touch.addEventListener('pointerup',e=>{if(!origin)return;const dx=e.clientX-origin.x,dy=e.clientY-origin.y;origin=null;if(Math.abs(dx)>=50&&Math.abs(dx)>Math.abs(dy)*1.5){lastSwipe=Date.now();cycle(dx<0?1:-1);}});touch.addEventListener('pointercancel',()=>origin=null);
  return {select,picker,get id(){return selected;},get swiped(){return Date.now()-lastSwipe<400;}};

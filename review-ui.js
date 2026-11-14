@@ -4,7 +4,7 @@ import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
 import {defaultStudents} from './planner-catalog.js';
 import {splitDialogue} from './dialogue-pages.js';
 import {appearanceFor} from './wardrobe-service.js?v=20261114senaBlack6';
-import {createCharacter} from './renderer.js?v=20261114senaBlack6';
+import {createCharacter} from './renderer.js?v=20261114framing';
 const KEY='heart-companion-v1-reviews';
 export function createReviewUI({getBond,onChange=()=>{},onReaction=()=>{},beforeOpen=()=>{},toast}){
  let state;try{state=normalizeReview(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{state=normalizeReview(null);}

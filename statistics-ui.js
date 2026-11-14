@@ -3,6 +3,7 @@ import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
 import {schedule} from './schedule-data.js';
 import {koreanDate,shiftDate,validDate} from './game-state.js';
 import {sessionTotals} from './growth-engine.js?v=20261110';
+import {portraitHeadX} from './illustration-layout.js?v=20261114framing';
 export function createStatisticsUI({getData,getLiveData=getData,onProfile,onPlan}){
  let period='all',from='',to='',search='',sort='default',limit=30,host=null,historyOpen=false,mode='students',rosterOpen=false,expanded=new Set();
  const el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
@@ -31,7 +32,7 @@ export function createStatisticsUI({getData,getLiveData=getData,onProfile,onPlan
  }
  function card(s,stats,detail=false){
   const g=s.growth,bond=g.bond,profile=illustratedStudents.find(p=>p.id===s.id),section=el('article',undefined,'academyStudent'+(detail?' is-detail':''));section.style.setProperty('--student-color',s.color);
-  const summary=el('button',undefined,'academyCardButton'),art=el('div',undefined,'academyPortrait');if(profile){const img=el('img');img.src=profile.portrait;img.alt='';img.loading='lazy';art.append(img);}else art.append(el('span',s.name.slice(0,1),'academyInitial'));
+  const summary=el('button',undefined,'academyCardButton'),art=el('div',undefined,'academyPortrait');if(profile){const img=el('img');img.src=profile.portrait;img.alt='';img.loading='lazy';art.dataset.student=profile.id;art.dataset.renderer=profile.renderer||'live2d';art.style.setProperty('--head-x',`${portraitHeadX(profile.id)*100}%`);art.append(img);}else art.append(el('span',s.name.slice(0,1),'academyInitial'));
   art.append(el('b',`Lv. ${g.level}`,'academyLevel'));const info=el('div',undefined,'academyStudentInfo');info.append(el('small',s.subject),el('h4',s.name));const stars=el('div','★'.repeat(g.stars)+'☆'.repeat(3-g.stars),'academyStars');stars.setAttribute('aria-label',`학생 ${g.stars}성`);info.append(stars,el('strong',durationText(s.time),'academyTime'),el('span',`인연 ${1+Math.floor(bond/100)} · ${bond%100}/100`,'academyBond'));summary.append(art,info);summary.setAttribute('aria-label',s.name+' 상세');summary.onclick=()=>onProfile(s.id);section.append(summary);if(!detail)return section;summary.onclick=null;summary.disabled=true;
   const details=el('div',undefined,'academyStudentDetail');details.append(el('h5','성장'),metric('경험치',`${g.xp} XP`),meter(g.progress,1,'레벨 진행도'),el('small',g.remaining?`다음 레벨까지 ${g.remaining} XP`:'최대 레벨'));
   details.append(metric('인연도',`${bond}점`),meter(bond%100,100,'인연 진행도'),el('small',`다음 인연까지 ${100-bond%100}점`));

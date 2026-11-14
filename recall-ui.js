@@ -7,7 +7,7 @@ import {defaultStudents} from './planner-catalog.js';
 import {accessoryFor} from './accessory-art.js';
 import {sceneAssets} from './scene-assets.js';
 import {appearanceFor} from './wardrobe-service.js?v=20261114senaBlack6';
-import {createCharacter} from './renderer.js?v=20261114senaBlack6';
+import {createCharacter} from './renderer.js?v=20261114framing';
 const KEY='mediarchive-wiki-recall-v1',marks={circle:'○',triangle:'△',cross:'×'},markNames={circle:'알겠어',triangle:'애매해',cross:'다시 볼래'};
 const items=new Map(recallLectures.flatMap(l=>l.questions.map(q=>[q.id,{...q,lecture:l.id,lectureTitle:l.title,student:l.student}])));
 const students=defaultStudents.filter(s=>recallLectures.some(l=>l.student===s.id));
