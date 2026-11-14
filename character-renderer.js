@@ -1,6 +1,6 @@
 import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261111ritsuExpressions';
-import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261110ritsu';
-import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261110ritsu';
+import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261114senaBlack6';
+import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261114senaBlack6';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
 export async function createCharacter(canvas, options={}){

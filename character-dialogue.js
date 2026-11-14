@@ -1,4 +1,4 @@
-import {homePool} from './home-dialogue.js?v=20261110ritsu';
+import {homePool} from './home-dialogue.js?v=20261114studentVoices';
 import {dialogueGroups} from './dialogue.js';
 import {ritsuDialogue as ritsu} from './ritsu-dialogue.js?v=20261110ritsu';
 
@@ -408,7 +408,8 @@ const haru=Object.fromEntries(Object.entries(dialogueGroups).map(([group,bank])=
 haru.greeting.push(Object.freeze({text:'{teacher} 선생님! 오늘은 내가 먼저 불렀다. 헤헤.',expression:'happy'}));
 haru.touch.push(Object.freeze({text:'{teacher} 선생님, 나 지금 꽤 얌전히 있었지? 칭찬 한 번만!',expression:'smile'}));
 haru.finish.push(Object.freeze({text:'{teacher} 선생님, 끝까지 같이 왔네! 자, 하이파이브!',expression:'happy'}));
-export const characterDialogueBanks=Object.freeze(Object.fromEntries(Object.entries({haru,nagi,shiori,rei,ritsu}).map(([id,bank])=>[id,Object.freeze(Object.fromEntries(Object.entries(bank).map(([group,items])=>[group,Object.freeze(items)])))])));
+import {illustrationBanks} from './illustration-dialogue.js?v=20261114studentVoices';
+export const characterDialogueBanks=Object.freeze(Object.fromEntries(Object.entries({haru,nagi,shiori,rei,ritsu,...illustrationBanks}).map(([id,bank])=>[id,Object.freeze(Object.fromEntries(Object.entries(bank).map(([group,items])=>[group,Object.freeze(items)])))])));
 export const characterDialogueCounts=Object.freeze(Object.fromEntries(Object.entries(characterDialogueBanks).map(([id,bank])=>[id,Object.values(bank).reduce((sum,items)=>sum+items.length,0)])));
 export function personalizeDialogue(text,teacher=''){
  const name=String(teacher||'').trim().slice(0,20);

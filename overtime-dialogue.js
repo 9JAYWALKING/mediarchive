@@ -1,3 +1,4 @@
+import {illustrationOvertime} from './illustration-context.js?v=20261114studentVoices';
 const expressions=['calm','disappointed','angry','cry'];
 export function overtimeState(planner,session,now=Date.now()){
  const focus=planner.focus||session;if(!focus?.started)return null;
@@ -7,7 +8,7 @@ export function overtimeState(planner,session,now=Date.now()){
  const step=minutes>=90?4+Math.floor((minutes-90)/20):Math.min(3,Math.floor(minutes/20));if(!Number.isFinite(step)||step<1)return null;
  return {key:plan.id+':'+end,step,stage:Math.min(step,4),student:focus.student||plan.student||'haru',expression:expressions[Math.min(step,4)-1]};
 }
-export const overtimeLines={
+export const overtimeLines={...illustrationOvertime,
  haru:[
   ['어라… 끝내기로 한 시간, 벌써 지났네. 어디까지 남았어?','조금 길어지고 있네. 우리 끝낼 곳부터 정할까?'],
   ['너무 오래 잡고 있는 거 아니야? 아까도 조금만 더 한다고 했잖아…','나 아까부터 시계 보고 있었는데. 아직 많이 남았어?'],

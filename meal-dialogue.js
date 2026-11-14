@@ -1,6 +1,7 @@
+import {illustrationMeals} from './illustration-context.js?v=20261114studentVoices';
 // Meal dialogue follows the configured schedule; it does not assert that the user ate.
 import {ritsuMeals} from './ritsu-dialogue.js?v=20261110ritsu';
-export const mealLines={
+export const mealLines={...illustrationMeals,
  ritsu:ritsuMeals,
  haru:{
   before:['슬슬 밥 먹으러 갈까? 나 벌써 메뉴 고민 중이야!','십 분쯤 남았네. 여기까지만 보고 같이 나가자!','배에서 꼬르륵했지? …나였어. 곧 밥 먹으러 가자!'],

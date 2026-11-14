@@ -1,13 +1,13 @@
-import {pickCharacterLine} from './character-dialogue.js?v=20261110ritsu';
+import {pickCharacterLine} from './character-dialogue.js?v=20261114studentVoices';
 import {teacherName,personalize} from './teacher-profile.js?v=20261110';
 import {createDialogueVisibility} from './dialogue-visibility.js';
 import {expressionNames,expressionLabels} from './expressions.js?v=20261111ritsuExpressions';
 import {createDialoguePager} from './dialogue-pages.js';
-import {createCharacter} from './renderer.js?v=20261111ritsuExpressions';
-import {illustratedStudents} from './character-data.js?v=20261110ritsu';
+import {createCharacter} from './renderer.js?v=20261114senaBlack6';
+import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
 import {characterStories} from './character-stories.js';
-import {routineLine} from './routine-service.js?v=20261110ritsu';
-import {appearanceFor} from './wardrobe-service.js?v=20261110ritsu';
+import {routineLine} from './routine-service.js?v=20261114studentVoices';
+import {appearanceFor} from './wardrobe-service.js?v=20261114senaBlack6';
 import {outfitLabels} from './wardrobe-engine.js';
 
 export function createCharacterViewer(){

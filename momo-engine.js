@@ -1,7 +1,9 @@
 import {schedule} from './schedule-data.js';
 import {koreanDate,validDate,shiftDate} from './game-state.js';
 import {routineContext} from './routine-engine.js';
-export const momoOwners={haru:[1,2,6],nagi:[3,4,5,7],shiori:[8,9,10,11,12,13],rei:[14,15,16,17],ritsu:[20,21,35]};
+import {defaultStudents} from './planner-catalog.js';
+import {illustrationDM} from './illustration-messages.js?v=20261114studentVoices';
+export const momoOwners=Object.fromEntries(defaultStudents.map(s=>[s.id,[...s.lectures]]));
 const M=60000,DAY=86400000;
 const owned=(student,lecture)=>momoOwners[student]?.includes(lecture);
 const finite=t=>Number.isFinite(t)&&t>=0;
@@ -73,6 +75,7 @@ export function scheduleMomo(raw,messageId,proposal,now=Date.now()){
  return {state:normalizeMomo({...state,plans:[...state.plans.filter(x=>x.id!==p.id),p]})};
 }
 export const momoCopy={
+ ...illustrationDM,
  ritsu:{hello:'잘 지내? 네 자리 비어 있으면 자꾸 보게 되더라.',invite:'전에 헷갈리던 것, 같이 다시 볼래? 비슷한 것끼리 놓고 차이부터 찾아보자.',reply:'응. 같이 보자.',accept:'알았어. 그 시간 비워 둘게. 이번엔 같이 앉자.',done:'와 줘서 좋았어. 다음에도 내 옆자리 써.',cancel:'응. 다른 날로 잡자. 늦어지면 먼저 알려 줘.'},
  haru:{hello:'잘 지내? 내 옆자리 너무 오래 비어 있는 거 아냐?',invite:'지난 강의, 다시 펼쳐 볼래? 헷갈린 데부터 같이 보자. 내가 먼저 기다리고 있을게!',reply:'좋아, 그때 보자!',accept:'약속! 헤헤, 이번엔 내가 먼저 와 있을 거야.',done:'와 줬네! 다음에도 또 같이 하자.',cancel:'괜찮아! 시간 나면 다시 불러 줘.'},
  nagi:{hello:'잘 지내…? 그냥, 네 생각이 나서.',invite:'전에 봤던 거… 천천히 다시 볼까? 잊은 데가 있어도 괜찮아.',reply:'응, 같이 보자.',accept:'응… 그 시간 비워 둘게. 기다릴게.',done:'같이 봐 줘서 고마워. 혼자보다 좋았어.',cancel:'응, 괜찮아. 편할 때 다시 정하자…'},

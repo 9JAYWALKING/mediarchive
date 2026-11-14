@@ -1,4 +1,5 @@
 // Only students with finished illustration + runtime models appear in the gallery.
+import {illustrationStudents} from './illustration-students.js?v=20261114senaBlack6';
 export const illustratedStudents=[
  {id:'haru',name:'하루',roman:'HARU',subject:'심장생리',grade:1,role:'생리학부',color:'#c97b8b',portrait:'./assets/haru-fresh-airy.png',model:'./assets/haru.model3.json',accessory:'하트 머리핀',trait:'첫 박자',relation:'나기 · 쌍둥이',profile:'먼저 손을 내미는 쌍둥이. 승부욕은 강하지만, 막힌 친구를 두고 가지 못한다.',greeting:'왔네! 오늘은 내가 먼저 기다렸지.',lines:['나 쳐다보지 말고 앞에 봐, 우우. …나도 보고 있었지만.','나기가 또 창가에 있더라. 햇빛 좋은 자리는 어떻게 그렇게 잘 찾지?','헤헤, 방금 나 좀 멋있었어?','좋아! 오늘은 내가 네 옆에 있을게.']},
  {id:'nagi',name:'나기',roman:'NAGI',subject:'순환생리',grade:1,role:'생리학부',color:'#6b9c8d',portrait:'./assets/nagi-v1.png',model:'./assets/nagi.model3.json',accessory:'물방울 리본',trait:'잔잔한 흐름',relation:'하루 · 쌍둥이',relations:[{id:'haru',label:'쌍둥이'}],accessoryIcon:'ribbon',profile:'천천히 말을 고르는 쌍둥이. 부드러워 보여도, 자기 생각에는 작은 고집이 있다.',greeting:'여기… 앉을래? 창문은 조금 닫아 뒀어.',lines:['나는 괜찮으니까… 앞을 봐도 돼.','하루가 또 먼저 갔네. 괜찮아, 기다려 줄 거야.','오늘 화분에 새잎이 났어. …너한테 먼저 보여 주고 싶었어.','아직 아무도 안 왔는데… 나랑 먼저 있을래?','하루 없이도 괜찮아. 오늘은 내가 먼저 말 걸었잖아.','너는… 조용히 있어도 어색하지 않네.']},
@@ -31,4 +32,5 @@ export const illustratedStudents=[
   '여기서는… 그렇게 격식 차리지 않아도 돼.'
  ]}
  ,{id:'ritsu',name:'리츠',roman:'RITSU',subject:'심전도·전도·기기',grade:2,role:'방송부 · 음향 담당',color:'#6e9fbe',portrait:'./assets/ritsu-v1.png',model:'./assets/ritsu.model3.json',accessory:'박자 이어커프',trait:'정확한 간격',relation:'이부키 · 방송부',relations:[{id:'ibuki',label:'방송부 콤비'},{id:'haru',label:'기초와 해석'}],profile:'작은 차이를 먼저 알아채는 2학년 방송부원. 조용히 웃긴 말을 하고, 상대가 웃을 때까지 조금 기다린다. 오래된 노래와 손수 고친 이어폰을 아낀다.',greeting:'왔어? …의자 소리로 알았어.',lines:['이어커프? 가까이서 보면 작은 파란 선이 있어.','방금 농담이었어. 늦게 웃어도 괜찮아.','조용하다고 안 삐지는 건 아니거든.','이부키가 떠들면 나는 소리를 맞춰. 서로 할 일이 있는 거지.','네 발소리는 이제 구별돼. 오늘도 맞혔어.','잠깐 더 앉아 있다 가자. 꼭 할 얘기가 있어야 하는 건 아니잖아.']}
+,...illustrationStudents
 ];

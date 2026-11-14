@@ -1,32 +1,32 @@
-import {overtimeState,overtimeLine} from './overtime-dialogue.js?v=20261111nagiPromise';
+import {overtimeState,overtimeLine} from './overtime-dialogue.js?v=20261114studentVoices';
 import {bondStories} from './bond-story-data.js?v=20261110ritsu';
-import {createBondStoryUI} from './bond-story-ui.js?v=20261111ritsuExpressions';
-import {createLobbyController} from './lobby-controller.js?v=20261111ritsuExpressions';
-import {pickCharacterLine,characterDialogueBanks} from './character-dialogue.js?v=20261110ritsu';
+import {createBondStoryUI} from './bond-story-ui.js?v=20261114senaBlack6';
+import {createLobbyController} from './lobby-controller.js?v=20261114senaBlack6';
+import {pickCharacterLine,characterDialogueBanks} from './character-dialogue.js?v=20261114studentVoices';
 import {teacherProfile,teacherName,teacherAddress,personalize,saveTeacher,teacherLevel,preventAppZoom} from './teacher-profile.js?v=20261110';
 import {linkedLabel} from './linked-study.js?v=20261110';
 preventAppZoom();
-import {arrivalGreeting} from './arrival-dialogue.js?v=20261110ritsu';
+import {arrivalGreeting} from './arrival-dialogue.js?v=20261114studentVoices';
 import {createDialogueVisibility} from './dialogue-visibility.js';
-import {configureWardrobe,refreshWardrobe,appearanceFor,wardrobeSettings,saveWardrobe} from './wardrobe-service.js?v=20261110ritsu';
+import {configureWardrobe,refreshWardrobe,appearanceFor,wardrobeSettings,saveWardrobe} from './wardrobe-service.js?v=20261114senaBlack6';
 import {wardrobeSettingsError} from './wardrobe-engine.js';
-import {openWardrobeSettings} from './wardrobe-ui.js?v=20261110ritsu';
-import {createReviewUI} from './review-ui.js?v=20261111ritsuExpressions';
+import {openWardrobeSettings} from './wardrobe-ui.js?v=20261114senaBlack6';
+import {createReviewUI} from './review-ui.js?v=20261114senaBlack6';
 import {studentGrowth} from './student-growth.js?v=20261110';
 import {createDialoguePager} from './dialogue-pages.js';
-import {createLectureAdvice} from './lecture-advice.js?v=20261110ritsu';
-import {createClassCheckin} from './class-checkin.js?v=20261110ritsu';
-import {createCharacter} from './renderer.js?v=20261111ritsuExpressions';
+import {createLectureAdvice} from './lecture-advice.js?v=20261114senaBlack6';
+import {createClassCheckin} from './class-checkin.js?v=20261114senaBlack6';
+import {createCharacter} from './renderer.js?v=20261114senaBlack6';
 import {createQuizUI} from './quiz-ui.js';
-import {createGameUI} from './game-ui.js?v=20261111overtime';
+import {createGameUI} from './game-ui.js?v=20261114senaBlack6';
 import {normalizeChoice} from './game-state.js';
 import {createDialogueDirector} from './dialogue.js';
 import {sessionTotals,summarizeGrowth,normalizeGrowth,growthReminder} from './growth-engine.js?v=20261110';
 import {normalizeStudy,studySnapshot,mergeStudy} from './study-store.js';
 import {createGrowthUI} from './growth-ui.js';
-import {configureRoutine,routineLine,configuredRoutineContext} from './routine-service.js?v=20261110ritsu';
-import {createMomoUI} from './momo-ui.js?v=20261110ritsu';
-import {createPlannerUI} from './planner-ui.js?v=20261111rest';
+import {configureRoutine,routineLine,configuredRoutineContext} from './routine-service.js?v=20261114studentVoices';
+import {createMomoUI} from './momo-ui.js?v=20261114senaBlack6';
+import {createPlannerUI} from './planner-ui.js?v=20261114senaBlack6';
 import {startWorldTime} from './world-time.js?v=20261110hometalk';
 import {createQuestUI} from './quest-ui.js?v=20261111overtime';
 const $=s=>document.querySelector(s),KEY='heart-companion-v1';let state=normalizeStudy(null),storageOK=true;
@@ -107,7 +107,7 @@ game=createGameUI({onRecallTime:event=>{if(planner.recordWalk(event))quests.reco
 planner.importLegacyMomo(momo.export());
 momo.tick();setInterval(()=>{if(!document.hidden)momo.tick();},60000);
 configureRoutine(()=>({scene:document.documentElement.dataset.dayphase,meals:planner.state.meals,quiet,visible:!document.hidden,blocked:lobbyDialogue.hasNext||!!quiz.pending||!!quests?.resting,lastInteraction:Math.max(lastTouch,lastLineAt),growth:getGrowth()}));
-classCheckin=createClassCheckin({openModal:modal,closeModal:()=>$('#modal').close(),onLine:say,
+classCheckin=createClassCheckin({openModal:modal,closeModal:()=>$('#modal').close(),onLine:say,getStudent:()=>lobbyId,
  onPause:()=>{if(state.session?.started){checkpoint();save();refresh();}planner.pauseForRest();},
  onReady:()=>{if(planner.focus){planner.resumeFocus();return;}if(state.session)resumeSession();else game.launch();},
  isBlocked:()=>document.hidden||!!document.querySelector('dialog[open]')||!!quiz.pending||!!quests?.resting});

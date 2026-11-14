@@ -12,6 +12,7 @@ const voices={
  momo:{intro:'후후, 선배가 마지막으로 물어봐도 돼?',right:'잘했어. 외운 답 말고 흐름도 기억했네.',wrong:'어머… 익숙하다고 눈으로만 넘긴 건 아니지?',unknown:'선배가 조금 서운한데? 같이 다시 보자.',recover:'그렇지. 이제 선배도 안심이야.',perfect:'하나도 안 놓쳤네. 선배가 칭찬해 줄게.',end:'틀린 곳만 다시 보면 돼. 다음에도 잊지 말고 와.',negative:'disappointed',positive:'smile'},
  tsumugi:{intro:'마지막으로 연결한 곳을 같이 살펴볼까?',right:'좋아. 처음부터 끝까지 잘 이어졌어.',wrong:'음… 그 연결은 맞지 않아. 다시 짚어 보자.',unknown:'그 부분은 비워 뒀구나. 같이 채워 보자.',recover:'이제 튼튼하게 이어졌네. 잘했어.',perfect:'마지막까지 깔끔하네. 오늘은 마음이 놓여.',end:'느슨했던 연결만 다음에 다시 확인하자.',negative:'disappointed',positive:'smile'}
 };
+Object.assign(voices.momo,{intro:'선배가 마지막으로 물어볼게! 설명까지 해 봐.',right:'잘했어! 선배가 괜히 믿은 게 아니지.',wrong:'우, 그건 같이 봤잖아! 다시 확인해!',unknown:'모르겠어? …선배랑 한 번 더 보자.',recover:'그렇지! 이제 안 틀릴 거지?',perfect:'전부 맞았어! 선배도 기쁘… 아니, 당연한 결과지!',end:'헷갈린 곳은 다음에 다시 와. 선배가 기다려 줄게.',negative:'angry',positive:'happy'});
 export function reviewReaction(student,kind,{misses=0}={}){
  const v=voices[student]||voices.mio;
  const expression=kind==='perfect'?'happy':['right','recover'].includes(kind)?v.positive:kind==='intro'?'neutral':kind==='end'?'smile':student==='nagi'&&(kind==='unknown'||misses>=2)?'cry':v.negative;

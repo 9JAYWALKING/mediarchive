@@ -1,5 +1,5 @@
 import {analyzeStatistics,durationText} from './statistics-engine.js?v=20261111overtime';
-import {illustratedStudents} from './character-data.js?v=20261110ritsu';
+import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
 import {schedule} from './schedule-data.js';
 import {koreanDate,shiftDate,validDate} from './game-state.js';
 import {sessionTotals} from './growth-engine.js?v=20261110';

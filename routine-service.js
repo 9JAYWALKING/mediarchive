@@ -1,8 +1,8 @@
-import {homePool} from './home-dialogue.js?v=20261110ritsu';
+import {homePool} from './home-dialogue.js?v=20261114studentVoices';
 import {worldTime} from './world-time.js?v=20261110hometalk';
 import {classTime} from './class-time.js';
 import {routineContext,routineDue} from './routine-engine.js';
-import {routinePool} from './routine-dialogue.js?v=20261110ritsu';
+import {routinePool} from './routine-dialogue.js?v=20261114studentVoices';
 const KEY='heart-companion-v1-routine';
 let history={seen:[],recent:{}},getFlags=()=>({});
 try{const raw=JSON.parse(localStorage.getItem(KEY)||'null');if(raw&&typeof raw==='object')history={lastAt:Number(raw.lastAt)||0,seen:Array.isArray(raw.seen)?raw.seen.filter(x=>typeof x==='string').slice(-80):[],recent:raw.recent&&typeof raw.recent==='object'?raw.recent:{}};}catch{}

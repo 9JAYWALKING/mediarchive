@@ -283,11 +283,11 @@
       "personality": "장난스럽고 순발력이 좋다. 평소엔 떠들다가 중요한 순간에는 말이 짧아진다.",
       "contrast": "즉흥적으로 보여도 긴급 상황의 순서를 가장 열심히 외운다.",
       "daily": "리듬게임과 즉석 상황극을 좋아한다.",
-      "appearance": "따뜻한 적갈색의 짧은 높은 포니테일, 생기 있는 눈매, 주황 포인트. 하루와 다른 날렵한 실루엣.",
+      "appearance": "IBUKI: mischievous energetic broadcasting-club host, cinnamon chestnut hair in ONE HIGH SHORT SIDE PONYTAIL with spiky curved tip, asymmetrical swept bangs, lively golden eyes, tiny amber lightning zipper charm. Cute confident grin, sporty petite.",
       "accessory": "번개 지퍼 참",
       "trait": "순간의 선택",
       "traitMeaning": "갈림길에서 핵심 조건을 먼저 찾는 타입.",
-      "status": "proposed",
+      "status": "implemented-illustration",
       "subject": "빈맥·부정맥 증례",
       "lectureIds": [
         22,
@@ -323,9 +323,25 @@
         "estimateOnly": true
       },
       "art": {
-        "portrait": null,
-        "model": null
-      }
+        "renderer": "illustration",
+        "portrait": "./assets/illustrations/ibuki-uniform.png",
+        "model": null,
+        "outfits": {
+          "uniform": {
+            "portrait": "./assets/illustrations/ibuki-uniform.png",
+            "atlas": "./assets/illustrations/ibuki-uniform-atlas.png"
+          },
+          "casual": {
+            "portrait": "./assets/illustrations/ibuki-casual.png",
+            "atlas": "./assets/illustrations/ibuki-casual-atlas.png"
+          },
+          "sleep": {
+            "portrait": "./assets/illustrations/ibuki-sleep.png",
+            "atlas": "./assets/illustrations/ibuki-sleep-atlas.png"
+          }
+        }
+      },
+      "availableInGallery": true
     },
     {
       "id": "mio",
@@ -335,11 +351,11 @@
       "personality": "차분하고 믿음직하다. 여러 사람의 상태를 동시에 챙기느라 자기 부탁은 미룬다.",
       "contrast": "늘 괜찮다면서 사소한 부탁 하나를 쉽게 못 한다.",
       "daily": "뜨개질과 따뜻한 음료를 좋아한다.",
-      "appearance": "부드러운 밀크티색 어깨 길이 머리, 낮은 반묶음, 푸른 회색 카디건. 과도하게 성숙한 비율을 피한다.",
+      "appearance": "MIO: gentle dependable caring girl, long milk-tea beige hair in ONE THICK LOOSE SIDE BRAID over her left shoulder, wispy curved bangs, softly downturned sage-green eyes, small pale blue knotted cord bracelet. Cute gentle thoughtful face, modest petite proportions.",
       "accessory": "매듭 팔찌",
       "trait": "버팀목",
       "traitMeaning": "복잡한 내용을 오래 붙들어도 옆을 지키는 타입.",
-      "status": "proposed",
+      "status": "implemented-illustration",
       "subject": "심부전·심근·심장막",
       "lectureIds": [
         28,
@@ -379,9 +395,25 @@
         "estimateOnly": true
       },
       "art": {
-        "portrait": null,
-        "model": null
-      }
+        "renderer": "illustration",
+        "portrait": "./assets/illustrations/mio-uniform-v2.png",
+        "model": null,
+        "outfits": {
+          "uniform": {
+            "portrait": "./assets/illustrations/mio-uniform-v2.png",
+            "atlas": "./assets/illustrations/mio-uniform-v2-atlas.png"
+          },
+          "casual": {
+            "portrait": "./assets/illustrations/mio-casual-v2.png",
+            "atlas": "./assets/illustrations/mio-casual-v2-atlas.png"
+          },
+          "sleep": {
+            "portrait": "./assets/illustrations/mio-sleep-v2.png",
+            "atlas": "./assets/illustrations/mio-sleep-v2-atlas.png"
+          }
+        }
+      },
+      "availableInGallery": true
     },
     {
       "id": "sena",
@@ -391,11 +423,11 @@
       "personality": "조용히 관찰하다 정확한 질문을 던진다. 관심 없는 척하면서 소소한 변화에 잘 반응한다.",
       "contrast": "풍경 사진은 잘 찍는데 자기 사진에는 늘 어색하다.",
       "daily": "필름 사진과 창가 자리 탐색을 좋아한다.",
-      "appearance": "짙은 갈색의 턱 아래 단발, 한쪽 귀 뒤로 넘긴 머리와 옅은 청색 포인트. 눈은 선명하되 과장된 광택 금지.",
+      "appearance": "SENA: quiet observant photography girl, deep espresso-brown long straight hair with crisp HIME cheek-length sidelocks and tidy blunt eyebrow-length fringe, clear cool gray-blue eyes, tiny translucent icy-blue glass flower hairpin above left temple. Cute reserved face, petite.",
       "accessory": "유리꽃 핀",
       "trait": "한 번 더 보기",
       "traitMeaning": "듣고 본 단서를 겹쳐 전체 모습을 만든다.",
-      "status": "proposed",
+      "status": "implemented-illustration",
       "subject": "진찰·영상·판막",
       "lectureIds": [
         18,
@@ -441,9 +473,25 @@
         "estimateOnly": true
       },
       "art": {
-        "portrait": null,
-        "model": null
-      }
+        "renderer": "illustration",
+        "portrait": "./assets/illustrations/sena-uniform-v2.png",
+        "model": null,
+        "outfits": {
+          "uniform": {
+            "portrait": "./assets/illustrations/sena-uniform-v2.png",
+            "atlas": "./assets/illustrations/sena-uniform-v2-atlas.png"
+          },
+          "casual": {
+            "portrait": "./assets/illustrations/sena-casual-v6.png",
+            "atlas": "./assets/illustrations/sena-casual-v6-atlas.png"
+          },
+          "sleep": {
+            "portrait": "./assets/illustrations/sena-sleep-v2.png",
+            "atlas": "./assets/illustrations/sena-sleep-v2-atlas.png"
+          }
+        }
+      },
+      "availableInGallery": true
     },
     {
       "id": "aoi",
@@ -453,11 +501,11 @@
       "personality": "활동적이고 꼼꼼하다. 여러 길을 비교해 안전하게 도착하는 데서 만족을 느낀다.",
       "contrast": "남에게 길을 잘 알려 주면서 자기 여행은 분 단위로 고치느라 늦는다.",
       "daily": "산책 지도와 작은 여행 계획을 좋아한다.",
-      "appearance": "청흑색의 긴 옆땋기, 맑은 눈과 청록 포인트. 작은 가방과 가느다란 리본으로 경쾌하게.",
+      "appearance": "AOI: cheerful meticulous walk-loving navigation girl, dark blue-black hair with muted teal undertone in a LONG HIGH PONYTAIL, airy parted bangs and two fine face-framing locks, turquoise eyes, small brass compass bag charm. Cute bright alert face, athletic petite proportions.",
       "accessory": "나침반 참",
       "trait": "갈림길 지도",
       "traitMeaning": "비슷해 보이는 길의 조건과 차이를 정리한다.",
-      "status": "proposed",
+      "status": "implemented-illustration",
       "subject": "혈관·위험인자",
       "lectureIds": [
         32,
@@ -502,9 +550,25 @@
         "estimateOnly": true
       },
       "art": {
-        "portrait": null,
-        "model": null
-      }
+        "renderer": "illustration",
+        "portrait": "./assets/illustrations/aoi-uniform.png",
+        "model": null,
+        "outfits": {
+          "uniform": {
+            "portrait": "./assets/illustrations/aoi-uniform.png",
+            "atlas": "./assets/illustrations/aoi-uniform-atlas.png"
+          },
+          "casual": {
+            "portrait": "./assets/illustrations/aoi-casual.png",
+            "atlas": "./assets/illustrations/aoi-casual-atlas.png"
+          },
+          "sleep": {
+            "portrait": "./assets/illustrations/aoi-sleep.png",
+            "atlas": "./assets/illustrations/aoi-sleep-atlas.png"
+          }
+        }
+      },
+      "availableInGallery": true
     },
     {
       "id": "akari",
@@ -514,11 +578,11 @@
       "personality": "직선적이고 결단이 빠르다. 평소엔 털털하지만 필요한 순간에는 집중한다.",
       "contrast": "대담하게 나서고 나서야 손이 떨렸다고 털어놓는다.",
       "daily": "짧은 달리기와 간단한 요리를 좋아한다.",
-      "appearance": "짙은 구리빛 중단발을 작게 묶고 크림·적색 포인트. 눈썹과 입꼬리로 자신감 표현, 날카롭거나 성숙하게 몰지 않는다.",
+      "appearance": "AKARI: bold decisive relaxed event organizer, short copper-auburn layered WOLF PIXIE with soft feathered nape and side-swept bangs, lively warm amber-brown eyes, tiny gold sun badge. Cute spirited expression, not mature or harsh, petite athletic build.",
       "accessory": "작은 태양 배지",
       "trait": "결정의 순간",
       "traitMeaning": "상황을 정리하고 다음 행동을 고르는 추진력.",
-      "status": "proposed",
+      "status": "implemented-illustration",
       "subject": "관상동맥·허혈",
       "lectureIds": [
         19,
@@ -559,23 +623,39 @@
         "estimateOnly": true
       },
       "art": {
-        "portrait": null,
-        "model": null
-      }
+        "renderer": "illustration",
+        "portrait": "./assets/illustrations/akari-uniform.png",
+        "model": null,
+        "outfits": {
+          "uniform": {
+            "portrait": "./assets/illustrations/akari-uniform.png",
+            "atlas": "./assets/illustrations/akari-uniform-atlas.png"
+          },
+          "casual": {
+            "portrait": "./assets/illustrations/akari-casual.png",
+            "atlas": "./assets/illustrations/akari-casual-atlas.png"
+          },
+          "sleep": {
+            "portrait": "./assets/illustrations/akari-sleep.png",
+            "atlas": "./assets/illustrations/akari-sleep-atlas.png"
+          }
+        }
+      },
+      "availableInGallery": true
     },
     {
       "id": "momo",
       "name": "모모",
       "grade": 3,
       "role": "놀이부 · 부장",
-      "personality": "작고 귀여운 인상이지만 선배다운 여유가 있다. 익숙한 놀이의 요령을 금방 짚어 준다.",
+      "personality": "어른스러운 선배가 되려고 애쓰지만 허당이라 실수하고 발끈한다. 자존심 뒤로 다정함이 비친다.",
       "contrast": "늘 쉽게 해내는 듯 보이지만 새로운 규칙에는 남몰래 연습한다.",
       "daily": "보드게임과 손가락 인형을 좋아한다.",
-      "appearance": "크림빛의 둥글고 정돈된 단발, 작은 체리색 리본과 웃는 눈매. 아기 말투·유아 복장으로 소아과를 표현하지 않는다.",
-      "accessory": "토끼 가방 참",
+      "appearance": "핑크 트윈테일과 토끼 장식. 교복, 넉넉한 파스텔 핑크 후드와 연청 와이드 데님, 토끼 무늬 핑크 잠옷.",
+      "accessory": "토끼 매듭 핀",
       "trait": "익숙한 놀이",
       "traitMeaning": "반복 속의 패턴을 먼저 알아채는 여유.",
-      "status": "proposed",
+      "status": "implemented-illustration",
       "subject": "소아심장",
       "lectureIds": [
         24,
@@ -614,9 +694,25 @@
         "estimateOnly": true
       },
       "art": {
-        "portrait": null,
-        "model": null
-      }
+        "renderer": "illustration",
+        "portrait": "./assets/illustrations/momo-uniform.png",
+        "model": null,
+        "outfits": {
+          "uniform": {
+            "portrait": "./assets/illustrations/momo-uniform.png",
+            "atlas": "./assets/illustrations/momo-uniform-atlas.png"
+          },
+          "casual": {
+            "portrait": "./assets/illustrations/momo-casual.png",
+            "atlas": "./assets/illustrations/momo-casual-atlas.png"
+          },
+          "sleep": {
+            "portrait": "./assets/illustrations/momo-sleep.png",
+            "atlas": "./assets/illustrations/momo-sleep-atlas.png"
+          }
+        }
+      },
+      "availableInGallery": true
     },
     {
       "id": "tsumugi",
@@ -626,11 +722,11 @@
       "personality": "말보다 손이 먼저 움직이는 실무파. 완성 뒤의 정리와 회복까지 책임진다.",
       "contrast": "정교한 작업은 잘하면서 선물 포장에는 쓸데없이 힘을 준다.",
       "daily": "작은 모형 만들기와 걷기를 좋아한다.",
-      "appearance": "차분한 올리브브라운 머리를 낮게 묶고 소매를 조금 걷은 재킷. 황동색 작은 장식. 수술도구는 상시 소품으로 쓰지 않는다.",
+      "appearance": "TSUMUGI: practical quietly warm crafts club senior, olive-ash brown hair in ONE LOW MESSY CHIGNON at nape with loose fine wisps and long gently parted bangs, soft amber eyes, tiny braided cord knot keyring. Cute calm understated face, petite not mature.",
       "accessory": "실매듭 키링",
       "trait": "마지막 매듭",
       "traitMeaning": "시작부터 마무리까지 이어 주는 손길.",
-      "status": "proposed",
+      "status": "implemented-illustration",
       "subject": "외과·재활",
       "lectureIds": [
         47,
@@ -669,9 +765,25 @@
         "estimateOnly": true
       },
       "art": {
-        "portrait": null,
-        "model": null
-      }
+        "renderer": "illustration",
+        "portrait": "./assets/illustrations/tsumugi-uniform-v2.png",
+        "model": null,
+        "outfits": {
+          "uniform": {
+            "portrait": "./assets/illustrations/tsumugi-uniform-v2.png",
+            "atlas": "./assets/illustrations/tsumugi-uniform-v2-atlas.png"
+          },
+          "casual": {
+            "portrait": "./assets/illustrations/tsumugi-casual-v2.png",
+            "atlas": "./assets/illustrations/tsumugi-casual-v2-atlas.png"
+          },
+          "sleep": {
+            "portrait": "./assets/illustrations/tsumugi-sleep-v2.png",
+            "atlas": "./assets/illustrations/tsumugi-sleep-v2-atlas.png"
+          }
+        }
+      },
+      "availableInGallery": true
     }
   ],
   "relationships": [
@@ -928,5 +1040,16 @@
     "majorClinical": 2,
     "minorClinical": 3,
     "note": "진단·치료지원 등 마이너 임상은 3학년. 리츠는 사용자 지정 2학년."
+  },
+  "worldSetting": {
+    "allCharactersAdults": true,
+    "studentAgeRange": "20대 이상 성인",
+    "studentExpertise": "대학원생 또는 교수 수준의 의학 지식",
+    "protagonistRole": "의사",
+    "teacherTitleMeaning": "의사 선생님",
+    "schoolMeaning": "가상의 의대 아카데미",
+    "gradeMeaning": "세계관 속 학년·기수이며 미성년 나이를 뜻하지 않음",
+    "visualConvention": "고등학교풍 교복과 학원물 디자인을 사용하는 성인 등장인물",
+    "clarifiedByUser": "2026-11-14"
   }
 }

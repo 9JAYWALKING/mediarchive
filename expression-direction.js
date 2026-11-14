@@ -1,7 +1,7 @@
 import {dialogueGroups} from './dialogue.js';
-import {routineLines} from './routine-dialogue.js?v=20261110ritsu';
-import {mealLines} from './meal-dialogue.js?v=20261110ritsu';
-import {illustratedStudents} from './character-data.js?v=20261110ritsu';
+import {routineLines} from './routine-dialogue.js?v=20261114studentVoices';
+import {mealLines} from './meal-dialogue.js?v=20261114studentVoices';
+import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
 import {characterStories} from './character-stories.js';
 
 const names={s:'smile',h:'happy',a:'angry',d:'disappointed',c:'cry',f:'soft',z:'sleepy',n:'calm'};
@@ -37,15 +37,23 @@ const mealCues={
 };
 export const authoredExpressions=new Map();
 function register(student,lines,cues){
- const list=cues.split(' ');
+ const list=(cues||lines.map(()=> 's').join(' ')).split(' ');
  if(lines.length!==list.length||list.some(c=>!names[c]))throw Error('Invalid expression cues: '+student);
  lines.forEach((text,i)=>authoredExpressions.set(student+'\n'+text,names[list[i]]));
 }
 for(const [group,bank] of Object.entries(dialogueGroups))register('haru',bank.lines,lobbyCues[group]);
 for(const student of illustratedStudents){register(student.id,student.lines,studentCues[student.id]);authoredExpressions.set(student.id+'\n'+student.greeting,'smile');}
-for(const [student,bank] of Object.entries(routineLines))for(const [phase,lines] of Object.entries(bank))register(student,lines,routineCues[student][phase]);
-for(const [student,bank] of Object.entries(mealLines))for(const [phase,lines] of Object.entries(bank))register(student,lines,mealCues[student][phase]);
+for(const [student,bank] of Object.entries(routineLines))for(const [phase,lines] of Object.entries(bank))register(student,lines,routineCues[student]?.[phase]);
+for(const [student,bank] of Object.entries(mealLines))for(const [phase,lines] of Object.entries(bank))register(student,lines,mealCues[student]?.[phase]);
 for(const story of characterStories)story.beats.forEach((beat,i)=>register(beat.speaker,[beat.text],storyCues[story.id].split(' ')[i]));
+// Explicit direction for the illustration students' routine and meal performances.
+for(const student of illustratedStudents.filter(s=>s.outfits)){
+ const lively=['ibuki','akari','momo','aoi'].includes(student.id);
+ const routine={sleep:'sleepy',wake:'soft',morning:'smile',class:lively?'angry':'calm',lunch:'smile',break:'soft',review:'calm',dinner:'smile',evening:'calm',home:'soft',bed:'sleepy',pathology:'calm',lateDinner:'calm',firstEvening:'smile',dayOff:'happy'};
+ const meals={before:'smile',during:'calm',ending:'happy',after1:['momo','akari','ibuki'].includes(student.id)?'angry':'soft',after2:'soft'};
+ for(const [phase,lines]of Object.entries(routineLines[student.id]||{}))for(const text of lines)authoredExpressions.set(student.id+'\n'+text,routine[phase]||'calm');
+ for(const [phase,lines]of Object.entries(mealLines[student.id]||{}))for(const text of lines)authoredExpressions.set(student.id+'\n'+text,meals[phase]||'calm');
+}
 
 export function dialogueExpression(student,line){
  const value=typeof line==='string'?{text:line}:line||{};

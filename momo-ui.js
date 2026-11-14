@@ -1,8 +1,8 @@
 import {sceneStrip} from './scene-assets.js';
-import {illustratedStudents} from './character-data.js?v=20261110ritsu';
+import {illustratedStudents} from './character-data.js?v=20261114senaBlack6';
 import {schedule} from './schedule-data.js';
 import {koreanDate} from './game-state.js';
-import {normalizeMomo,mergeMomo,deliverMomo,scheduleMomo,suggestPlan,planStart,momoCopy} from './momo-engine.js?v=20261110ritsu';
+import {normalizeMomo,mergeMomo,deliverMomo,scheduleMomo,suggestPlan,planStart,momoCopy} from './momo-engine.js?v=20261114studentVoices';
 const KEY='heart-companion-momo-v1';
 export function createMomoUI({getStudy,getExamDate,planner,bondEvents,openModal,closeModal,onSchedule,onLaunch,toast}){
  let state=normalizeMomo(null),active=null,host=null,setTitle=null;
