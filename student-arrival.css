@@ -1,0 +1,47 @@
+/* Outside the fading Live2D stage. The entire cast shares one 2x atlas. */
+.loadStatus.studentArrival{
+ position:absolute;z-index:3;top:43%;left:50%;right:auto;
+ width:230px;height:190px;margin:0;padding:0;transform:translate(-50%,-50%);
+ display:flex;flex-direction:column;align-items:center;gap:12px;
+ border:0;border-radius:0;background:none;pointer-events:none;
+ opacity:1;transition:opacity 180ms ease-out;
+}
+.arrivalBubble{
+ position:relative;display:block;max-width:230px;padding:10px 15px;
+ border:1px solid #ffffffed;border-radius:17px;
+ background:#fffffff2;color:#416173;box-shadow:0 3px 14px #22384a14;
+ font:700 13px/1.5 var(--display);text-align:center;word-break:keep-all;
+}
+.arrivalBubble:after{
+ content:'';position:absolute;bottom:-5px;left:calc(50% - 5px);
+ width:10px;height:10px;background:#fffffff2;transform:rotate(45deg);border-radius:0 0 3px 0;
+}
+.arrivalSprite{
+ display:block;flex:none;width:112px;height:140px;
+ background-image:url('./assets/sd/student-arrival-v1.webp');
+ background-size:400% 300%;background-repeat:no-repeat;
+ transform-origin:50% 90%;animation-duration:var(--arrival-duration,1.6s);
+ animation-timing-function:ease-in-out;animation-iteration-count:infinite;
+}
+.studentArrival[data-motion=hop] .arrivalSprite{animation-name:arrival-hop}
+.studentArrival[data-motion=sway] .arrivalSprite{animation-name:arrival-sway}
+.studentArrival[data-motion=step] .arrivalSprite{animation-name:arrival-step}
+.studentArrival[data-motion=nod] .arrivalSprite{animation-name:arrival-nod}
+.studentArrival[data-motion=rock] .arrivalSprite{animation-name:arrival-rock}
+.studentArrival[data-motion=cat] .arrivalSprite{animation-name:arrival-cat}
+.studentArrival[data-motion=wobble] .arrivalSprite{animation-name:arrival-wobble}
+.studentArrival.is-leaving{opacity:0}
+.studentArrival.is-leaving .arrivalSprite,.studentArrival.is-paused .arrivalSprite,
+.phone:not([data-view=home]) .arrivalSprite{animation-play-state:paused}
+.studentArrival.is-error{height:auto;top:29%;pointer-events:auto}
+.studentArrival.is-error .arrivalSprite,.studentArrival.is-error .arrivalBubble{display:none}
+.arrivalRetry{min-height:44px;padding:10px 18px;border:1px solid #fff;border-radius:15px;background:#fffffff2;color:#416173;font:700 13px var(--ui);box-shadow:0 3px 14px #22384a14}
+@keyframes arrival-hop{0%,100%{transform:translateY(0) rotate(-2deg)}45%{transform:translateY(-9px) rotate(3deg)}70%{transform:translateY(0) rotate(1deg)}}
+@keyframes arrival-sway{0%,100%{transform:rotate(-3deg)}50%{transform:translateY(-2px) rotate(3deg)}}
+@keyframes arrival-step{0%,100%{transform:translate(-3px,0) rotate(-3deg)}50%{transform:translate(3px,-4px) rotate(3deg)}}
+@keyframes arrival-nod{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(3px) rotate(-2deg)}70%{transform:translateY(-1px) rotate(0)}}
+@keyframes arrival-rock{0%,100%{transform:rotate(-2deg)}50%{transform:translateY(-3px) rotate(2deg)}}
+@keyframes arrival-cat{0%,100%{transform:rotate(-4deg)}35%{transform:rotate(4deg)}55%{transform:translateY(-5px) rotate(4deg)}70%{transform:translateY(0) rotate(2deg)}}
+@keyframes arrival-wobble{0%,100%{transform:rotate(-3deg)}35%{transform:translateY(-5px) rotate(3deg)}55%{transform:rotate(-6deg)}72%{transform:rotate(4deg)}}
+@media(max-height:700px){.loadStatus.studentArrival{top:42%;height:158px;gap:9px}.arrivalSprite{width:92px;height:115px}.arrivalBubble{padding:8px 12px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){.studentArrival .arrivalSprite{animation:none}.loadStatus.studentArrival{transition:none}}
