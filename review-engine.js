@@ -11,7 +11,7 @@ export function normalizeReview(raw){
   const order=r.qids.map((id,i)=>Array.isArray(r.order?.[i])&&r.order[i].length===3&&new Set(r.order[i]).size===3&&r.order[i].every(n=>[0,1,2].includes(n))?r.order[i]:[0,1,2]);
   const answers=[];
   for(const a of Array.isArray(r.answers)?r.answers:[]){const q=byId.get(a?.qid);if(!q||!r.qids.includes(a.qid)||!finite(a.at)||![-1,0,1,2].includes(a.selected)||![-2,-1,0,1,2].includes(a.delta))continue;const prior=answers.filter(x=>x.qid===a.qid);if(prior.length>=2||prior.length&&prior[0].correct)continue;answers.push({qid:a.qid,selected:a.selected,at:a.at,correct:a.selected===q.answer,delta:a.delta,recovered:a.recovered===true});}
-  answers.sort((a,b)=>a.at-b.at);seen.add(r.id);state.runs.push({id:r.id,student:r.student,name:typeof r.name==='string'?r.name.slice(0,20):'',lecture:r.lecture,lectures:[...new Set(Array.isArray(r.lectures)?r.lectures:[r.lecture])].filter(id=>Number.isInteger(id)&&byId.size&&[...byId.values()].some(q=>q.lecture===id)),track:['Wiki','J','JBL'].includes(r.track)?r.track:'',at:r.at,qids:[...r.qids],order:order.map(x=>[...x]),answers});
+  answers.sort((a,b)=>a.at-b.at);seen.add(r.id);state.runs.push({id:r.id,student:r.student,name:typeof r.name==='string'?r.name.slice(0,20):'',lecture:r.lecture,lectures:[...new Set(Array.isArray(r.lectures)?r.lectures:[r.lecture])].filter(id=>Number.isInteger(id)&&byId.size&&[...byId.values()].some(q=>q.lecture===id)),firstLearning:r.firstLearning===true,track:['Wiki','J','JBL'].includes(r.track)?r.track:'',at:r.at,qids:[...r.qids],order:order.map(x=>[...x]),answers});
  }return state;
 }
 export function reviewHistory(state){return state.runs.flatMap(r=>r.answers.map((a,i)=>({...a,id:r.id+':'+i,student:r.student,lecture:byId.get(a.qid)?.lecture||r.lecture,runId:r.id}))).sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id));}
@@ -23,7 +23,7 @@ export function queueReview(state,event,random=Math.random){
  if(!event?.id||!event.student||event.duration<60000)return null;
  const existing=state.runs.find(r=>r.id===event.id);if(existing)return existing;
  const lectures=[...new Set(studyTargets(event).map(t=>t.lecture))];if(!lectures.length)lectures.push(Number(event.lecture));const banks=lectures.map(id=>reviewQuestions.filter(q=>q.lecture===id)),pool=[];for(let i=0;i<3;i++)for(const bank of banks)if(bank[i])pool.push(bank[i]);if(pool.length<2)return null;
- const chosen=pool.slice(0,(event.duration>=2700000||event.track==='JBL')?3:2),run={id:event.id,student:event.student,name:event.name||'',lecture:Number(event.lecture),lectures,track:studyTargets(event).length>1?'':event.track||'',at:event.at||Date.now(),qids:chosen.map(q=>q.id),order:chosen.map(()=>{const a=[0,1,2];for(let i=2;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}),answers:[]};state.runs.push(run);return run;
+ const chosen=pool.slice(0,(event.duration>=2700000||event.track==='JBL')?3:2),run={id:event.id,firstLearning:event.firstLearning===true||event.mode==='new'||!state.runs.some(r=>r.lectures?.some(id=>lectures.includes(id))),student:event.student,name:event.name||'',lecture:Number(event.lecture),lectures,track:studyTargets(event).length>1?'':event.track||'',at:event.at||Date.now(),qids:chosen.map(q=>q.id),order:chosen.map(()=>{const a=[0,1,2];for(let i=2;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}),answers:[]};state.runs.push(run);return run;
 }
 export function answerReview(state,runId,qid,selected,{now=Date.now(),bond=20,retry=false}={}){
  const run=state.runs.find(r=>r.id===runId),q=byId.get(qid);if(!run||!q||!run.qids.includes(qid)||![-1,0,1,2].includes(selected))return null;
@@ -33,7 +33,7 @@ export function answerReview(state,runId,qid,selected,{now=Date.now(),bond=20,re
  const debt=Math.max(0,-history.filter(a=>a.qid===qid&&(a.delta<0||a.recovered)).reduce((n,a)=>n+a.delta,0));
  let delta=0,recovered=false;
  if(correct){if(debt){delta=Math.min(2,debt);recovered=true;}else if(!retry&&!same.some(a=>a.correct)&&today.filter(a=>a.delta>0&&!a.recovered).length<6)delta=1;}
- else if(!retry&&!same.some(a=>!a.correct)){const remaining=Math.max(0,6+today.reduce((n,a)=>n+Math.min(0,a.delta),0));delta=-Math.min(2,remaining,Math.max(0,Math.floor(bond)))||0;}
+ else if(!run.firstLearning&&!retry&&!same.some(a=>!a.correct)){const remaining=Math.max(0,6+today.reduce((n,a)=>n+Math.min(0,a.delta),0));delta=-Math.min(2,remaining,Math.max(0,Math.floor(bond)))||0;}
  const result={qid,selected,at:now,correct,delta,recovered};run.answers.push(result);return result;
 }
 export function mergeReview(current,incoming){

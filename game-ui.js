@@ -1,10 +1,10 @@
 import {createRecallUI} from './recall-ui.js?v=20261115akariVoice1';
 import {paintLevelBadge} from './level-badge.js?v=20261110rank';
 import {teacherAddress,teacherLevel} from './teacher-profile.js?v=20261110';
-import {studentGrowth} from './student-growth.js?v=20261110';
+import {studentGrowth} from './student-growth.js?v=20261116guideDM2';
 import {linkedLabel} from './linked-study.js?v=20261110';
 import {accessoryFor} from './accessory-art.js?v=20261115akariVoice1';
-import {schedule} from './schedule-data.js';
+import {schedule} from './schedule-data.js?v=20261116guideDM2';
 import {tracks,haruLessons,koreanDate,validDate,examCountdown,normalizePreferences,normalizeChoice,shiftDate} from './game-state.js';
 
 import {illustratedStudents} from './character-data.js?v=20261115akariVoice1';
@@ -13,7 +13,7 @@ import {storiesFor} from './character-stories.js';
 import {createStatisticsUI} from './statistics-ui.js?v=20261115akariVoice1';
 import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261111overtime';
 const KEY='heart-companion-shell-v1';
-export function createGameUI({beforeRecall=()=>{},onRecallTime=()=>{},bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
+export function createGameUI({onGuide=()=>{},beforeRecall=()=>{},onRecallTime=()=>{},bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
  const $=s=>document.querySelector(s),screen=$('#screen'),body=$('#screenContent');
  const characterViewer=createCharacterViewer();
  const recall=createRecallUI({beforeOpen:beforeRecall,onStudyTime:onRecallTime,toast});
@@ -89,6 +89,7 @@ export function createGameUI({beforeRecall=()=>{},onRecallTime=()=>{},bondEvents
   const weekday=new Date(selectedDate+'T12:00:00Z').getUTCDay(),monday=shiftDate(selectedDate,-((weekday+6)%7)),strip=node('div',undefined,'weekStrip');strip.setAttribute('aria-label','주간 날짜');
   for(let i=0;i<7;i++){const day=shiftDate(monday,i),b=node('button');b.append(node('small',['월','화','수','목','금','토','일'][i]),node('b',String(Number(day.slice(8)))));b.setAttribute('aria-label',day);b.setAttribute('aria-pressed',String(day===selectedDate));if(day===koreanDate())b.dataset.today='true';if(planner.count(day))b.append(node('i',undefined,'planDot'));b.onclick=()=>{selectedDate=day;render();};strip.append(b);}body.append(strip);
   const today=node('button','오늘','textButton');today.onclick=()=>{selectedDate=koreanDate();render();};body.append(today);
+  const guide=node('button','오늘의 흐름','action');guide.onclick=()=>onGuide(selectedDate);body.append(guide);
   planner.renderDay(body,selectedDate,{onQuest:()=>{quests.resetDate();show('quests');},onRest:()=>quests.restOpen()});
  }
  function renderRecords(){title('기록');statistics.render(body,{historyOpen:true,mode:'records'});const list=document.createElement('details');list.className='reviewHistory';list.append(node('summary','마지막 질문'));for(const r of [...reviews.state.runs].reverse()){const first=r.qids.map(id=>r.answers.find(a=>a.qid===id)).filter(Boolean),b=node('button',`${r.name||'학생'} · ${r.lecture}강 · ${first.filter(a=>a.correct).length}/${r.qids.length}`,'reviewRetry');b.setAttribute('aria-label',b.textContent);b.onclick=()=>reviews.open(r.id);list.append(b);}body.append(list);}

@@ -1,4 +1,5 @@
-import {schedule} from './schedule-data.js';
+import {normalizeGuideMessages,mergeGuideMessages} from './guide-dm-engine.js?v=20261116guideDM2';
+import {schedule} from './schedule-data.js?v=20261116guideDM2';
 import {koreanDate,validDate,shiftDate} from './game-state.js';
 import {routineContext} from './routine-engine.js';
 import {defaultStudents} from './planner-catalog.js?v=20261115akariVoice1';
@@ -20,9 +21,9 @@ export function normalizeMomo(raw){
   const value={id:p.id,messageId:m.id,student:m.student,lecture:m.lecture,date:p.date,time:p.time,minutes:p.minutes,status:p.status,createdAt:p.createdAt,updatedAt:p.updatedAt};
   if(!plans.has(p.id)||plans.get(p.id).updatedAt<=p.updatedAt)plans.set(p.id,value);
  }
- return {version:1,messages:[...messages.values()].sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id)),plans:[...plans.values()].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))};
+ return {version:1,guidance:normalizeGuideMessages(raw?.guidance),messages:[...messages.values()].sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id)),plans:[...plans.values()].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))};
 }
-export function mergeMomo(a,b){return normalizeMomo({messages:[...(a?.messages||[]),...(b?.messages||[])],plans:[...(a?.plans||[]),...(b?.plans||[])]});}
+export function mergeMomo(a,b){return normalizeMomo({guidance:mergeGuideMessages(a?.guidance,b?.guidance),messages:[...(a?.messages||[]),...(b?.messages||[])],plans:[...(a?.plans||[]),...(b?.plans||[])]});}
 export const planStart=p=>Date.parse(`${p.date}T${p.time}:00+09:00`);
 function lastStudy(lecture,study){return Math.max(0,...(study?.memories||[]).filter(m=>m.context?.lecture===lecture&&m.duration>=300000).map(m=>Date.parse(m.date)).filter(Number.isFinite));}
 export function deliverMomo(raw,study,examDate,now=Date.now()){

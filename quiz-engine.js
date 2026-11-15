@@ -51,7 +51,7 @@ export function tick(s,dt,{active,visible,blocked,quiet}){
  if(!active||!visible||blocked||quiet||s.pending||dt<=0||dt>3000)return false;
  s.remaining=Math.max(0,s.remaining-dt);return s.remaining===0;
 }
-export function answer(s,attemptId,selected,now,score,random=Math.random){
+export function answer(s,attemptId,selected,now,score,random=Math.random,{firstLearning=false}={}){
  const p=s.pending;if(!p||p.id!==attemptId||s.history.some(h=>h.id===attemptId))return null;
  const q=questions.find(q=>q.id===p.qid);
  if(!Number.isInteger(selected)||selected<0||selected>=q.choices.length)return null;
@@ -63,7 +63,7 @@ export function answer(s,attemptId,selected,now,score,random=Math.random){
   // A recovery refunds the last paid mistake once, even across midnight.
   if(owed){delta=owed;recovered=true;}
   else if(!same.some(h=>h.correct)&&daily.filter(h=>h.delta===2).length<5)delta=2;
- }else if(!same.some(h=>!h.correct)&&daily.reduce((n,h)=>n+Math.min(0,h.delta),0)>-9&&score>=3)delta=-3;
+ }else if(!firstLearning&&prior.length>0&&!same.some(h=>!h.correct)&&daily.reduce((n,h)=>n+Math.min(0,h.delta),0)>-9&&score>=3)delta=-3;
  const result={id:attemptId,qid:q.id,at:now,correct,delta,selected};s.history.push(result);postpone(s,random);
  return {...result,recovered};
 }

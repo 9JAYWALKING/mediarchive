@@ -1,5 +1,5 @@
 import {allocatedTargets} from './linked-study.js?v=20261110';
-import {schedule} from './schedule-data.js';
+import {schedule} from './schedule-data.js?v=20261116guideDM2';
 import {koreanDate,shiftDate,validDate} from './game-state.js';
 import {materialUnits} from './material-scope.js';
 const HOUR=3600000;
@@ -61,7 +61,7 @@ export function unionDuration(intervals,start,end){
 }
 export function captureRun(state,session,student,now=Date.now()){
  if(!student||!session?.started||!session.id||state.rest)return state;
- const start=Math.max(state.enabledAt,session.started),end=Math.min(now,start+7*24*HOUR);if(end<=start)return state;
+ const start=Math.max(state.enabledAt,session.started),end=Math.min(now,session.stopAt||now,start+7*24*HOUR);if(end<=start)return state;
  const id=session.id+':'+session.started,old=state.runs.find(r=>r.id===id);if(old?.end>=end)return state;
  const run={id,start:old?.start??start,end};return {...state,runs:old?state.runs.map(r=>r.id===id?run:r):[...state.runs,run]};
 }

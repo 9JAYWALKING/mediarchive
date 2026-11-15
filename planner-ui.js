@@ -1,14 +1,15 @@
+import {classTime} from './class-time.js';
 import {studyTargets,completedTargets,linkedTitle,linkedLabel,targetKey} from './linked-study.js?v=20261110';
 import {createDayPicker} from './day-picker.js?v=20261116timeButtons1';
-import {schedule} from './schedule-data.js';
+import {schedule} from './schedule-data.js?v=20261116guideDM2';
 import {createMealEditor} from './meals-ui.js';
 import {mealsForDate} from './meals-engine.js';
 import {agendaItem,agendaTiming} from './agenda-engine.js?v=20261111rest';
 import {illustratedStudents} from './character-data.js?v=20261115akariVoice1';
 import {koreanDate,shiftDate} from './game-state.js';
-import {suggestPlan} from './momo-engine.js?v=20261115akariVoice1';
-import {studentGrowth,recordSnapshot,focusPreview} from './student-growth.js?v=20261110';
-import {normalizePlanner,mergePlanner,plannerSnapshot,focusElapsed,buildPlans,legacyMomoPlans,startOf,endOf,nextPlan} from './planner-engine.js?v=20261115akariVoice1';
+import {suggestPlan} from './momo-engine.js?v=20261116guideDM2';
+import {studentGrowth,recordSnapshot,focusPreview} from './student-growth.js?v=20261116guideDM2';
+import {normalizePlanner,mergePlanner,plannerSnapshot,focusElapsed,buildPlans,legacyMomoPlans,startOf,endOf,nextPlan} from './planner-engine.js?v=20261116guideDM2';
 const KEY='heart-companion-planner-v1';
 export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal,closeModal,toast,onChange,onSchedule,getSession,beforeTimerChange=()=>{},canStudy=()=>true,beforeStudy=()=>false,onStudyFinished=()=>{},onStudyStarted=()=>{}}){
  let state=normalizePlanner(null),filter='all';try{state=normalizePlanner(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{}
@@ -83,7 +84,7 @@ export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal
   if(state.focus){if(state.focus.planId===p.id){focusModal();return;}toast('진행 중인 약속을 먼저 마쳐 줘.');return;}
   if(getSession()){toast('진행 중인 이벤트를 먼저 마쳐 줘.');return;}
   if(p.student&&!briefed&&beforeStudy({lecture:p.lecture,track:p.track,student:student(p.student)},()=>start(p,true)))return;
-  const growth=p.student?{...studentGrowth(state.records,student(p.student)),...(p.student==='haru'?getHaruGrowth():{})}:null;if(save({...state,focus:{id:crypto.randomUUID(),planId:p.id,elapsed:0,started:Date.now(),...recordSnapshot(p),previewElapsed:0,cycle:growth?.cycle||1,scope:growth?.scope||[]}})){onStudyStarted(p.student);changed();}
+  const growth=p.student?{...studentGrowth(state.records,student(p.student)),...(p.student==='haru'?getHaruGrowth():{})}:null;if(save({...state,focus:{id:crypto.randomUUID(),planId:p.id,elapsed:0,started:Date.now(),...recordSnapshot(p),previewElapsed:0,...(p.sourceId?.startsWith('guide:')?{stopAt:Math.min(Date.parse(p.date+'T23:00:00+09:00'),...classTime.lessons().map(l=>Date.parse(l.date+'T'+l.time+':00+09:00')).filter(t=>t>Date.now()),...state.plans.filter(x=>x.status==='scheduled'&&!x.sourceId?.startsWith('guide:')).map(startOf).filter(t=>t>Date.now())),guideMinutes:p.minutes}:{}),cycle:growth?.cycle||1,scope:growth?.scope||[]}})){onStudyStarted(p.student);changed();}
  }
  function focusModal(){
   const f=state.focus;if(!f)return;const p=state.plans.find(p=>p.id===f.planId),s=student(p.student);
@@ -106,8 +107,24 @@ export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal
   nextButton.setAttribute('aria-label',[p.label,p.title,timing?.range,timing?.remaining].filter(Boolean).join(' · '));
   nextButton.onclick=()=>p.kind==='focus'&&state.focus?focusModal():onSchedule(p.date);
  }
- function pauseForRest(){const f=state.focus;if(!f?.started)return;beforeTimerChange();save({...state,focus:{...f,elapsed:focusElapsed(f),previewElapsed:focusPreview(f,state.plans.find(p=>p.id===f.planId)),started:null}});tick();}
- function resumeFocus(){const f=state.focus;if(!f||f.started)return;const p=state.plans.find(p=>p.id===f.planId);if(!canStudy(resumeFocus,p?.student))return;beforeTimerChange();if(save({...state,focus:{...f,started:Date.now()}}))focusModal();}
+ function pauseForRest(){const f=state.focus;if(!f?.started)return;beforeTimerChange();save({...state,focus:{...f,elapsed:focusElapsed(f),previewElapsed:focusPreview(f,state.plans.find(p=>p.id===f.planId)),started:null,pausedAt:Date.now()}});tick();}
+ function resumeFocus(silent=false){const f=state.focus;if(!f||f.started)return;const p=state.plans.find(p=>p.id===f.planId);if(!canStudy(()=>resumeFocus(silent),p?.student))return;if(f.stopAt&&Date.now()>=f.stopAt){finishGuided(f.stopAt);return;}beforeTimerChange();const now=Date.now(),pauseMinutes=p.sourceId?.startsWith('guide:')&&f.pausedAt?Math.max(0,Math.ceil((now-f.pausedAt)/60000)):0;const plans=pauseMinutes?state.plans.map(x=>x.id===p.id?{...x,minutes:Math.min(720,x.minutes+pauseMinutes,f.stopAt?Math.ceil((f.stopAt-startOf(x))/60000):720),updatedAt:now}:x):state.plans;if(save({...state,plans,focus:{...f,started:now,pausedAt:undefined}})&&!silent)focusModal();}
+ function startGuided(unit,minutes){
+  if(!student(unit.student)?.enabled||!student(unit.student)?.lectures.includes(unit.lecture)){toast('담당 학생 설정을 먼저 확인해 줘.');return false;}
+  if(state.focus||getSession()){toast('진행 중인 시간을 먼저 마쳐 줘.');return false;}
+  if(!canStudy(()=>startGuided(unit,minutes),unit.student))return false;
+  const now=Date.now(),date=koreanDate(now),time=new Date(now+32400000).toISOString().slice(11,16),p={id:crypto.randomUUID(),sourceId:'guide:'+unit.id,title:unit.title,student:unit.student,lecture:unit.lecture,track:unit.material,targets:[{lecture:unit.lecture,track:unit.material}],date,time,minutes:Math.max(5,Math.ceil(minutes)),note:unit.goal,status:'scheduled',createdAt:now,updatedAt:now};
+  if(!save({...state,plans:[...state.plans,p]}))return false;
+  start(p,true);return state.focus?.planId===p.id;
+ }
+ function finishGuided(until=Date.now()){
+  const f=state.focus,p=state.plans.find(p=>p.id===f?.planId);if(!f||!p?.sourceId?.startsWith('guide:'))return false;
+  beforeTimerChange();const duration=focusElapsed(f,until);if(duration<1000){toast('조금 뒤에 마쳐 줘.');return false;}
+  const record={id:f.id,planId:p.id,at:until,duration,...recordSnapshot(f),preview:focusPreview(f,p,until),cycle:f.cycle||1,scope:f.scope||[],completed:[],unitComplete:false};
+  if(!save({...state,focus:null,records:[...state.records,record],plans:state.plans.map(x=>x.id===p.id?{...x,status:'done',updatedAt:until}:x)}))return false;
+  changed();onStudyFinished({...record,name:student(p.student)?.name||''});return true;
+ }
+ function recordMeal(date,entry){const days=state.meals.days.filter(d=>d.date!==date),existing=state.meals.days.find(d=>d.date===date&&!d.inherit)?.entries||state.meals.defaults.entries;return save({...state,meals:{...state.meals,days:[...days,{date,inherit:false,updatedAt:Date.now(),entries:existing.map(e=>e.id===entry.id?{...e,...entry,enabled:true}:e)}]}});}
  function tick(){const f=state.focus;if(f&&$('#focusTimer')){const seconds=Math.floor(focusElapsed(f)/1000);$('#focusTimer').textContent=`${String(Math.floor(seconds/3600)).padStart(2,'0')}:${String(Math.floor(seconds/60)%60).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;$('#focusPause').textContent=f.started?'일시정지':'재개';const eligible=focusElapsed(f)>=60000;for(const input of document.querySelectorAll('#focusUnits input')){input.disabled=!eligible||!f.scope?.includes(input.dataset.unit);if(input.disabled)input.checked=false;}$('#focusUnitHint').textContent=!eligible?'1분부터 선택할 수 있어.':'마친 자료를 각각 체크해 줘.';}}
  setInterval(()=>{tick();if(!document.hidden)updateNext();},1000);setInterval(()=>{if(state.focus)save(state);},5000);window.addEventListener('pagehide',()=>{if(state.focus)save(state);});document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.focus)save(state);if(!document.hidden)updateNext();});updateNext();
  function recordWalk(event){
@@ -116,5 +133,5 @@ export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal
   const records=[...state.records.filter(r=>r.id!==event.id),record];
   return save({...state,records});
  }
- return {recordWalk,edit,quick:id=>edit({student:id,quick:true,lecture:student(id)?.lectures[0]||null,track:'Wiki'}),focusModal,start,editMeals,renderDay,studentSettings,sourcePlan,pauseForRest,resumeFocus,get focus(){return state.focus;},get state(){return state;},count:date=>state.plans.filter(p=>p.date===date&&p.status!=='canceled').length,export:()=>plannerSnapshot(state),import(raw){if(!raw||raw.version!==1||!Array.isArray(raw.plans)||raw.plans.length>10000)return false;const ok=save(mergePlanner(state,raw));if(ok)changed();return ok;},importLegacyMomo(raw){const migrated=legacyMomoPlans(raw).filter(p=>!sourcePlan(p.sourceId)||sourcePlan(p.sourceId).updatedAt<p.updatedAt).map(p=>({...p,id:sourcePlan(p.sourceId)?.id||p.id}));return save(mergePlanner(state,{plans:migrated}));},record(planId,event){if(!planId||!event||!state.plans.some(p=>p.id===planId)||state.records.some(r=>r.id===event.id))return;save({...state,records:[...state.records,{id:event.id,planId,at:event.at,duration:event.duration,...recordSnapshot(state.plans.find(p=>p.id===planId)),preview:event.preview||0}]});changed();},momoPlans(){return state.plans.filter(p=>p.sourceId).map(p=>({...p,id:`plan:${p.sourceId}`,messageId:p.sourceId}));}};
+ return {startGuided,finishGuided,recordMeal,recordWalk,edit,quick:id=>edit({student:id,quick:true,lecture:student(id)?.lectures[0]||null,track:'Wiki'}),focusModal,start,editMeals,renderDay,studentSettings,sourcePlan,pauseForRest,resumeFocus,get focus(){return state.focus;},get state(){return state;},count:date=>state.plans.filter(p=>p.date===date&&p.status!=='canceled').length,export:()=>plannerSnapshot(state),import(raw){if(!raw||raw.version!==1||!Array.isArray(raw.plans)||raw.plans.length>10000)return false;const ok=save(mergePlanner(state,raw));if(ok)changed();return ok;},importLegacyMomo(raw){const migrated=legacyMomoPlans(raw).filter(p=>!sourcePlan(p.sourceId)||sourcePlan(p.sourceId).updatedAt<p.updatedAt).map(p=>({...p,id:sourcePlan(p.sourceId)?.id||p.id}));return save(mergePlanner(state,{plans:migrated}));},record(planId,event){if(!planId||!event||!state.plans.some(p=>p.id===planId)||state.records.some(r=>r.id===event.id))return;save({...state,records:[...state.records,{id:event.id,planId,at:event.at,duration:event.duration,...recordSnapshot(state.plans.find(p=>p.id===planId)),preview:event.preview||0}]});changed();},momoPlans(){return state.plans.filter(p=>p.sourceId&&!p.sourceId.startsWith('guide:')).map(p=>({...p,id:`plan:${p.sourceId}`,messageId:p.sourceId}));}};
 }

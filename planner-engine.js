@@ -1,9 +1,9 @@
 import {studyTargets,completedTargets,linkedTitle} from './linked-study.js?v=20261110';
 import {defaultStudents} from './planner-catalog.js?v=20261115akariVoice1';
-import {schedule} from './schedule-data.js';
+import {schedule} from './schedule-data.js?v=20261116guideDM2';
 import {validDate,koreanDate,shiftDate} from './game-state.js';
 import {routineContext} from './routine-engine.js';
-import {recordSnapshot,focusPreview} from './student-growth.js?v=20261110';
+import {recordSnapshot,focusPreview} from './student-growth.js?v=20261116guideDM2';
 import {materialUnits} from './material-scope.js';
 import {normalizeMeals,mergeMeals,mealsForDate} from './meals-engine.js';
 const clean=(s,n=80)=>typeof s==='string'?s.trim().slice(0,n):'';
@@ -21,12 +21,12 @@ export function normalizePlanner(raw){
   if(!plans.has(v.id)||plans.get(v.id).updatedAt<=v.updatedAt)plans.set(v.id,v);
  }
  for(const r of Array.isArray(raw?.records)?raw.records:[]){if(!r||!clean(r.id,160)||(!plans.has(r.planId)&&!r.snapshot)||!Number.isFinite(r.at)||!Number.isFinite(r.duration)||r.duration<1000||r.duration>604800000||(records.get(r.id)?.duration??-1)>=r.duration)continue;const snap=recordSnapshot(r.snapshot?r:plans.get(r.planId));records.set(r.id,{id:r.id,planId:r.planId,at:r.at,duration:r.duration,...snap,preview:Math.max(0,Math.min(r.duration,Number(r.preview)||0)),unitComplete:r.unitComplete===true&&r.duration>=60000,completed:r.duration>=60000?completedTargets(r):[],cycle:Number.isInteger(r.cycle)&&r.cycle>=1&&r.cycle<=5?r.cycle:1,scope:Array.isArray(r.scope)?[...new Set(r.scope.filter(u=>materialUnits.includes(u)))]:[]});}
- const f=raw?.focus,focus=f&&plans.has(f.planId)&&Number.isFinite(f.elapsed)&&f.elapsed>=0&&f.elapsed<=604800000?{id:clean(f.id,160)||crypto.randomUUID(),planId:f.planId,elapsed:f.elapsed,started:null,...recordSnapshot(f.snapshot?f:plans.get(f.planId)),previewElapsed:Math.max(0,Math.min(f.elapsed,Number(f.previewElapsed)||0)),cycle:Number.isInteger(f.cycle)&&f.cycle>=1&&f.cycle<=5?f.cycle:1,scope:Array.isArray(f.scope)?f.scope.filter(u=>materialUnits.includes(u)):[]}:null;
+ const f=raw?.focus,focus=f&&plans.has(f.planId)&&Number.isFinite(f.elapsed)&&f.elapsed>=0&&f.elapsed<=604800000?{id:clean(f.id,160)||crypto.randomUUID(),planId:f.planId,elapsed:f.elapsed,started:null,stopAt:Number.isFinite(f.stopAt)?f.stopAt:undefined,guideMinutes:Number.isFinite(f.guideMinutes)?f.guideMinutes:undefined,pausedAt:Number.isFinite(f.pausedAt)?f.pausedAt:undefined,...recordSnapshot(f.snapshot?f:plans.get(f.planId)),previewElapsed:Math.max(0,Math.min(f.elapsed,Number(f.previewElapsed)||0)),cycle:Number.isInteger(f.cycle)&&f.cycle>=1&&f.cycle<=5?f.cycle:1,scope:Array.isArray(f.scope)?f.scope.filter(u=>materialUnits.includes(u)):[]}:null;
  return {version:1,meals:normalizeMeals(raw?.meals),settings:{updatedAt:Number(raw?.settings?.updatedAt)||0,students:[...students.values()]},plans:[...plans.values()].sort((a,b)=>startOf(a)-startOf(b)),records:[...records.values()],focus};
 }
 export function mergePlanner(a,b){const settings=(b?.settings?.updatedAt||0)>(a?.settings?.updatedAt||0)?b.settings:a.settings;const merged=normalizePlanner({settings,plans:[...(a?.plans||[]),...(b?.plans||[])],records:[...(a?.records||[]),...(b?.records||[])]});return {...merged,meals:mergeMeals(a?.meals,b?.meals),focus:a?.focus||null};}
-export function plannerSnapshot(state,now=Date.now()){return {...state,focus:state.focus?{...state.focus,elapsed:focusElapsed(state.focus,now),previewElapsed:focusPreview(state.focus,state.plans.find(p=>p.id===state.focus.planId)||{},now),started:null}:null};}
-export function focusElapsed(f,now=Date.now()){return f?f.elapsed+(f.started?Math.max(0,now-f.started):0):0;}
+export function plannerSnapshot(state,now=Date.now()){return {...state,focus:state.focus?{...state.focus,elapsed:focusElapsed(state.focus,now),previewElapsed:focusPreview(state.focus,state.plans.find(p=>p.id===state.focus.planId)||{},now),pausedAt:state.focus.started?now:state.focus.pausedAt,started:null}:null};}
+export function focusElapsed(f,now=Date.now()){return f?f.elapsed+(f.started?Math.max(0,Math.min(now,f.stopAt||now)-f.started):0):0;}
 export function planIssues(p,state){
  const issues=[];
  if(!validDate(p.date)||!timeOK(p.time)||!Number.isInteger(p.minutes)||p.minutes<5||p.minutes>720)return {errors:[...issues,'시간은 5–720분으로 설정해 줘.'],warnings:[]};

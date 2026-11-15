@@ -1,7 +1,7 @@
 import {lessons,topics,questions,reactions} from './quiz-data.js';
-import {normalizeQuiz,bondScore,setProgress,invite,postpone,tick,answer,mergeQuiz} from './quiz-engine.js';
+import {normalizeQuiz,bondScore,setProgress,invite,postpone,tick,answer,mergeQuiz} from './quiz-engine.js?v=20261116guideDM2';
 const KEY='heart-companion-v1-quiz',MINUTE=60000;
-export function createQuizUI({getMemories,onExpression=()=>{},onLine,onBondChange,openModal,closeModal,toast}){
+export function createQuizUI({isFirstLearning=()=>false,getMemories,onExpression=()=>{},onLine,onBondChange,openModal,closeModal,toast}){
  let state,preview=false,last=performance.now(),savedAt=0;
  try{state=normalizeQuiz(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{state=normalizeQuiz(null);}
  const button=document.querySelector('#questionInvite');
@@ -25,7 +25,7 @@ export function createQuizUI({getMemories,onExpression=()=>{},onLine,onBondChang
    const b=document.createElement('button');b.type='button';b.textContent=choice;b.className='quizChoice';
    b.onclick=()=>{
     if(answered)return;
-    const result=isPreview?{correct:index===q.answer,delta:0,recovered:false}:answer(state,pending.id,index,Date.now(),score());
+    const result=isPreview?{correct:index===q.answer,delta:0,recovered:false}:answer(state,pending.id,index,Date.now(),score(),Math.random,{firstLearning:isFirstLearning()});
     if(!result)return;answered=true;
     if(!isPreview){save();update();}
     for(const [i,el] of [...$('#quizChoices').children].entries()){el.disabled=true;if(i===q.answer)el.classList.add('correct');else if(i===index)el.classList.add('wrong');}

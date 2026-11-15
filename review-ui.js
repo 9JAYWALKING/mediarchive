@@ -1,4 +1,4 @@
-import {normalizeReview,queueReview,answerReview,pendingQuestion,reviewQuestion,reviewSummary,mergeReview} from './review-engine.js?v=20261110';
+import {normalizeReview,queueReview,answerReview,pendingQuestion,reviewQuestion,reviewSummary,mergeReview} from './review-engine.js?v=20261116guideDM2';
 import {reviewReaction} from './review-dialogue.js?v=20261115akariVoice1';
 import {illustratedStudents} from './character-data.js?v=20261115akariVoice1';
 import {defaultStudents} from './planner-catalog.js?v=20261115akariVoice1';

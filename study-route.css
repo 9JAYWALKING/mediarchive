@@ -1,0 +1,64 @@
+.routeBar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 7px}
+.routeBar button{min-height:44px;border:1px solid #b9d4db99;border-radius:12px;background:#f8fdffdb;color:#467486;padding:6px 14px;font:inherit;font-size:12px;font-weight:650;box-shadow:0 2px 8px #4d859008}
+.routeBar button:first-child{padding-left:12px;border-left:3px solid #6faab4}
+.hasStudyRoute .plannerNext:not([data-kind="focus"]){display:none}
+.routeSheet{color:#365c70;max-width:560px;margin:0 auto;padding:8px 0 0}
+.routeEyebrow{display:block;letter-spacing:.12em;font-size:11px;font-weight:650;color:#7a9ba8;padding-right:40px}
+.routeSheet h2{margin:12px 0 22px;font-size:27px;letter-spacing:-.045em}
+.routeSheet h3{font-size:17px;line-height:1.45;margin:5px 0 9px;letter-spacing:-.03em}
+.routeSheet p{line-height:1.8;word-break:keep-all;overflow-wrap:anywhere}
+.routeDays{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-bottom:20px}
+.routeDays button{border:1px solid #dbe8ed;background:#fff9;color:#63828f;border-radius:13px;min-height:44px;font:inherit;font-weight:650;font-variant-numeric:tabular-nums}
+.routeDays button[aria-pressed="true"]{background:#467b8d;color:white;border-color:transparent;box-shadow:0 4px 9px #467b8d25}
+#routeOverview{background:linear-gradient(125deg,#eef8f7,#f9fcfe);border:1px solid #d7e9e8;border-radius:18px;padding:16px;margin-bottom:19px}
+.routeHint{display:block;color:#76929e;font-size:12px;line-height:1.65;margin:6px 0}
+.routeAdjustment{font-size:13px;color:#736965;border-top:1px solid #d5e3e7;padding-top:10px}
+.routeTimeline{position:relative}.routeItem{display:grid;grid-template-columns:48px minmax(0,1fr);gap:14px;padding-bottom:16px}
+.routeTime{text-align:right;font-variant-numeric:tabular-nums;padding-top:14px}.routeTime b{display:block;font-size:12px;font-weight:600}.routeTime small{display:block;color:#9aadb5;font-size:10px;margin-top:4px}
+.routeBody{border:1px solid #dae6ec;border-left:3px solid var(--route-color,#c2d7df);background:#fffdfd;border-radius:4px 15px 15px 15px;padding:13px 14px;min-width:0}
+.routeBody>small{color:#8a9faa;font-size:10px;font-weight:600;letter-spacing:.015em}.routeBody h3{font-size:15px;margin:6px 0}.routeBody p{font-family:'Gowun Dodum','GowunDodum',sans-serif;font-size:14px;margin-bottom:2px}
+.routeBody summary,.routeRecall summary{font-size:12px;color:#7395a5;cursor:pointer;padding:6px 0}.routeItem[data-kind="meal"] .routeBody{background:#faf7f1;border-color:#e9e1d7}.routeItem[data-kind="class"] .routeBody{background:#edf3f7}.routeItem[data-kind="rest"] .routeBody{background:transparent;border-style:dashed;padding:7px 14px}.routeItem[data-kind="rest"] .routeTime{padding-top:8px}
+.routeInline{border:0;background:#eaf4f5;color:#497d8b;border-radius:10px;font:inherit;font-size:12px;min-height:44px;padding:8px 15px;margin-top:8px}
+.routeFoot{padding-top:6px;display:grid;gap:10px}.routeText{border:0;background:none;color:#889ea9;font:inherit;font-size:12px;min-height:44px}
+.routeChoices{display:flex;gap:10px}.routeChoices .action{flex:1;min-width:0;min-height:50px;font-size:14px;padding:12px 8px;margin-top:10px}
+.routeQuestion{font-family:'Gowun Dodum','GowunDodum',sans-serif;font-size:21px;margin:24px 0;line-height:1.75!important}
+#routeAnswer{background:#eff7f8;border:1px solid #d7e8ec;border-radius:16px;padding:14px 18px;margin-bottom:18px}
+#routeAnswer>p:first-child{font-weight:650;font-size:15px}.routeExplanation{font-size:14px;color:#6d8791}
+.routeComplete{display:flex;align-items:center;gap:10px;min-height:48px;font-size:14px}.routeComplete input{width:21px;height:21px;accent-color:#4d899a}
+.routeRecall p{font-size:12px;margin:5px 0 10px}
+@media(max-height:760px){.routeBar{margin-bottom:2px}.routeBar button{min-height:40px}.hasStudyRoute .sessionTop{margin-bottom:4px}}
+
+.routeSources{display:block;color:#72909c;font-size:11px;line-height:1.6;margin:6px 0 5px}.routeBody details{border:0;padding:0;margin:5px 0 0;background:transparent}.routeBody details summary{border:0;padding:5px 0}.routeBody .routeInline{margin-top:4px}
+
+.routeCarry{display:block;width:100%;text-align:left;border:1px solid #d8e6eb;border-radius:10px;background:#fff9;color:#5c7b8a;min-height:44px;padding:10px 12px;margin:7px 0;font:inherit;font-size:12px}
+
+/* Shared current-task card. No extra animated portrait or canvas is mounted in DM. */
+.guideSlot:empty{display:none}
+.guideCurrent{position:relative;margin:0 0 22px;padding:15px 17px 16px;border:1px solid #fff;border-radius:22px;background:linear-gradient(135deg,color-mix(in srgb,var(--guide-accent,#7da9b4) 11%,#fff),#ffffffed 72%);box-shadow:0 5px 24px #4264760b;color:#3e6273;overflow:hidden}
+.guideCurrent:before{content:'';position:absolute;left:0;top:24px;bottom:24px;width:3px;border-radius:4px;background:var(--guide-accent,#7da9b4);opacity:.65}
+.guideCurrentHeader{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.guideContact{display:flex;align-items:center;gap:9px;min-height:44px;padding:0;border:0;background:none;color:#547483;font:700 13px var(--ui);cursor:pointer}
+.guideContact .momoAvatar{width:38px;height:38px;flex-basis:38px;border-radius:13px}
+.guideState{font:550 10px var(--ui);color:#7d959e;padding:5px 8px;border:1px solid #d6e4e875;border-radius:7px;background:#ffffff7d;white-space:nowrap}
+.guideCurrent h3{margin:0 0 6px;font:700 20px/1.4 var(--display);letter-spacing:-.045em;word-break:keep-all;overflow-wrap:anywhere}
+.guideMeta{display:block;font:500 11px/1.6 var(--numbers);letter-spacing:0;color:#819aa4}
+.guideCurrentLine{margin:13px 0 14px;font:400 15px/1.85 var(--dialogue);color:#547381;word-break:keep-all;overflow-wrap:anywhere}
+.guideCurrentActions{display:flex;gap:8px;align-items:center;margin-top:8px}
+.guideCurrentActions button{min-height:46px;border-radius:12px;padding:10px 16px;font:650 13px var(--ui);cursor:pointer}
+.guidePrimary{flex:1;background:linear-gradient(110deg,#44899c,#60a4ad);border:1px solid #78aebb;color:white;box-shadow:0 3px 8px #44899c17}
+.guideSecondary{min-width:64px;background:#fff9;border:1px solid #d8e7eb;color:#78929e}
+.guideCurrent .guideDetails{margin:0;padding:0;border:0;background:none;font:400 13px/1.8 var(--dialogue);color:#718d99}
+.guideDetails summary{font:550 11px var(--ui);min-height:38px;display:flex;align-items:center;gap:6px;cursor:pointer;list-style:none}
+.guideDetails summary:after{content:'⌄';font-size:15px;transition:transform .2s}.guideDetails[open] summary:after{transform:rotate(180deg)}
+.guideDetails p{margin:2px 0 10px}.guideCurrent.is-compact h3{font-size:18px}.guideCurrent.is-compact .guideCurrentLine{margin:10px 0;font-size:14px}
+.guideLog{border-bottom:1px solid #dce8ee;margin:0 0 22px}.guideExchange{margin-bottom:20px}.guideExchange .momoBubble{font-weight:400;font-size:14px}
+.guideNotification{position:absolute;left:14px;right:14px;top:calc(env(safe-area-inset-top) + 86px);z-index:55;display:flex;gap:11px;align-items:center;text-align:left;padding:11px 14px;border:1px solid #fff;border-radius:18px;background:#f9fdffed;box-shadow:0 8px 28px #314b6326;color:#436374;backdrop-filter:blur(14px);animation:guideArrive .25s ease-out;cursor:pointer}
+.guideNotification .momoAvatar{width:42px;height:42px;flex-basis:42px;border-radius:14px}.guideNotificationBody{display:grid;gap:4px;min-width:0}.guideNotificationBody b{font:700 12px var(--ui)}.guideNotificationBody>span{font:400 13px/1.6 var(--dialogue);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.eventContext.hasGuidePortrait{padding-left:55px!important;min-height:66px}.guideHomePortrait{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:36px;height:40px;flex-basis:36px;border-radius:12px}.eventContext.hasGuidePortrait strong{font-size:13px}
+@keyframes guideArrive{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.guideNotification{animation:none}}
+@media(max-width:360px){.guideCurrent{padding:13px}.guideCurrent h3{font-size:18px}.guideCurrentLine{font-size:14px}.eventContext.hasGuidePortrait{padding-left:48px!important}.guideHomePortrait{width:30px;height:36px;left:7px}}
+
+.routeCheckContact{display:flex;align-items:center;gap:10px;letter-spacing:.02em}.routeCheckContact .momoAvatar{width:42px;height:42px;flex-basis:42px;border-radius:14px}
+
+.guideOlder{padding:0;border:0;margin:0 0 18px;background:transparent}.guideOlder>summary{min-height:44px;display:flex;align-items:center;font:500 11px var(--ui);color:#8a9fa9;cursor:pointer}.guideOlder>summary:after{content:"⌄";margin-left:7px}.guideOlder[open]>summary{margin-bottom:14px}

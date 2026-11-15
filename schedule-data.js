@@ -1,4 +1,4 @@
-// Source: 2026-2학기 순환기계 시간표(1030), local course-data.js snapshot 2026-11-09.
+// Source: current course-data.js, checked 2026-11-16 against the 10-day study plan.
 export const schedule = [
   {
     "id": 1,
@@ -239,17 +239,17 @@ export const schedule = [
     "title": "심장판막질환",
     "teacher": "신성희",
     "area": "임상의학",
-    "date": "2026-11-13",
-    "time": "09:00",
-    "hours": 2
+    "date": "2026-11-23",
+    "time": "08:30",
+    "hours": 1.5
   },
   {
     "id": 28,
     "title": "심부전의 진단과 치료",
     "teacher": "신성희",
     "area": "임상의학",
-    "date": "2026-11-13",
-    "time": "11:00",
+    "date": "2026-11-23",
+    "time": "10:00",
     "hours": 2
   },
   {

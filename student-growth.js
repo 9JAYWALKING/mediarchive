@@ -14,5 +14,6 @@ export function studentGrowth(records,student){
 }
 export function recordSnapshot(plan){return {snapshot:true,targets:studyTargets(plan),student:plan?.student||'',lecture:plan?.lecture||null,track:plan?.track||'',title:plan?.title||'개인 일정'};}
 export function focusPreview(f,plan,now=Date.now()){
+ now=Math.min(now,f.stopAt||now);
  const targets=studyTargets(f).length?studyTargets(f):studyTargets(plan);if(!targets.length)return sessionTotals({elapsed:f.elapsed,started:f.started,previewElapsed:f.previewElapsed||0,context:{lecture:f.lecture??plan.lecture}},now).preview;const running=f.started?Math.max(0,now-f.started):0;const extra=targets.length?targets.reduce((n,t)=>n+sessionTotals({elapsed:0,started:f.started,context:{lecture:t.lecture}},now).preview,0)/targets.length:0;return Math.min(f.elapsed+running,(f.previewElapsed||0)+extra);
 }
