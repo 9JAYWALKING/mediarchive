@@ -1,6 +1,6 @@
-import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261114momoLive4';
-import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261114momoLive4';
-import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261114momoLive4';
+import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261115senaLive5';
+import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261115senaLive5';
+import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115senaLive5';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
 export async function createCharacter(canvas, options={}){
@@ -61,6 +61,8 @@ export async function createCharacter(canvas, options={}){
    gl.uniform2fv(gl.getUniformLocation(program,'u_artSize'),rig?.size||[1199,1312]);
    gl.uniform1f(gl.getUniformLocation(program,'u_preserveHair'),rig?.preserveHair?1:0);
    gl.uniform1f(gl.getUniformLocation(program,'u_hairGuard'),rig?.hairGuard?1:0);
+   gl.uniform1f(gl.getUniformLocation(program,'u_brownHairGuard'),rig?.brownHairGuard?1:0);
+   gl.uniform3fv(gl.getUniformLocation(program,'u_mouthRadius'),rig?.mouthRadius||(rig?.hairGuard?[76,42,62]:[70,42,42]));
    if(rig?.eyes)for(const [i,side] of ['Left','Right'].entries()){const [a,b,c,d,x,y]=rig.eyes[i];gl.uniform3fv(gl.getUniformLocation(program,'u_eye'+side+'X'),[a,b,x]);gl.uniform3fv(gl.getUniformLocation(program,'u_eye'+side+'Y'),[c,d,y]);}
    if(rig){const map=faceTransform(rig);gl.uniform3fv(gl.getUniformLocation(program,'u_mapX'),map[0]);gl.uniform3fv(gl.getUniformLocation(program,'u_mapY'),map[1]);for(const [i,name] of ['u_left','u_right','u_mouth'].entries())gl.uniform2fv(gl.getUniformLocation(program,name),rig.target[i]);const [left,right]=rig.target;gl.uniform4fv(gl.getUniformLocation(program,'u_fringe'),[left[0]-85,Math.min(left[1],right[1])-125,right[0]+85,Math.max(left[1],right[1])+20]);}
    gl.uniform4fv(gl.getUniformLocation(program,'u_protect'),rig?.protect||[0,0,0,0]);
@@ -73,6 +75,7 @@ export async function createCharacter(canvas, options={}){
   function autoExpression(){acting.auto(activeTime);requestDraw();}
   gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.disable(gl.DEPTH_TEST);
   const profiles={
+   sena:{speed:.51,breath:1.08,head:.30,body:.38,hair:.63,lag:1.9,damping:3.4,look:.46,react:.62,hold:1.9,blink:4.2,open:.19},
    momo:{speed:.68,breath:1.28,head:.32,body:.42,hair:.70,lag:2.5,damping:4.1,look:.60,react:.85,hold:1.6,blink:3.6,open:.17},
    ritsu:{speed:.56,breath:1.12,head:.29,body:.34,hair:.56,lag:2.4,damping:3.8,look:.48,react:.65,hold:1.8,blink:4,open:.18},
    haru:{speed:.72,breath:1.45,head:.34,body:.55,hair:.68,lag:2.5,damping:4.5,look:.65,react:.9,hold:1.5,blink:3.2,open:.16},
@@ -138,7 +141,7 @@ export async function createCharacter(canvas, options={}){
    gl.uniform1f(faceLocations.mouthPose,facesReady?face.mouth:-1);
    gl.uniform1f(faceLocations.blink,facesReady?blinkArt:-1);
    canvas.dataset.blink=blink;
-   const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,studentId==='momo'?3:2);
+   const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,['momo','sena'].includes(studentId)?3:2);
    if(rect.width<=0||rect.height<=0)return;
    const w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
    const imageH=options.framing==='face'?rect.height*2.5:options.framing==='review'?rect.height*1.65:options.framing==='portrait'?Math.min(rect.height*.99,rect.width*(img.height/img.width)*1.25):Math.max(rect.height*.99,rect.width*1.34);

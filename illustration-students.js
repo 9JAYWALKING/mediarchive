@@ -92,21 +92,18 @@ export const illustrationStudents=[
   "grade": 2,
   "role": "사진부 · 관찰 담당",
   "color": "#919dbb",
-  "portrait": "./assets/illustrations/sena-uniform-v2.png",
-  "model": null,
-  "renderer": "illustration",
+  "portrait": "./assets/sena-live-v1.png",
+  "model": "./assets/sena.model3.json",
+  "renderer": "live2d",
   "outfits": {
    "uniform": {
-    "portrait": "./assets/illustrations/sena-uniform-v2.png",
-    "atlas": "./assets/illustrations/sena-uniform-v2-atlas.png"
+    "portrait": "./assets/sena-live-v1.png"
    },
    "casual": {
-    "portrait": "./assets/illustrations/sena-casual-v6.png",
-    "atlas": "./assets/illustrations/sena-casual-v6-atlas.png"
+    "portrait": "./assets/wardrobe/sena-casual-live-v1.png"
    },
    "sleep": {
-    "portrait": "./assets/illustrations/sena-sleep-v2.png",
-    "atlas": "./assets/illustrations/sena-sleep-v2-atlas.png"
+    "portrait": "./assets/wardrobe/sena-sleep-live-v1.png"
    }
   },
   "accessory": "유리꽃 핀",

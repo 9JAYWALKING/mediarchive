@@ -7,3 +7,4 @@
 /* Illustration portraits contain more of the body than the original Live2D art.
    Scale with the avatar frame so list and conversation crops stay consistent. */
 .momoAvatar[data-renderer="illustration"] img{width:190%;top:-18%}
+.momoAvatar[data-student="sena"] img{width:190%;top:-18%}

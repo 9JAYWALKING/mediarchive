@@ -1,5 +1,6 @@
 import {ritsuFaceRig} from './ritsu-face-rig.js?v=20261111ritsuExpressions';
 import {momoFaceRig} from './momo-face-rig.js?v=20261114momoLive4';
+import {senaFaceRig} from './sena-face-rig.js?v=20261115senaLive5';
 // Facial atlas registration: source eye/mouth landmarks align with the approved portrait.
 export const expressionNames=['neutral','smile','happy','angry','disappointed','cry','soft','sleepy','calm'];
 export const expressionLabels=['평소','미소','활짝','삐침','실망','울먹','눈웃음','나른','차분'];
@@ -13,10 +14,11 @@ export function expressionPose(name){
 }
 export function facialParts(student,name,{talking=false,blink='open'}={}){
  const face=expressionPose(name),positive=['smile','happy','soft'].includes(name);
- const mouth=talking?(student==='haru'?-1:student==='momo'?(positive?0:face.mouth):student==='ritsu'&&!positive?face.mouth:2):face.mouth;
+ const mouth=talking?(student==='haru'?-1:['momo','sena'].includes(student)?(positive?0:face.mouth):student==='ritsu'&&!positive?face.mouth:2):face.mouth;
  return {...face,mouth,blink:face.eyes===2||blink==='open'?-1:blink==='closed'?2:4,mouthScale:student==='ritsu'&&talking&&positive&&name!=='happy'?.76:1};
 }
 export const expressionRigs={
+ sena:{size:[1024,1536],atlas:'expressions/sena-live-v1.png',preserveHair:true,registered:true,brownHairGuard:true,mouthRadius:[70,38,45],...senaFaceRig.uniform,source:[[205,323],[340,291],[289,396]],outfits:{casual:senaFaceRig.casual,sleep:senaFaceRig.sleep}},
  momo:{size:[1024,1536],atlas:'expressions/momo-live-v2.png',preserveHair:true,registered:true,hairGuard:true,...momoFaceRig.uniform,source:[[214,288],[365,255],[307,370]],outfits:{casual:momoFaceRig.casual,sleep:momoFaceRig.sleep}},
  ritsu:{size:[1108,1420],preserveHair:true,registered:true,protect:[738,355,35,52],...ritsuFaceRig.uniform,source:[[208,302],[337,287],[280,385]],outfits:{casual:{...ritsuFaceRig.casual,protect:[755,354,36,52]},sleep:{...ritsuFaceRig.sleep,protect:[738,355,35,52]}}},
  haru:{target:[[495,353],[650,312],[590,444]],source:[[190,290],[313,258],[264,357]]},
@@ -33,7 +35,8 @@ export const expressionFragment=`precision mediump float;
 varying vec2 v_uv; uniform sampler2D u_texture; uniform sampler2D u_faces; uniform vec2 u_artSize;
 uniform vec3 u_mapX; uniform vec3 u_mapY; uniform vec2 u_left; uniform vec2 u_right; uniform vec2 u_mouth;
 uniform vec4 u_fringe; uniform vec4 u_protect;
-uniform float u_preserveHair,u_hairGuard;
+uniform float u_preserveHair,u_hairGuard,u_brownHairGuard;
+uniform vec3 u_mouthRadius;
 uniform vec3 u_eyeLeftX,u_eyeLeftY,u_eyeRightX,u_eyeRightY;
 uniform float u_registered,u_mouthScale;
 uniform vec3 u_browLeftX,u_browLeftY,u_browRightX,u_browRightY,u_mouthX,u_mouthY;
@@ -77,6 +80,13 @@ void main(){
  vec2 nearEye=distance(p,u_left)<distance(p,u_right)?u_left:u_right;
  float pinkHair=smoothstep(.0,.025,base.b-base.g)*smoothstep(.12,.23,base.r-base.g);
  float hairCover=u_hairGuard*pinkHair*(1.0-smoothstep(-18.0,-5.0,p.y-nearEye.y));
+ // Protect Sena's brown fringe above the lids, excluding the dark brow ink.
+ vec3 above=texture2D(u_texture,v_uv+vec2(0.0,12.0/u_artSize.y)).rgb;
+ // Brown eyebrow ink has the same hue as hair. Protect only a continuous
+ // hair region, not isolated ink with exposed skin immediately above it.
+ float hairAbove=1.0-smoothstep(.68,.78,above.r);
+ float brownHair=hairAbove*smoothstep(.28,.36,base.r)*(1.0-smoothstep(.67,.76,base.r))*(1.0-smoothstep(.12,.19,base.r-base.g));
+ hairCover=max(hairCover,u_brownHairGuard*brownHair*(1.0-smoothstep(-23.0,-10.0,p.y-nearEye.y)));
  faceMask*=1.0-hairCover;
  if(u_protect.z>0.0)faceMask*=smoothstep(.75,1.0,length((p-u_protect.xy)/u_protect.zw));
  
@@ -86,6 +96,14 @@ void main(){
  if(u_preserveHair>.5){
   if(u_blink<0.0&&(u_eyePose==1.0||u_eyePose==0.0))eyes=-1.0;
   lids=max(1.0-smoothstep(.9,1.0,length((p-u_left)/vec2(90.0,46.0))),1.0-smoothstep(.9,1.0,length((p-u_right)/vec2(90.0,46.0))));
+  if(u_brownHairGuard>.5){
+   // Follow Sena's slanted eye line. The blink window must stop below her
+   // expressive brows instead of replacing them with the smiling-eye atlas.
+   vec2 l=p-u_left,r=p-u_right;l.y+=l.x*.26;r.y+=r.x*.26;
+   float leftLid=(1.0-smoothstep(.9,1.0,length(l/vec2(84.0,34.0))))*smoothstep(-29.0,-26.0,l.y);
+   float rightLid=(1.0-smoothstep(.9,1.0,length(r/vec2(84.0,34.0))))*smoothstep(-29.0,-26.0,r.y);
+   lids=max(leftLid,rightLid);
+  }
 
   if(u_browPose>4.5&&u_blink<0.0)lids=max(lids,max(oval(p,u_left+vec2(0.0,29.0),vec2(63.0,53.0)),oval(p,u_right+vec2(0.0,29.0),vec2(63.0,53.0))));
  }
@@ -98,7 +116,7 @@ void main(){
  // A single mouth replaces the old one; jaw pixels always belong to the portrait.
  // Momo's laugh extends below the resting smile; keep the feathered edge
  // outside the entire mouth while ending safely above her original chin.
- vec2 mouthRadius=mix(vec2(70.0,42.0),vec2(76.0,p.y<u_mouth.y?42.0:62.0),u_hairGuard);
+ vec2 mouthRadius=vec2(u_mouthRadius.x,p.y<u_mouth.y?u_mouthRadius.y:u_mouthRadius.z);
  float mouth=1.0-smoothstep(.86,1.0,length((p-u_mouth)/mouthRadius));
  gl_FragColor=paint(u_mouthPose,face,p,mouth,2);
 }`;
