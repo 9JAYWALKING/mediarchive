@@ -10,22 +10,22 @@ import {tracks,haruLessons,koreanDate,validDate,examCountdown,normalizePreferenc
 import {illustratedStudents} from './character-data.js?v=20261115akariVoice1';
 import {createCharacterViewer} from './character-viewer.js?v=20261115akariVoice1';
 import {storiesFor} from './character-stories.js';
-import {createStatisticsUI} from './statistics-ui.js?v=20261115akariVoice1';
-import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261111overtime';
+import {createStatisticsUI} from './statistics-ui.js?v=20261116quests2';
+import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261116quests2';
 const KEY='heart-companion-shell-v1';
-export function createGameUI({onGuide=()=>{},beforeRecall=()=>{},onRecallTime=()=>{},bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
+export function createGameUI({onGuide=()=>{},beforeRecall=()=>{},onRecallTime=()=>{},bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,care,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){
  const $=s=>document.querySelector(s),screen=$('#screen'),body=$('#screenContent');
  const characterViewer=createCharacterViewer();
  const recall=createRecallUI({beforeOpen:beforeRecall,onStudyTime:onRecallTime,toast});
  let prefs;try{prefs=normalizePreferences(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{prefs=normalizePreferences(null);}
  let view='home',selectedDate=koreanDate(),studentDetail=false,lastDate='',dailySources=[],dailyCache=0,rankSources=[],rankCache=1;
- const statistics=createStatisticsUI({getLiveData:()=>({study:getState(),planner:planner.state}),getData:()=>({study:getState(),planner:planner.state,growth:getGrowth(),bond:getQuiz().score,quiz:getQuiz().export(),reviews:reviews.export(),quests:quests.state}),onProfile:id=>{show('students');studentDetail=id;render();body.scrollTop=0;},onPlan:id=>planner.edit({student:id})});
+ const statistics=createStatisticsUI({getLiveData:()=>({study:getState(),planner:planner.state}),getData:()=>({study:getState(),planner:planner.state,growth:getGrowth(),bond:getQuiz().score,quiz:getQuiz().export(),reviews:reviews.export(),care:care.state}),onProfile:id=>{show('students');studentDetail=id;render();body.scrollTop=0;},onPlan:id=>planner.edit({student:id})});
  const icon=name=>`<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
  function persist(){try{localStorage.setItem(KEY,JSON.stringify(prefs));return true;}catch{toast('설정 저장 실패');return false;}}
  function node(tag,text,className){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(className)el.className=className;return el;}
  function show(next){view=next;studentDetail=false;$('.phone').dataset.view=next;screen.hidden=next==='home';for(const b of document.querySelectorAll('[data-nav]')){const active=b.dataset.nav===next;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}if(next!=='home'){render();body.scrollTop=0;$('#screenTitle').focus();}}
  function title(text){$('#screenTitle').textContent=text;screen.dataset.section=view;}
- function render(){body.classList.remove('recallPage');body.replaceChildren();if(view==='students')renderStudents();else if(view==='schedule')renderSchedule();else if(view==='recall')recall.render(body,title);else if(view==='records')renderRecords();else if(view==='momo')momo.render(body,title);else if(view==='quests'){title('퀘스트');quests.render(body);}}
+ function render(){body.classList.remove('recallPage');body.replaceChildren();if(view==='students')renderStudents();else if(view==='schedule')renderSchedule();else if(view==='recall')recall.render(body,title);else if(view==='records')renderRecords();else if(view==='momo')momo.render(body,title);}
  function activeChoice(){return normalizeChoice(getState().session?.context||prefs.choice);}
  function update(){
   const growth=getStudentGrowth(getLobby());$('.starLine>b').textContent='Lv. '+growth.level;$('.stars').textContent='★'.repeat(growth.stars)+'☆'.repeat(3-growth.stars);$('.stars').setAttribute('aria-label',`성급 ${growth.stars}성`);
@@ -44,7 +44,7 @@ export function createGameUI({onGuide=()=>{},beforeRecall=()=>{},onRecallTime=()
  }
  function launch(lecture,selectedTrack,planId){
   if(!lecture&&getLobby()!=='haru'){if(getState().session||planner.focus){toast('진행 중인 이벤트를 먼저 마쳐 줘.');return;}planner.quick(getLobby());return;}
-  if(quests.resting){quests.restOpen();return;}
+  if(care.resting){care.restOpen();return;}
   if(planner.focus){toast('진행 중인 약속을 먼저 마쳐 줘.');return;}
   if(getState().session){toast('진행 중인 이벤트를 먼저 종료해 주세요.');show('home');return;}
   let choice=normalizeChoice(lecture?{lecture,track:selectedTrack||prefs.choice.track}:prefs.choice),mode=getGrowth().cycles?'familiar':'new';
@@ -89,13 +89,13 @@ export function createGameUI({onGuide=()=>{},beforeRecall=()=>{},onRecallTime=()
   const weekday=new Date(selectedDate+'T12:00:00Z').getUTCDay(),monday=shiftDate(selectedDate,-((weekday+6)%7)),strip=node('div',undefined,'weekStrip');strip.setAttribute('aria-label','주간 날짜');
   for(let i=0;i<7;i++){const day=shiftDate(monday,i),b=node('button');b.append(node('small',['월','화','수','목','금','토','일'][i]),node('b',String(Number(day.slice(8)))));b.setAttribute('aria-label',day);b.setAttribute('aria-pressed',String(day===selectedDate));if(day===koreanDate())b.dataset.today='true';if(planner.count(day))b.append(node('i',undefined,'planDot'));b.onclick=()=>{selectedDate=day;render();};strip.append(b);}body.append(strip);
   const today=node('button','오늘','textButton');today.onclick=()=>{selectedDate=koreanDate();render();};body.append(today);
-  const guide=node('button','오늘의 흐름','action');guide.onclick=()=>onGuide(selectedDate);body.append(guide);
-  planner.renderDay(body,selectedDate,{onQuest:()=>{quests.resetDate();show('quests');},onRest:()=>quests.restOpen()});
+  
+  planner.renderDay(body,selectedDate,{onQuest:()=>onGuide(selectedDate),onRest:()=>care.restOpen()});
  }
  function renderRecords(){title('기록');statistics.render(body,{historyOpen:true,mode:'records'});const list=document.createElement('details');list.className='reviewHistory';list.append(node('summary','마지막 질문'));for(const r of [...reviews.state.runs].reverse()){const first=r.qids.map(id=>r.answers.find(a=>a.qid===id)).filter(Boolean),b=node('button',`${r.name||'학생'} · ${r.lecture}강 · ${first.filter(a=>a.correct).length}/${r.qids.length}`,'reviewRetry');b.setAttribute('aria-label',b.textContent);b.onclick=()=>reviews.open(r.id);list.append(b);}body.append(list);}
  for(const b of document.querySelectorAll('[data-nav]'))b.onclick=()=>{if(b.dataset.nav==='momo')momo.reset();show(b.dataset.nav);};
  $('#screenBack').onclick=()=>{if(view==='momo'&&momo.back())return;if(view==='recall'&&recall.back())return;if(view==='students'&&studentDetail){studentDetail=false;render();}else show('home');};
- $('#examButton').onclick=examEditor;$('#eventContext').onclick=()=>launch();$('#quickQuest').onclick=()=>{quests.resetDate();show('quests');};$('#quickSchedule').onclick=()=>show('schedule');
+ $('#examButton').onclick=examEditor;$('#eventContext').onclick=()=>launch();$('#quickQuest').onclick=()=>onGuide();$('#quickSchedule').onclick=()=>show('schedule');
  update();
  return {recall,show,update,launch,examEditor,showArrival:greeting=>characterViewer.open(greeting.student,null,greeting),openSchedule(date){if(validDate(date))selectedDate=date;show('schedule');},refreshPanel(){if(view!=='home'){const scroll=body.scrollTop;render();body.scrollTop=scroll;}},get view(){return view;},get examDate(){return prefs.examDate;},export:()=>structuredClone(prefs),import(raw){prefs=normalizePreferences(raw);persist();update();if(view!=='home')render();}};
 }

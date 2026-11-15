@@ -4,8 +4,8 @@ import {createCharacter} from './renderer.js?v=20261115akariVoice1';
 import {appearanceFor} from './wardrobe-service.js?v=20261115akariVoice1';
 import {teacherProfile,saveTeacher} from './teacher-profile.js?v=20261110';
 import {positionIllustrationFallback} from './illustration-layout.js?v=20261115akariVoice1';
-export function createLobbyController({getStudents,onSelect,onReady,onMotionChange,openModal,closeModal}){
- const $=s=>document.querySelector(s);let selected=teacherProfile().lobby,model=null,controller=null,generation=0,lastSwipe=0,presented=false;
+export function createLobbyController({getStudents,onSelect,onReady,onLoadingChange=()=>{},onMotionChange,openModal,closeModal}){
+ const $=s=>document.querySelector(s);let selected=teacherProfile().lobby,model=null,controller=null,generation=0,lastSwipe=0,presented=false,loading=false;
  const stage=$('#stage'),reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
  const arrival=createStudentArrival($('#loadStatus'));
  const placeFallback=look=>positionIllustrationFallback($('#fallback'),selected,look?.id||appearanceFor(selected)?.id||'uniform',stage);
@@ -17,11 +17,11 @@ export function createLobbyController({getStudents,onSelect,onReady,onMotionChan
  async function select(id,{greet=true,persist=true}={}){
   const student=getStudents().find(s=>s.id===id)||getStudents()[0],art=illustratedStudents.find(s=>s.id===student.id);id=student.id;selected=id;const gen=++generation;controller?.abort();controller=new AbortController();
   if(art)arrival.show(id,gen);else arrival.cancel(gen);
-  stage.classList.add('is-changing');
+  loading=true;onLoadingChange(true);stage.classList.add('is-changing');$('.dialogue').classList.add('is-changing');
   if(presented&&!reducedMotion.matches)await new Promise(resolve=>setTimeout(resolve,180));
   if(gen!==generation)return;
   model?.destroy();model=null;onReady(null);
-  const reveal=()=>{if(gen!==generation)return;presented=true;requestAnimationFrame(()=>{if(gen===generation)stage.classList.remove('is-changing');});};
+  const reveal=()=>{if(gen!==generation)return;presented=true;requestAnimationFrame(()=>{if(gen!==generation)return;loading=false;stage.classList.remove('is-changing');$('.dialogue').classList.remove('is-changing');onLoadingChange(false);});};
   if(persist)saveTeacher({lobby:id});$('.studentName .dept').textContent=`${art?.grade||2}학년 · ${student.subject}`;$('.studentName h1').replaceChildren(document.createTextNode(student.name+' '));const roman=document.createElement('span');roman.textContent=art?.roman||'';$('.studentName h1').append(roman);$('.nameplate').replaceChildren(document.createTextNode(student.name+' '));const small=document.createElement('small');small.textContent=art?.roman||'';$('.nameplate').append(small);$('#touch').setAttribute('aria-label',student.name+'에게 말 걸기');$('#fallback').alt=student.name;
   $('.phone').dataset.student=id;$('.phone').style.setProperty('--student-accent',student.color);$('#motionToggle').hidden=!art;$('#fallback').hidden=!art;initial.hidden=!!art;initial.textContent=student.name.slice(0,1);initial.style.setProperty('--student-color',student.color);
   const old=$('#character'),canvas=document.createElement('canvas');canvas.id='character';canvas.setAttribute('aria-hidden','true');old.replaceWith(canvas);canvas.hidden=!art;onSelect(id,greet);if(!art){reveal();return;}
@@ -30,5 +30,5 @@ export function createLobbyController({getStudents,onSelect,onReady,onMotionChan
   try{const instance=await createCharacter(canvas,{manifest:art.model,personality:id,signal:controller.signal,releaseContext:true,onMotionChange,onAppearanceChange:look=>{if(look&&gen===generation){$('#fallback').src=look.portrait;placeFallback(look);}}});if(gen!==generation){instance.destroy();return;}model=instance;onReady(instance);$('#fallback').hidden=true;arrival.ready(gen);reveal();}catch(error){if(gen!==generation||error.name==='AbortError')return;canvas.hidden=true;arrival.failed(gen,()=>select(id,{greet:false}));reveal();}
  }
  let origin=null;const touch=$('#touch');touch.style.touchAction='pan-y';touch.addEventListener('pointerdown',e=>{origin={x:e.clientX,y:e.clientY};});touch.addEventListener('pointerup',e=>{if(!origin)return;const dx=e.clientX-origin.x,dy=e.clientY-origin.y;origin=null;if(Math.abs(dx)>=50&&Math.abs(dx)>Math.abs(dy)*1.5){lastSwipe=Date.now();cycle(dx<0?1:-1);}});touch.addEventListener('pointercancel',()=>origin=null);
- return {select,picker,get id(){return selected;},get swiped(){return Date.now()-lastSwipe<400;}};
+ return {select,picker,get id(){return selected;},get loading(){return loading;},get swiped(){return Date.now()-lastSwipe<400;}};
 }

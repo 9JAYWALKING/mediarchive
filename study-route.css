@@ -1,6 +1,3 @@
-.routeBar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 7px}
-.routeBar button{min-height:44px;border:1px solid #b9d4db99;border-radius:12px;background:#f8fdffdb;color:#467486;padding:6px 14px;font:inherit;font-size:12px;font-weight:650;box-shadow:0 2px 8px #4d859008}
-.routeBar button:first-child{padding-left:12px;border-left:3px solid #6faab4}
 .hasStudyRoute .plannerNext:not([data-kind="focus"]){display:none}
 .routeSheet{color:#365c70;max-width:560px;margin:0 auto;padding:8px 0 0}
 .routeEyebrow{display:block;letter-spacing:.12em;font-size:11px;font-weight:650;color:#7a9ba8;padding-right:40px}
@@ -26,7 +23,7 @@
 #routeAnswer>p:first-child{font-weight:650;font-size:15px}.routeExplanation{font-size:14px;color:#6d8791}
 .routeComplete{display:flex;align-items:center;gap:10px;min-height:48px;font-size:14px}.routeComplete input{width:21px;height:21px;accent-color:#4d899a}
 .routeRecall p{font-size:12px;margin:5px 0 10px}
-@media(max-height:760px){.routeBar{margin-bottom:2px}.routeBar button{min-height:40px}.hasStudyRoute .sessionTop{margin-bottom:4px}}
+@media(max-height:760px){.hasStudyRoute .sessionTop{margin-bottom:4px}}
 
 .routeSources{display:block;color:#72909c;font-size:11px;line-height:1.6;margin:6px 0 5px}.routeBody details{border:0;padding:0;margin:5px 0 0;background:transparent}.routeBody details summary{border:0;padding:5px 0}.routeBody .routeInline{margin-top:4px}
 
@@ -62,3 +59,10 @@
 .routeCheckContact{display:flex;align-items:center;gap:10px;letter-spacing:.02em}.routeCheckContact .momoAvatar{width:42px;height:42px;flex-basis:42px;border-radius:14px}
 
 .guideOlder{padding:0;border:0;margin:0 0 18px;background:transparent}.guideOlder>summary{min-height:44px;display:flex;align-items:center;font:500 11px var(--ui);color:#8a9fa9;cursor:pointer}.guideOlder>summary:after{content:"⌄";margin-left:7px}.guideOlder[open]>summary{margin-bottom:14px}
+
+/* Meal control sits beside the close control, outside the scrolling timeline. */
+#modal .routeMealButton{position:absolute;right:64px;top:29px;z-index:3;min-width:64px;height:36px;padding:0 12px;border:1px solid #c7dfdd;border-radius:12px;background:#f4fbf8;color:#527f78;font:700 12px var(--ui);box-shadow:0 2px 8px #4d85900a;touch-action:manipulation}
+#modal .routeMealButton:after{content:'';position:absolute;inset:-4px}
+#modal .routeDaySheet>.routeEyebrow{padding-right:136px;min-height:18px;white-space:nowrap}
+#modal .routeDaySheet>h2{margin-top:15px;margin-bottom:22px;font-family:var(--display);font-size:25px}
+@media(max-width:359px){#modal .routeDaySheet>.routeEyebrow{font-size:10px;letter-spacing:.04em}#modal .routeMealButton{right:60px;padding:0 10px}}

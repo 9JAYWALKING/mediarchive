@@ -12,11 +12,11 @@
 <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/mediarchive-180.png"><link rel="preload" href="./assets/fonts/WantedSansVariable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/fonts/LINESeedSansKR-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/fonts/GowunDodum-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="./fonts.css"><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./design.css"><link rel="stylesheet" href="./quiz.css"><link rel="stylesheet" href="./game.css"><link rel="stylesheet" href="./theme.css"><link rel="stylesheet" href="./characters.css"><link rel="stylesheet" href="./growth.css"><link rel="stylesheet" href="./momo.css?v=20261115dmPortrait1"><link rel="stylesheet" href="./planner.css?v=20261111overtime"><link rel="stylesheet" href="./world-time.css"><link rel="stylesheet" href="./statistics.css"><link rel="stylesheet" href="./quests.css"><link rel="stylesheet" href="./meals.css"><link rel="stylesheet" href="./polish.css?v=20261110home"><link rel="stylesheet" href="./review.css?v=2"><link rel="stylesheet" href="./typography.css"><link rel="stylesheet" href="./wardrobe.css">
+<link rel="stylesheet" href="./fonts.css"><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./design.css"><link rel="stylesheet" href="./quiz.css"><link rel="stylesheet" href="./game.css"><link rel="stylesheet" href="./theme.css"><link rel="stylesheet" href="./characters.css"><link rel="stylesheet" href="./growth.css"><link rel="stylesheet" href="./momo.css?v=20261115dmPortrait1"><link rel="stylesheet" href="./planner.css?v=20261111overtime"><link rel="stylesheet" href="./world-time.css"><link rel="stylesheet" href="./statistics.css"><link rel="stylesheet" href="./care.css?v=20261116quests2"><link rel="stylesheet" href="./meals.css"><link rel="stylesheet" href="./polish.css?v=20261110home"><link rel="stylesheet" href="./review.css?v=2"><link rel="stylesheet" href="./typography.css"><link rel="stylesheet" href="./wardrobe.css">
 <script>if(navigator.standalone===true)document.documentElement.dataset.iosStandalone='';</script>
 <link rel="stylesheet" href="./mobile-layout.css?v=3">
-<link rel="stylesheet" href="./refinement.css?v=20261116timeButtons1"><link rel="stylesheet" href="./bond-stories.css?v=20261110bondpolish"><link rel="stylesheet" href="./recall.css?v=20261111walk">
-<link rel="stylesheet" href="./study-route.css?v=20261116guideDM2">
+<link rel="stylesheet" href="./refinement.css?v=20261116speech1"><link rel="stylesheet" href="./bond-stories.css?v=20261110bondpolish"><link rel="stylesheet" href="./recall.css?v=20261111walk">
+<link rel="stylesheet" href="./study-route.css?v=20261116quests2">
 <link rel="preload" href="./assets/sd/student-arrival-v1.webp" as="image">
 <link rel="stylesheet" href="./student-arrival.css?v=20261116sd1">
 </head>
@@ -56,11 +56,11 @@
   <div class="bond"><svg><use href="#i-heart"/></svg><div><small>인연</small><b id="bondLevel">1</b><progress id="bondProgress" max="100" value="20" aria-label="인연 진행도"></progress><small id="bondPoints">20 / 100</small></div></div>
  </section>
  <div class="stage" id="stage"><img id="fallback" src="./assets/haru-fresh-airy.png" alt="흰 재킷에 하트 머리핀을 한 분홍 단발의 하루"><canvas id="character" aria-hidden="true"></canvas><button id="touch" class="touch" aria-label="하루에게 말 걸기"></button></div>
- <div class="quickTools"><button id="quickSchedule"><svg><use href="#i-calendar"/></svg><span>일정</span></button><button id="quickQuest"><svg><use href="#i-target"/></svg><span>퀘스트</span><b id="questProgress" class="questProgress" aria-label="일일 퀘스트 완료 수"></b></button></div>
+ <div class="quickTools"><button id="quickSchedule"><svg><use href="#i-calendar"/></svg><span>일정</span></button><button id="quickQuest" aria-label="오늘의 퀘스트"><svg><use href="#i-target"/></svg><span>퀘스트</span></button></div>
  <div class="sideTools"><button id="quietToggle" class="motion" aria-label="자동 대사 끄기" aria-pressed="false"><svg><use href="#i-moon"/></svg></button><button id="motionToggle" class="motion" aria-label="캐릭터 움직임 멈추기"><svg><use href="#i-pause"/></svg></button></div>
  <div id="loadStatus" class="loadStatus" role="status">불러오는 중…</div>
  <section class="bottom">
-  <div class="dialogue"><span class="nameplate">하루 <small>HARU</small></span><p id="line" aria-live="polite">왔구나! 네 자리, 내가 맡아뒀지.</p><button class="next" id="nextLine" aria-label="하루에게 한 번 더 말 걸기"><svg><use href="#i-arrow"/></svg></button></div>
+  <div class="dialogue is-changing"><span class="nameplate">하루 <small>HARU</small></span><p id="line" aria-live="polite">왔구나! 네 자리, 내가 맡아뒀지.</p><button class="next" id="nextLine" aria-label="하루에게 한 번 더 말 걸기"><svg><use href="#i-arrow"/></svg></button></div>
   <button id="questionInvite" class="questionInvite" hidden>답하기</button>
   <div class="session"><div class="sessionTop"><span id="sessionLabel">대기</span><time id="timer">00:00</time></div>
    <div class="launchRow"><button id="eventContext" class="eventContext"><span><span id="contextStudent">하루</span> <b id="contextTrack">Wiki</b></span><strong id="contextName">심장의 전기활동</strong><svg><use href="#i-arrow"/></svg></button><button id="start" class="primary"><span>시작</span><svg><use href="#i-play"/></svg></button></div>
@@ -73,5 +73,5 @@
 </main>
 <dialog id="modal"><button id="closeModal" class="close" aria-label="닫기">×</button><div id="modalContent"></div></dialog>
 <script src="./launch-screen.js?v=20261116launch1"></script>
-<script src="https://cubism.live2d.com/sdk-web/core/05/live2dcubismcore.min.js" onerror="window.coreLoadFailed=true"></script><script id="appModule" type="module" src="./app.js?v=20261116sd1"></script></body></html>
+<script src="https://cubism.live2d.com/sdk-web/core/05/live2dcubismcore.min.js" onerror="window.coreLoadFailed=true"></script><script id="appModule" type="module" src="./app.js?v=20261116speech1"></script></body></html>
 

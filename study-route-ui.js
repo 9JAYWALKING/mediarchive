@@ -17,7 +17,6 @@ export function createStudyRoute({planner,say,selectStudent,openModal,closeModal
  let state;try{state=normalizeRoute(JSON.parse(localStorage.getItem(routeKey)||'null'));}catch{state=normalizeRoute(null);}
  const $=s=>document.querySelector(s),node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
  const student=id=>planner.state.settings.students.find(s=>s.id===id)||defaultStudents.find(s=>s.id===id),voice=id=>studentVoices[id]||studentVoices.haru;
- const bar=node('div',undefined,'routeBar'),overview=node('button','오늘 흐름'),meal=node('button','식사');overview.onclick=()=>openDay();meal.onclick=()=>mealAction();bar.append(overview,meal);$('.session').prepend(bar);
  function save(next){try{localStorage.setItem(routeKey,JSON.stringify(next));state=next;return true;}catch{toast('안내 기록을 저장하지 못했어. 설정에서 먼저 내보내 줘.');return false;}}
  let routeCache=null,cacheKeys=[];
  function current(now=Date.now()){if(!state.enabled)return null;const keys=[Math.floor(now/60000),state,planner.state,classTime.released(now)];if(keys.some((v,i)=>v!==cacheKeys[i])){cacheKeys=keys;routeCache=buildRoute(koreanDate(now),state,planner.state,{now,lessons:classTime.lessons(now),releasedAt:classTime.released(now)&&classTime.current(now)?.time<'14:00'?Math.max(660,dayMinute(now)):undefined});}return routeCache;}
@@ -69,7 +68,8 @@ export function createStudyRoute({planner,say,selectStudent,openModal,closeModal
  function openDay(date=koreanDate()){
   if(!studyDays.some(d=>d.date===date))date=studyDays[0].date;
   const route=buildRoute(date,state,planner.state,{lessons:classTime.lessons(),releasedAt:date===koreanDate()&&classTime.released()&&classTime.current()?.time<'14:00'?Math.max(660,dayMinute(Date.now())):undefined}),isToday=date===koreanDate();
-  openModal('<div class="routeSheet"><div class="routeEyebrow">11.16 — 11.25</div><h2>오늘의 흐름</h2><div id="routeDays" class="routeDays"></div><div id="routeOverview"></div><div id="routeTimeline" class="routeTimeline"></div><div id="routeFoot" class="routeFoot"></div></div>');
+  openModal('<div class="routeSheet routeDaySheet"><button type="button" id="routeMealButton" class="routeMealButton">식사</button><div class="routeEyebrow">11.16 — 11.25</div><h2>오늘의 퀘스트</h2><div id="routeDays" class="routeDays"></div><div id="routeOverview"></div><div id="routeTimeline" class="routeTimeline"></div><div id="routeFoot" class="routeFoot"></div></div>');
+  const mealButton=$('#routeMealButton');mealButton.textContent=state.activeMeal?'다 먹었어':'식사';mealButton.onclick=()=>{const returning=!!state.activeMeal;mealAction();if(returning)openDay(date);};
   for(const d of studyDays){const b=node('button',String(Number(d.date.slice(-2))));b.setAttribute('aria-label',d.date);b.setAttribute('aria-pressed',String(d.date===date));b.onclick=()=>openDay(d.date);$('#routeDays').append(b);}
   const summary=$('#routeOverview');summary.append(node('h3',route.day.title),node('p',`제안 ${Math.floor(route.allocated/60)}시간 ${Math.round(route.allocated%60)}분 · 23:00 마무리`,'routeHint'));
   if(route.unplaced)summary.append(node('p',`오늘 남은 시간에 ${route.unplaced}분은 다 담기 어려워. 약리와 처음 보는 내용을 먼저 두었어.`,'routeAdjustment'));
@@ -91,10 +91,10 @@ export function createStudyRoute({planner,say,selectStudent,openModal,closeModal
   let owner=f?.student||b?.unit?.student||getLobby();
   const make=(kind,id,title,text,action,label,extra={})=>({kind,id,noticeId:id,student:owner,title,text,action,label,...extra});
   if(state.activeMeal)return make('eating','meal:'+state.activeMeal.start,'식사 중',copy(owner).meal,'meal','돌아왔어');
-  if(r.before||r.after)return make('rest',day+(r.before?':morning':':night'),r.before?'07:00부터':'오늘은 여기까지',r.before?copy(owner).ready:voice(owner).end,'day','일정');
+  if(r.before||r.after)return make('rest',day+(r.before?':morning':':night'),r.before?'07:00부터':'오늘은 여기까지',r.before?copy(owner).ready:voice(owner).end,'day','퀘스트');
   if(b?.kind==='class'&&!classTime.released()){
    owner=defaultStudents.find(s=>s.lectures.includes(b.lectures[0]))?.id||owner;
-   return make('class',day+':class:'+b.start,b.title,copy(owner).class,'day','일정',{time:clock(b.start)+'–'+clock(b.end)});
+   return make('class',day+':class:'+b.start,b.title,copy(owner).class,'day','퀘스트',{time:clock(b.start)+'–'+clock(b.end)});
   }
   if(f){const p=planner.state.plans.find(p=>p.id===planner.focus.planId);return make('focus',planner.focus.id,p.title,planner.focus.started?voice(owner).middle:copy(owner).resume,planner.focus.started?'finish':'resume',planner.focus.started?'마무리':'재개',{goal:p.note,material:f.material,time:p.time+'–'+clock(Math.min(1380,dayMinute(Date.parse(p.date+'T'+p.time+':00+09:00'))+p.minutes)),unitId:f.id});}
   if(getSession()||planner.focus)return null;
@@ -102,7 +102,7 @@ export function createStudyRoute({planner,say,selectStudent,openModal,closeModal
   if(b?.kind==='study')return make('study',day+':guide:'+b.unit.id,b.title,voice(owner).start,'start','시작',{unitId:b.unit.id,goal:b.unit.goal,material:b.unit.material,lecture:b.unit.lecture,minutes:b.minutes,time:clock(b.start)+'–'+clock(b.end),sources:routeSources(b.unit.lecture)});
   if(b?.kind==='meal')return make('meal',day+':meal:'+b.meal,'식사부터 할까?',copy(owner).meal,'meal','식사',{meal:b.meal,time:clock(b.start)+'–'+clock(b.end)});
   if(b?.kind==='plan'){owner=planner.state.plans.find(p=>p.id===b.planId)?.student||owner;return make('plan',b.planId,b.title,voice(owner).start,'start','시작',{time:clock(b.start)+'–'+clock(b.end)});}
-  return make('rest',day+':rest:'+Math.floor((state.restUntil||0)/60000),'잠깐 쉬기',copy(owner).rest,'day','일정');
+  return make('rest',day+':rest:'+Math.floor((state.restUntil||0)/60000),'잠깐 쉬기',copy(owner).rest,'day','퀘스트');
  }
  function act(expected){
   const c=card();if(!c||c.id!==expected){onCard(c);toast('지금 일정으로 바뀌었어. 다시 확인해 줘.');return;}
@@ -124,10 +124,10 @@ export function createStudyRoute({planner,say,selectStudent,openModal,closeModal
  let inTick=false;
  function tick(){if(inTick)return;inTick=true;try{tickInner();}finally{inTick=false;}}
  function tickInner(){
-  const now=Date.now(),route=current(now),f=routeFocus(planner.state);onCard(card());bar.hidden=!route&&!studyDays.some(d=>d.date===koreanDate(now));overview.textContent=state.enabled?(pending()?'오늘 흐름 · 확인':'오늘 흐름'):'안내 켜기';meal.textContent=state.activeMeal?'다 먹었어':'식사';
+  const now=Date.now(),route=current(now),f=routeFocus(planner.state);onCard(card());const mealButton=$('#routeMealButton');if(mealButton)mealButton.textContent=state.activeMeal?'다 먹었어':'식사';
   $('.phone').classList.toggle('hasStudyRoute',!!route);if(f&&planner.focus?.stopAt&&now>=planner.focus.stopAt){planner.finishGuided(planner.focus.stopAt);return;}if(!route){$('#start span').textContent='시작';return;}
   const b=route.current,idle=!planner.focus&&!getSession();
-  if(idle){$('#start span').textContent=state.activeMeal?'다 먹었어':route.before||route.after?'안내':b?.kind==='meal'?'식사':['class','rest'].includes(b?.kind)?'확인':'시작';$('#contextStudent').textContent=b?.unit?student(b.unit.student)?.name:'지금';$('#contextTrack').textContent=b?.unit?`${b.unit.lecture}강 · ${b.unit.material}`:route.after?'마무리':route.before?'07:00':b?.kind==='class'?'수업':'다음';$('#contextName').textContent=state.activeMeal?'편하게 먹고 와':route.after?'오늘은 여기까지':route.before?'7시부터 함께 시작':b?.title||'오늘은 여기까지';$('#eventContext').setAttribute('aria-label','오늘의 흐름과 핵심 보기');}
+  if(idle){$('#start span').textContent=state.activeMeal?'다 먹었어':route.before||route.after?'안내':b?.kind==='meal'?'식사':['class','rest'].includes(b?.kind)?'확인':'시작';$('#contextStudent').textContent=b?.unit?student(b.unit.student)?.name:'지금';$('#contextTrack').textContent=b?.unit?`${b.unit.lecture}강 · ${b.unit.material}`:route.after?'마무리':route.before?'07:00':b?.kind==='class'?'수업':'다음';$('#contextName').textContent=state.activeMeal?'편하게 먹고 와':route.after?'오늘은 여기까지':route.before?'7시부터 함께 시작':b?.title||'오늘은 여기까지';$('#eventContext').setAttribute('aria-label','오늘의 퀘스트와 핵심 보기');}
   const task=card();if(task){$('#eventContext').disabled=false;$('#eventContext').setAttribute('aria-label',student(task.student)?.name+' DM · '+task.title);$('#contextStudent').textContent=student(task.student)?.name;$('#contextTrack').textContent=task.kind==='check'?'확인':task.kind==='focus'?'진행 중':task.material||'DM';$('#contextName').textContent=task.title;if(idle)$('#start span').textContent=task.label;}
   // Pause at the day boundary even if the tab slept; count only through 23:00.
   if(f&&planner.focus?.started){const p=planner.state.plans.find(p=>p.id===planner.focus.planId),end=Date.parse(p.date+'T23:00:00+09:00');if(now>=end){planner.finishGuided(end);return;}}
