@@ -1,4 +1,4 @@
-import {illustratedStudents} from './character-data.js?v=20261115aoiLive2';
+import {illustratedStudents} from './character-data.js?v=20261115akariRemake1';
 import {outfitLabels} from './wardrobe-engine.js';
 
 export function outfitFor(studentId,id='uniform'){

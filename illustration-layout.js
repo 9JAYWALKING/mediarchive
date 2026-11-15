@@ -1,7 +1,13 @@
 import {illustrationRegistration} from './illustration-registration.js?v=20261114framing';
+import {lobbyLayout} from './lobby-framing.js?v=20261115akariRemake1';
 
 export function illustrationLayout(student,outfit,frame,rect,framing='lobby'){
- if(['momo','sena','ibuki','mio','aoi'].includes(student)){
+ if(framing==='lobby'){
+  const frames=illustrationRegistration[student]?.[outfit]?.frames;
+  const anchor=student==='tsumugi'&&frames?{deltaX:(frames[frame]||frames[0]).x-frames[0].x,deltaY:(frames[frame]||frames[0]).top-frames[0].top}:null;
+  const layout=lobbyLayout(student,outfit,rect,anchor);if(layout)return layout;
+ }
+ if(['momo','sena','ibuki','mio','aoi','akari'].includes(student)){
   // The loading portrait must match the new Cubism camera exactly.
   const height=framing==='face'?rect.height*2.5:framing==='review'?rect.height*1.65:framing==='portrait'?Math.min(rect.height*.99,rect.width*1.5*1.25):Math.max(rect.height*.99,rect.width*1.34);
   const width=height/1.5,y=['face','review'].includes(framing)?0:rect.height*.0125;

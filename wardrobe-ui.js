@@ -1,6 +1,6 @@
-import {wardrobeSettings,saveWardrobe,currentOutfit} from './wardrobe-service.js?v=20261115aoiLive2';
+import {wardrobeSettings,saveWardrobe,currentOutfit} from './wardrobe-service.js?v=20261115akariRemake1';
 import {wardrobeSettingsError,outfitLabels} from './wardrobe-engine.js';
-import {outfitFor} from './wardrobe-data.js?v=20261115aoiLive2';
+import {outfitFor} from './wardrobe-data.js?v=20261115akariRemake1';
 
 export function openWardrobeSettings({openModal,closeModal,toast}){
  const settings=wardrobeSettings();

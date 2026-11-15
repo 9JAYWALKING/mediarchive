@@ -1,6 +1,7 @@
-import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261115aoiLive2';
-import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261115aoiLive2';
-import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115aoiLive2';
+import {lobbyLayout} from './lobby-framing.js?v=20261115akariRemake1';
+import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261115akariRemake1';
+import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261115akariRemake1';
+import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115akariRemake1';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
 export async function createCharacter(canvas, options={}){
@@ -33,10 +34,10 @@ export async function createCharacter(canvas, options={}){
   if(options.signal?.aborted)throw new DOMException('Cancelled','AbortError');
   function shader(type,src){const s=gl.createShader(type);shaders.push(s);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error('화면을 열지 못했어요.');return s;}
   program=gl.createProgram();
-  gl.attachShader(program,shader(gl.VERTEX_SHADER,'attribute vec2 a_pos;attribute vec2 a_uv;uniform vec2 u_scale;uniform float u_y;varying vec2 v_uv;void main(){v_uv=a_uv;gl_Position=vec4(a_pos*u_scale+vec2(0.0,u_y),0.0,1.0);}'));
+  gl.attachShader(program,shader(gl.VERTEX_SHADER,'attribute vec2 a_pos;attribute vec2 a_uv;uniform vec2 u_scale;uniform float u_y;uniform float u_x;varying vec2 v_uv;void main(){v_uv=a_uv;gl_Position=vec4(a_pos*u_scale+vec2(u_x,u_y),0.0,1.0);}'));
   gl.attachShader(program,shader(gl.FRAGMENT_SHADER,expressionFragment));
   gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error('화면을 열지 못했어요.');gl.useProgram(program);
-  const pos=gl.getAttribLocation(program,'a_pos'),uv=gl.getAttribLocation(program,'a_uv'),scale=gl.getUniformLocation(program,'u_scale'),offset=gl.getUniformLocation(program,'u_y');
+  const pos=gl.getAttribLocation(program,'a_pos'),uv=gl.getAttribLocation(program,'a_uv'),scale=gl.getUniformLocation(program,'u_scale'),offset=gl.getUniformLocation(program,'u_y'),offsetX=gl.getUniformLocation(program,'u_x');
   const makeBuffer=()=>{const b=gl.createBuffer();buffers.push(b);return b;},posBuffer=makeBuffer(),uvBuffer=makeBuffer(),indices=makeBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER,uvBuffer);gl.bufferData(gl.ARRAY_BUFFER,model.drawables.vertexUvs[0],gl.STATIC_DRAW);gl.enableVertexAttribArray(uv);gl.vertexAttribPointer(uv,2,gl.FLOAT,false,0,0);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,indices);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,model.drawables.indices[0],gl.STATIC_DRAW);
@@ -66,6 +67,7 @@ export async function createCharacter(canvas, options={}){
    gl.uniform3fv(gl.getUniformLocation(program,'u_mouthRadius'),rig?.mouthRadius||(rig?.hairGuard?[76,42,62]:[70,42,42]));
    gl.uniform4fv(gl.getUniformLocation(program,'u_lidShape'),rig?.lidShape||[84,34,.26,-29]);
    gl.uniform1f(gl.getUniformLocation(program,'u_customLids'),rig?.lidShape?1:0);
+   gl.uniform1f(gl.getUniformLocation(program,'u_blinkBrowGuard'),rig?.blinkBrowGuard?1:0);
    if(rig?.eyes)for(const [i,side] of ['Left','Right'].entries()){const [a,b,c,d,x,y]=rig.eyes[i];gl.uniform3fv(gl.getUniformLocation(program,'u_eye'+side+'X'),[a,b,x]);gl.uniform3fv(gl.getUniformLocation(program,'u_eye'+side+'Y'),[c,d,y]);}
    if(rig){const map=faceTransform(rig);gl.uniform3fv(gl.getUniformLocation(program,'u_mapX'),map[0]);gl.uniform3fv(gl.getUniformLocation(program,'u_mapY'),map[1]);for(const [i,name] of ['u_left','u_right','u_mouth'].entries())gl.uniform2fv(gl.getUniformLocation(program,name),rig.target[i]);const [left,right]=rig.target;gl.uniform4fv(gl.getUniformLocation(program,'u_fringe'),[left[0]-85,Math.min(left[1],right[1])-125,right[0]+85,Math.max(left[1],right[1])+20]);}
    gl.uniform4fv(gl.getUniformLocation(program,'u_protect'),rig?.protect||[0,0,0,0]);
@@ -80,6 +82,7 @@ export async function createCharacter(canvas, options={}){
   function autoExpression(){acting.auto(activeTime);requestDraw();}
   gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.disable(gl.DEPTH_TEST);
   const profiles={
+   akari:{speed:.52,breath:1.05,head:.30,body:.34,hair:.48,lag:1.6,damping:3.3,look:.52,react:.75,hold:1.8,blink:4.2,open:.18},
    aoi:{speed:.57,breath:1.04,head:.34,body:.38,hair:.62,lag:1.65,damping:3.1,look:.55,react:.68,hold:1.9,blink:4.1,open:.20},
    mio:{speed:.49,breath:1.02,head:.28,body:.34,hair:.50,lag:1.85,damping:3.2,look:.46,react:.58,hold:2.1,blink:4.3,open:.20},
    ibuki:{speed:.74,breath:1.25,head:.35,body:.43,hair:.78,lag:2.8,damping:4.3,look:.64,react:.92,hold:1.5,blink:3.3,open:.16},
@@ -149,11 +152,15 @@ export async function createCharacter(canvas, options={}){
    gl.uniform1f(faceLocations.mouthPose,facesReady?face.mouth:-1);
    gl.uniform1f(faceLocations.blink,facesReady?blinkArt:-1);
    canvas.dataset.blink=blink;
-   const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,['momo','sena','ibuki','mio','aoi'].includes(studentId)?3:2);
+   const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,3);
    if(rect.width<=0||rect.height<=0)return;
    const w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
    const imageH=options.framing==='face'?rect.height*2.5:options.framing==='review'?rect.height*1.65:options.framing==='portrait'?Math.min(rect.height*.99,rect.width*(img.height/img.width)*1.25):Math.max(rect.height*.99,rect.width*1.34);
-   gl.uniform2f(scale,imageH/rect.width*2,imageH/rect.height*2);gl.uniform1f(offset,1-imageH/rect.height+(['face','review'].includes(options.framing)?0:-.025));
+   const lobby=(!options.framing||options.framing==='lobby')?lobbyLayout(studentId,appearance?.id||'uniform',rect):null;
+   const drawH=lobby?.height||imageH;
+   gl.uniform2f(scale,drawH/rect.width*2,drawH/rect.height*2);
+   gl.uniform1f(offset,lobby?1-(2*lobby.y+drawH)/rect.height:1-imageH/rect.height+(['face','review'].includes(options.framing)?0:-.025));
+   gl.uniform1f(offsetX,lobby?(2*lobby.x+lobby.width)/rect.width-1:0);
    gl.bindBuffer(gl.ARRAY_BUFFER,posBuffer);gl.bufferData(gl.ARRAY_BUFFER,model.drawables.vertexPositions[0],gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);gl.drawElements(gl.TRIANGLES,model.drawables.indexCounts[0],gl.UNSIGNED_SHORT,0);model.drawables.resetDynamicFlags();
    canvas.dataset.live2d='ready';canvas.dataset.renderer='live2d';options.onFrame?.({canvas,expression:pose.expression,talking:pose.talking,blink});if(motion||acting.active)raf=requestAnimationFrame(draw);
   }

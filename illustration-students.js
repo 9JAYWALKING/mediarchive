@@ -1,4 +1,4 @@
-import {illustrationBanks} from './illustration-dialogue.js?v=20261114studentVoices';
+import {illustrationBanks} from './illustration-dialogue.js?v=20261115akariRemake1';
 export const illustrationStudents=[
  {
   "id": "ibuki",
@@ -158,27 +158,24 @@ export const illustrationStudents=[
   "roman": "AKARI",
   "subject": "관상동맥·허혈",
   "grade": 2,
-  "role": "행사운영부 · 현장 담당",
-  "color": "#bf8878",
-  "portrait": "./assets/illustrations/akari-uniform.png",
-  "model": null,
-  "renderer": "illustration",
+  "role": "행사운영부 · 대기실 담당",
+  "color": "#a34c5a",
+  "portrait": "./assets/akari-live-v10.png",
+  "model": "./assets/akari.model3.json",
+  "renderer": "live2d",
   "outfits": {
    "uniform": {
-    "portrait": "./assets/illustrations/akari-uniform.png",
-    "atlas": "./assets/illustrations/akari-uniform-atlas.png"
+    "portrait": "./assets/akari-live-v10.png"
    },
    "casual": {
-    "portrait": "./assets/illustrations/akari-casual.png",
-    "atlas": "./assets/illustrations/akari-casual-atlas.png"
+    "portrait": "./assets/wardrobe/akari-casual-live-v5.png"
    },
    "sleep": {
-    "portrait": "./assets/illustrations/akari-sleep.png",
-    "atlas": "./assets/illustrations/akari-sleep-atlas.png"
+    "portrait": "./assets/wardrobe/akari-sleep-live-v5.png"
    }
   },
-  "accessory": "작은 태양 배지",
-  "trait": "결정의 순간",
+  "accessory": "검은 고양이 방울 참",
+  "trait": "작은 신호",
   "relation": "분석과 결정 · 예방과 현장",
   "relations": [
    {
@@ -194,7 +191,7 @@ export const illustrationStudents=[
     "label": "현장 콤비"
    }
   ],
-  "profile": "직선적이고 결단이 빠르다. 평소엔 털털하지만 필요한 순간에는 집중한다. 짧은 달리기와 간단한 요리를 좋아한다."
+  "profile": "자기 속도로 주변을 살피는 조용한 관찰자. 엉뚱한 기준으로 자리를 고르고, 마음에 드는 걸 발견하면 갑자기 환해진다. 고양이 사진과 작은 간식을 좋아한다."
  },
  {
   "id": "momo",

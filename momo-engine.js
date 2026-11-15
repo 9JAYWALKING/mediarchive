@@ -1,8 +1,8 @@
 import {schedule} from './schedule-data.js';
 import {koreanDate,validDate,shiftDate} from './game-state.js';
 import {routineContext} from './routine-engine.js';
-import {defaultStudents} from './planner-catalog.js';
-import {illustrationDM} from './illustration-messages.js?v=20261114studentVoices';
+import {defaultStudents} from './planner-catalog.js?v=20261115akariRemake1';
+import {illustrationDM} from './illustration-messages.js?v=20261115akariRemake1';
 export const momoOwners=Object.fromEntries(defaultStudents.map(s=>[s.id,[...s.lectures]]));
 const M=60000,DAY=86400000;
 const owned=(student,lecture)=>momoOwners[student]?.includes(lecture);

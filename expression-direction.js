@@ -1,7 +1,7 @@
 import {dialogueGroups} from './dialogue.js';
-import {routineLines} from './routine-dialogue.js?v=20261114studentVoices';
-import {mealLines} from './meal-dialogue.js?v=20261114studentVoices';
-import {illustratedStudents} from './character-data.js?v=20261115aoiLive2';
+import {routineLines} from './routine-dialogue.js?v=20261115akariRemake1';
+import {mealLines} from './meal-dialogue.js?v=20261115akariRemake1';
+import {illustratedStudents} from './character-data.js?v=20261115akariRemake1';
 import {characterStories} from './character-stories.js';
 
 const names={s:'smile',h:'happy',a:'angry',d:'disappointed',c:'cry',f:'soft',z:'sleepy',n:'calm'};
@@ -48,9 +48,9 @@ for(const [student,bank] of Object.entries(mealLines))for(const [phase,lines] of
 for(const story of characterStories)story.beats.forEach((beat,i)=>register(beat.speaker,[beat.text],storyCues[story.id].split(' ')[i]));
 // Explicit direction for the illustration students' routine and meal performances.
 for(const student of illustratedStudents.filter(s=>s.outfits)){
- const lively=['ibuki','akari','momo','aoi'].includes(student.id);
+ const lively=['ibuki','momo','aoi'].includes(student.id);
  const routine={sleep:'sleepy',wake:'soft',morning:'smile',class:lively?'angry':'calm',lunch:'smile',break:'soft',review:'calm',dinner:'smile',evening:'calm',home:'soft',bed:'sleepy',pathology:'calm',lateDinner:'calm',firstEvening:'smile',dayOff:'happy'};
- const meals={before:'smile',during:'calm',ending:'happy',after1:['momo','akari','ibuki'].includes(student.id)?'angry':'soft',after2:'soft'};
+ const meals={before:'smile',during:'calm',ending:'happy',after1:['momo','ibuki'].includes(student.id)?'angry':'soft',after2:'soft'};
  for(const [phase,lines]of Object.entries(routineLines[student.id]||{}))for(const text of lines)authoredExpressions.set(student.id+'\n'+text,routine[phase]||'calm');
  for(const [phase,lines]of Object.entries(mealLines[student.id]||{}))for(const text of lines)authoredExpressions.set(student.id+'\n'+text,meals[phase]||'calm');
 }
@@ -68,7 +68,7 @@ export function dialogueExpression(student,line){
  return 'smile';
 }
 
-const idleChoices={aoi:['smile','soft','smile','calm'],mio:['soft','smile','sleepy','soft'],ibuki:['soft','smile','happy','soft'],haru:['soft','calm','soft'],nagi:['soft','sleepy','soft'],shiori:['calm','soft','calm'],rei:['calm','soft','calm'],ritsu:['calm','soft','calm'],sena:['soft','calm','sleepy','soft']};
+const idleChoices={akari:['smile','calm','smile','soft'],aoi:['smile','soft','smile','calm'],mio:['soft','smile','sleepy','soft'],ibuki:['soft','smile','happy','soft'],haru:['soft','calm','soft'],nagi:['soft','sleepy','soft'],shiori:['calm','soft','calm'],rei:['calm','soft','calm'],ritsu:['calm','soft','calm'],sena:['soft','calm','sleepy','soft']};
 export function createExpressionPerformance(student,{random=Math.random}={}){
  let cue=null,pinned=null,nextIdle=12000+random()*6000,idleUntil=0,idle='smile';
  function defer(now){idleUntil=0;nextIdle=now+12000+random()*8000;}

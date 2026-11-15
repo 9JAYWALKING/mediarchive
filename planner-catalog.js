@@ -129,7 +129,7 @@ export const defaultStudents=[
       43,
       52
     ],
-    "color": "#ca9574",
+    "color": "#a34c5a",
     "enabled": true
   },
   {

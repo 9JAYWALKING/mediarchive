@@ -1,3 +1,5 @@
+import {akariFaceRig} from './akari-face-rig.js?v=20261115akariRemake1';
+import {akariBlinkRig} from './akari-blink-rig.js?v=20261115akariRemake1';
 import {aoiFaceRig} from './aoi-face-rig.js?v=20261115aoiLive2';
 import {aoiBlinkRig} from './aoi-blink-rig.js?v=20261115aoiLive2';
 import {mioFaceRig} from './mio-face-rig.js?v=20261115mioLive1';
@@ -19,11 +21,19 @@ export function expressionPose(name){
  return {brow:i,eyes:i,mouth:i};
 }
 export function facialParts(student,name,{talking=false,blink='open'}={}){
+ if(student==='akari'){
+  // The approved cheerful face has open almond eyes, so it also needs blinks.
+  // Her quiet expressions rest on the original closed smile, not a speaking mouth.
+  const face=['calm','soft'].includes(name)?{brow:1,eyes:1,mouth:1}:expressionPose(name);
+  const mouth=talking&&['neutral','smile','soft','calm'].includes(name)?0:face.mouth;
+  return {...face,mouth,blink:blink==='open'?-1:blink==='closed'?2:4,mouthScale:1};
+ }
  const face=expressionPose(name),positive=['smile','happy','soft'].includes(name);
- const mouth=talking?(student==='haru'?-1:['momo','sena','ibuki','mio','aoi'].includes(student)?(positive||['ibuki','mio','aoi'].includes(student)&&name==='neutral'?0:face.mouth):student==='ritsu'&&!positive?face.mouth:2):face.mouth;
+ const mouth=talking?(student==='haru'?-1:['momo','sena','ibuki','mio','aoi','akari'].includes(student)?(positive||['ibuki','mio','aoi','akari'].includes(student)&&name==='neutral'?0:face.mouth):student==='ritsu'&&!positive?face.mouth:2):face.mouth;
  return {...face,mouth,blink:face.eyes===2||blink==='open'?-1:blink==='closed'?2:4,mouthScale:student==='ritsu'&&talking&&positive&&name!=='happy'?.76:1};
 }
 export const expressionRigs={
+ akari:{size:[1024,1536],blinkBrowGuard:true,atlas:'expressions/akari-live-v6.png',blinkAtlas:'expressions/akari-blink-v3.png',blinkFeatures:akariBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.28,-29],mouthRadius:[64,34,46],...akariFaceRig.uniform,source:[[212,304],[343,268],[296,378]],outfits:{casual:{...akariFaceRig.casual,blinkFeatures:akariBlinkRig.casual.features},sleep:{...akariFaceRig.sleep,blinkFeatures:akariBlinkRig.sleep.features}}},
  aoi:{size:[1024,1536],atlas:'expressions/aoi-live-v1.png',blinkAtlas:'expressions/aoi-blink-v1.png',blinkFeatures:aoiBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.23,-29],mouthRadius:[64,34,46],...aoiFaceRig.uniform,source:[[175,307],[324,275],[269,394]],outfits:{casual:{...aoiFaceRig.casual,blinkFeatures:aoiBlinkRig.casual.features},sleep:{...aoiFaceRig.sleep,blinkFeatures:aoiBlinkRig.sleep.features}}},
  mio:{size:[1024,1536],atlas:'expressions/mio-live-v1.png',blinkAtlas:'expressions/mio-blink-v1.png',blinkFeatures:mioBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.23,-29],mouthRadius:[65,34,46],...mioFaceRig.uniform,source:[[212,300],[342,280],[290,379]],outfits:{casual:{...mioFaceRig.casual,blinkFeatures:mioBlinkRig.casual.features},sleep:{...mioFaceRig.sleep,blinkFeatures:mioBlinkRig.sleep.features}}},
  ibuki:{size:[1024,1536],atlas:'expressions/ibuki-live-v1.png',blinkAtlas:'expressions/ibuki-blink-v1.png',blinkFeatures:ibukiBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[84,38,.20,-30],mouthRadius:[65,36,48],...ibukiFaceRig.uniform,source:[[192,307],[318,285],[264,375]],outfits:{casual:{...ibukiFaceRig.casual,blinkFeatures:ibukiBlinkRig.casual.features},sleep:{...ibukiFaceRig.sleep,blinkFeatures:ibukiBlinkRig.sleep.features}}},
@@ -46,7 +56,7 @@ uniform sampler2D u_blinkFaces; uniform float u_hasBlinkAtlas;
 uniform vec3 u_mapX; uniform vec3 u_mapY; uniform vec2 u_left; uniform vec2 u_right; uniform vec2 u_mouth;
 uniform vec4 u_fringe; uniform vec4 u_protect;
 uniform float u_preserveHair,u_hairGuard,u_brownHairGuard;
-uniform float u_customLids;
+uniform float u_customLids,u_blinkBrowGuard;
 uniform vec3 u_mouthRadius;
 uniform vec4 u_lidShape;
 uniform vec3 u_eyeLeftX,u_eyeLeftY,u_eyeRightX,u_eyeRightY;
@@ -115,6 +125,8 @@ void main(){
    // Ibuki's open, curious eyes rise higher than her narrowed upset eyes.
    // Clear the entire original upper lash without touching lowered sad brows.
    if(u_customLids>.5&&(u_browPose<2.5||u_browPose>4.5))shape=vec4(94.0,53.0,shape.z,-54.0);
+   // Akari's lowered brows must survive the neutral blink atlas unchanged.
+   if(u_blinkBrowGuard>.5&&u_blink>=0.0)shape.w=u_lidShape.w;
    vec2 l=p-u_left,r=p-u_right;l.y+=l.x*shape.z;r.y+=r.x*shape.z;
    float leftLid=(1.0-smoothstep(.9,1.0,length(l/shape.xy)))*smoothstep(shape.w,shape.w+3.0,l.y);
    float rightLid=(1.0-smoothstep(.9,1.0,length(r/shape.xy)))*smoothstep(shape.w,shape.w+3.0,r.y);

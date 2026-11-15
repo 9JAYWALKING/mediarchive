@@ -562,15 +562,15 @@
       "id": "akari",
       "name": "아카리",
       "grade": 2,
-      "role": "행사운영부 · 현장 담당",
-      "personality": "직선적이고 결단이 빠르다. 평소엔 털털하지만 필요한 순간에는 집중한다.",
-      "contrast": "대담하게 나서고 나서야 손이 떨렸다고 털어놓는다.",
-      "daily": "짧은 달리기와 간단한 요리를 좋아한다.",
-      "appearance": "AKARI: bold decisive relaxed event organizer, short copper-auburn layered WOLF PIXIE with soft feathered nape and side-swept bangs, lively warm amber-brown eyes, tiny gold sun badge. Cute spirited expression, not mature or harsh, petite athletic build.",
-      "accessory": "작은 태양 배지",
-      "trait": "결정의 순간",
-      "traitMeaning": "상황을 정리하고 다음 행동을 고르는 추진력.",
-      "status": "implemented-illustration",
+      "role": "행사운영부 · 대기실 담당",
+      "personality": "조용하고 자기 속도가 분명한 관찰자. 엉뚱한 생각을 담담히 말하다 좋아하는 것을 발견하면 환해진다.",
+      "contrast": "무심한 듯 살피면서 상대가 좋아한 작은 것을 기억한다.",
+      "daily": "고양이 사진, 작은 간식, 조용하고 따뜻한 자리.",
+      "appearance": "검정 단발과 가넷빛 안쪽 머리, 붉은 눈. 2학년 교복·블랙 봄버 사복·빨간 파이핑 잠옷.",
+      "accessory": "검은 고양이 방울 참",
+      "trait": "작은 신호",
+      "traitMeaning": "작은 차이를 놓치지 않고, 기다려도 되는 때와 바로 살펴야 할 때를 구별한다.",
+      "status": "implemented-live2d",
       "subject": "관상동맥·허혈",
       "lectureIds": [
         19,
@@ -581,12 +581,12 @@
       ],
       "scheduledHours": 6,
       "dialogue": {
-        "greeting": "왔으면 앉아. 자, 시작하자!",
-        "early": "좋아, 먼저 움직이는 거 마음에 들어.",
-        "idle": "내 얼굴에 답은 없어. …지금 웃은 거 봤다?",
-        "wrong": "아, 거기서 망설이더니! 다음엔 잡자.",
-        "reminder": "나도 대기 중이야. 신호만 줘.",
-        "bond": "아까 사실 좀 떨렸어. 네 앞이라 티 안 낸 거야."
+        "greeting": "왔네. 이쪽 자리 비워 뒀어.",
+        "early": "벌써? 나 아직 머리도 덜 정리했는데. 일단 앉아.",
+        "idle": "나 말고 책. 내 얼굴엔 답 없어.",
+        "wrong": "음, 그 조건은 놓쳤네. 같이 본 데 다시 봐.",
+        "reminder": "전에 헷갈린 거, 표시해 뒀어. 잠깐 같이 볼래?",
+        "bond": "그냥 옆에 있어도 편해서 좋아."
       },
       "internalLearningProfile": {
         "difficultyEstimate": "높음",
@@ -611,21 +611,18 @@
         "estimateOnly": true
       },
       "art": {
-        "renderer": "illustration",
-        "portrait": "./assets/illustrations/akari-uniform.png",
-        "model": null,
+        "renderer": "live2d",
+        "portrait": "./assets/akari-live-v10.png",
+        "model": "./assets/akari.model3.json",
         "outfits": {
           "uniform": {
-            "portrait": "./assets/illustrations/akari-uniform.png",
-            "atlas": "./assets/illustrations/akari-uniform-atlas.png"
+            "portrait": "./assets/akari-live-v10.png"
           },
           "casual": {
-            "portrait": "./assets/illustrations/akari-casual.png",
-            "atlas": "./assets/illustrations/akari-casual-atlas.png"
+            "portrait": "./assets/wardrobe/akari-casual-live-v5.png"
           },
           "sleep": {
-            "portrait": "./assets/illustrations/akari-sleep.png",
-            "atlas": "./assets/illustrations/akari-sleep-atlas.png"
+            "portrait": "./assets/wardrobe/akari-sleep-live-v5.png"
           }
         }
       },
@@ -879,7 +876,7 @@
       "a": "rei",
       "b": "akari",
       "label": "분석과 결정",
-      "story": "확인하고 움직이려는 레이와 일단 현장에 가려는 아카리의 티격태격.",
+      "story": "같은 작은 단서를 서로 먼저 발견하고 말없이 시선을 나누는 사이.",
       "relatedLectureIds": [
         14,
         15,
@@ -892,7 +889,7 @@
       "a": "aoi",
       "b": "akari",
       "label": "예방과 현장",
-      "story": "멀리 보는 계획 담당과 눈앞의 문제부터 푸는 행동 담당.",
+      "story": "멀리 내다보는 계획과 가까운 작은 변화가 서로의 빈틈을 채운다.",
       "relatedLectureIds": [
         32,
         40,
@@ -947,7 +944,7 @@
       "a": "tsumugi",
       "b": "akari",
       "label": "현장 콤비",
-      "story": "둘 다 행동이 빠르지만 츠무기는 돌아오는 길까지 챙긴다.",
+      "story": "말이 길지 않아도 필요한 손길과 신호를 알아듣는다.",
       "relatedLectureIds": [
         19,
         41,

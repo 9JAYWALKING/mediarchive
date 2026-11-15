@@ -1,7 +1,7 @@
 import {lectureAdvice} from './lecture-advice-data.js';
 import {schedule} from './schedule-data.js';
-import {defaultStudents} from './planner-catalog.js';
-import {illustratedStudents} from './character-data.js?v=20261115aoiLive2';
+import {defaultStudents} from './planner-catalog.js?v=20261115akariRemake1';
+import {illustratedStudents} from './character-data.js?v=20261115akariRemake1';
 import {splitDialogue} from './dialogue-pages.js';
 
 export function adviceFor(context={}){

@@ -1,6 +1,6 @@
 import {classTime} from './class-time.js';
-import {illustrationClass} from './illustration-messages.js?v=20261114studentVoices';
-import {illustratedStudents} from './character-data.js?v=20261115aoiLive2';
+import {illustrationClass} from './illustration-messages.js?v=20261115akariRemake1';
+import {illustratedStudents} from './character-data.js?v=20261115akariRemake1';
 
 export const classReplies={
  ...illustrationClass,
@@ -17,7 +17,7 @@ export function createClassCheckin({openModal,closeModal,onLine,onPause,onReady,
   const lesson=classTime.current();if(!lesson||classTime.released())return true;
   const actor=illustratedStudents.find(s=>s.id===student)||illustratedStudents[0],voice=classReplies[actor.id]||classReplies.haru;
   attempted=lesson.key;showing=true;onPause();
-  const line=voice.ask[Math.floor(Math.random()*voice.ask.length)];onLine({text:line,expression:['haru','shiori','momo','akari','ibuki'].includes(actor.id)?'angry':'calm'});
+  const line=voice.ask[Math.floor(Math.random()*voice.ask.length)];onLine({text:line,expression:['haru','shiori','momo','ibuki'].includes(actor.id)?'angry':'calm'});
   openModal('<div class="classCheckin"><img class="classCheckinPortrait" alt=""><div class="sheetEyebrow" id="classSpeaker"></div><h2>잠깐!</h2><p id="classCheckinLine"></p><small id="classCheckinLesson"></small><div class="classReplyButtons"><button class="action" id="classAttend">응, 알겠어</button><button class="action solid" id="classEarly">수업 일찍 끝났어</button></div></div>');
   document.querySelector('.classCheckinPortrait').src=actor.portrait;
   document.querySelector('#classSpeaker').textContent=actor.name;
