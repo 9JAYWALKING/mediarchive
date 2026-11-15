@@ -1,5 +1,5 @@
-import {illustrationRoutine} from './illustration-context.js?v=20261115akariRemake1';
-import {illustrationExtras} from './illustration-dialogue-extra.js?v=20261115akariRemake1';
+import {illustrationRoutine} from './illustration-context.js?v=20261115tsumugiLive1';
+import {illustrationExtras} from './illustration-dialogue-extra.js?v=20261115tsumugiLive1';
 const parse=text=>text.trim().split('\n').filter(Boolean).map(row=>{const [expression,...rest]=row.split('|');return {expression,text:rest.join('|')};});
 const keys=['greeting','early','start','touch','tease','quiet','long','pause','resume','finish','shortFinish','sister','everyday','bond','encourage'];
 const raw={

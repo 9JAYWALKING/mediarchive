@@ -1,9 +1,9 @@
 import {analyzeStatistics,durationText} from './statistics-engine.js?v=20261111overtime';
-import {illustratedStudents} from './character-data.js?v=20261115akariRemake1';
+import {illustratedStudents} from './character-data.js?v=20261115tsumugiLive1';
 import {schedule} from './schedule-data.js';
 import {koreanDate,shiftDate,validDate} from './game-state.js';
 import {sessionTotals} from './growth-engine.js?v=20261110';
-import {portraitHeadX} from './illustration-layout.js?v=20261115akariRemake1';
+import {portraitHeadX} from './illustration-layout.js?v=20261115tsumugiLive1';
 export function createStatisticsUI({getData,getLiveData=getData,onProfile,onPlan}){
  let period='all',from='',to='',search='',sort='default',limit=30,host=null,historyOpen=false,mode='students',rosterOpen=false,expanded=new Set();
  const el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};

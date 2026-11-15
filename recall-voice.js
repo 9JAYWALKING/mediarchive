@@ -1,5 +1,5 @@
-import {illustrationRecall} from './illustration-recall.js?v=20261115akariRemake1';
-import {illustrationBanks} from './illustration-dialogue.js?v=20261115akariRemake1';
+import {illustrationRecall} from './illustration-recall.js?v=20261115tsumugiLive1';
+import {illustrationBanks} from './illustration-dialogue.js?v=20261115tsumugiLive1';
 // Only conversational phrasing changes; names, numbers, arrows and qualifiers stay intact.
 const voices={
  haru:{ask:['좋아, 내 차례!','이번엔 이거!','자, 떠올려 봐.','이건 기억나?'],answer:['자, 같이 맞춰 보자!','내 답은 이거야.','여기까지 연결하면 돼!','하나씩 보면 이래.'],wait:['calm','smile','soft'],question:['smile','happy','calm'],reveal:['smile','happy','soft'],ending:'어때, 나랑 한 바퀴 다 돌았네!'},

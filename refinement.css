@@ -44,3 +44,6 @@ html,body{touch-action:pan-x pan-y}button,a,input,select,textarea{touch-action:m
 .is-detail .academyCardButton .academyPortrait[data-student="aoi"] img{top:2px}
 
 .academyCardButton .academyPortrait[data-student="akari"] img{top:2px}
+
+.academyCardButton .academyPortrait[data-student="tsumugi"] img{top:2px}
+.is-detail .academyCardButton .academyPortrait[data-student="tsumugi"] img{top:2px}

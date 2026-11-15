@@ -1,5 +1,5 @@
 import {studyTargets,completedTargets,linkedTitle} from './linked-study.js?v=20261110';
-import {defaultStudents} from './planner-catalog.js?v=20261115akariRemake1';
+import {defaultStudents} from './planner-catalog.js?v=20261115tsumugiLive1';
 import {schedule} from './schedule-data.js';
 import {validDate,koreanDate,shiftDate} from './game-state.js';
 import {routineContext} from './routine-engine.js';

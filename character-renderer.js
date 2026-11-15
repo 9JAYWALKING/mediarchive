@@ -1,7 +1,7 @@
-import {lobbyLayout} from './lobby-framing.js?v=20261115akariRemake1';
-import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261115akariRemake1';
-import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261115akariRemake1';
-import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115akariRemake1';
+import {lobbyLayout} from './lobby-framing.js?v=20261115tsumugiLive1';
+import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261115tsumugiLive1';
+import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261115tsumugiLive1';
+import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115tsumugiLive1';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
 export async function createCharacter(canvas, options={}){
@@ -82,6 +82,7 @@ export async function createCharacter(canvas, options={}){
   function autoExpression(){acting.auto(activeTime);requestDraw();}
   gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.disable(gl.DEPTH_TEST);
   const profiles={
+   tsumugi:{speed:.48,breath:1.04,head:.27,body:.30,hair:.42,lag:1.7,damping:3.6,look:.44,react:.58,hold:2,blink:4.2,open:.19},
    akari:{speed:.52,breath:1.05,head:.30,body:.34,hair:.48,lag:1.6,damping:3.3,look:.52,react:.75,hold:1.8,blink:4.2,open:.18},
    aoi:{speed:.57,breath:1.04,head:.34,body:.38,hair:.62,lag:1.65,damping:3.1,look:.55,react:.68,hold:1.9,blink:4.1,open:.20},
    mio:{speed:.49,breath:1.02,head:.28,body:.34,hair:.50,lag:1.85,damping:3.2,look:.46,react:.58,hold:2.1,blink:4.3,open:.20},

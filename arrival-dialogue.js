@@ -1,4 +1,4 @@
-import {illustrationOvertime} from './illustration-context.js?v=20261115akariRemake1';
+import {illustrationOvertime} from './illustration-context.js?v=20261115tsumugiLive1';
 const lines={
  ritsu:{expression:'disappointed',text:'…이제 왔네. 복도에서 소리 날 때마다 봤는데. 다음엔 기다리게 하지 마.'},
  haru:{expression:'angry',text:'왜 이제 와! 나 기다렸는데… 다음엔 조금만 일찍 와 줘.'},

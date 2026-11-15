@@ -705,11 +705,11 @@
       "personality": "말보다 손이 먼저 움직이는 실무파. 완성 뒤의 정리와 회복까지 책임진다.",
       "contrast": "정교한 작업은 잘하면서 선물 포장에는 쓸데없이 힘을 준다.",
       "daily": "작은 모형 만들기와 걷기를 좋아한다.",
-      "appearance": "TSUMUGI: practical quietly warm crafts club senior, olive-ash brown hair in ONE LOW MESSY CHIGNON at nape with loose fine wisps and long gently parted bangs, soft amber eyes, tiny braided cord knot keyring. Cute calm understated face, petite not mature.",
+      "appearance": "TSUMUGI: adult medical academy third-year, practical and quietly warm. Olive-ash brown hair, compact tidy low chignon with reduced viewer-right bulk and controlled wisps, long softly parted bangs, amber eyes, rose braided knot keyring. Preserve her original uniform and sage pajamas. Casual: ivory short-sleeve blouse, olive A-line skirt, small brown shoulder bag. Hands never in pockets.",
       "accessory": "실매듭 키링",
       "trait": "마지막 매듭",
       "traitMeaning": "시작부터 마무리까지 이어 주는 손길.",
-      "status": "implemented-illustration",
+      "status": "implemented-live2d",
       "subject": "외과·재활",
       "lectureIds": [
         47,
@@ -748,21 +748,18 @@
         "estimateOnly": true
       },
       "art": {
-        "renderer": "illustration",
-        "portrait": "./assets/illustrations/tsumugi-uniform-v2.png",
-        "model": null,
+        "renderer": "live2d",
+        "portrait": "./assets/tsumugi-live-v1.png",
+        "model": "./assets/tsumugi.model3.json",
         "outfits": {
           "uniform": {
-            "portrait": "./assets/illustrations/tsumugi-uniform-v2.png",
-            "atlas": "./assets/illustrations/tsumugi-uniform-v2-atlas.png"
+            "portrait": "./assets/tsumugi-live-v1.png"
           },
           "casual": {
-            "portrait": "./assets/illustrations/tsumugi-casual-v2.png",
-            "atlas": "./assets/illustrations/tsumugi-casual-v2-atlas.png"
+            "portrait": "./assets/wardrobe/tsumugi-casual-live-v1.png"
           },
           "sleep": {
-            "portrait": "./assets/illustrations/tsumugi-sleep-v2.png",
-            "atlas": "./assets/illustrations/tsumugi-sleep-v2-atlas.png"
+            "portrait": "./assets/wardrobe/tsumugi-sleep-live-v1.png"
           }
         }
       },

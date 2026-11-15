@@ -1,4 +1,4 @@
-import {illustrationOvertime} from './illustration-context.js?v=20261115akariRemake1';
+import {illustrationOvertime} from './illustration-context.js?v=20261115tsumugiLive1';
 const expressions=['calm','disappointed','angry','cry'];
 export function overtimeState(planner,session,now=Date.now()){
  const focus=planner.focus||session;if(!focus?.started)return null;

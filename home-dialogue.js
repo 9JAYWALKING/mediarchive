@@ -1,4 +1,4 @@
-import {illustrationHome} from './illustration-context.js?v=20261115akariRemake1';
+import {illustrationHome} from './illustration-context.js?v=20261115tsumugiLive1';
 import {ritsuHome} from './ritsu-dialogue.js?v=20261110ritsu';
 // Home-only performances; explicit study actions retain their own acknowledgement.
 const lines=text=>text.trim().split('\n').map(row=>{const at=row.indexOf('|');return Object.freeze({expression:row.slice(0,at),text:row.slice(at+1)});});

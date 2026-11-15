@@ -1,5 +1,5 @@
 import {normalizeWardrobe,wardrobeSettingsError,outfitContext} from './wardrobe-engine.js';
-import {outfitFor} from './wardrobe-data.js?v=20261115akariRemake1';
+import {outfitFor} from './wardrobe-data.js?v=20261115tsumugiLive1';
 
 export const wardrobeKey='heart-companion-wardrobe-v1';
 let settings=normalizeWardrobe(null),getMeals=()=>null,started=false,lastId=null;

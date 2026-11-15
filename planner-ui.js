@@ -4,11 +4,11 @@ import {schedule} from './schedule-data.js';
 import {createMealEditor} from './meals-ui.js';
 import {mealsForDate} from './meals-engine.js';
 import {agendaItem,agendaTiming} from './agenda-engine.js?v=20261111rest';
-import {illustratedStudents} from './character-data.js?v=20261115akariRemake1';
+import {illustratedStudents} from './character-data.js?v=20261115tsumugiLive1';
 import {koreanDate,shiftDate} from './game-state.js';
-import {suggestPlan} from './momo-engine.js?v=20261115akariRemake1';
+import {suggestPlan} from './momo-engine.js?v=20261115tsumugiLive1';
 import {studentGrowth,recordSnapshot,focusPreview} from './student-growth.js?v=20261110';
-import {normalizePlanner,mergePlanner,plannerSnapshot,focusElapsed,buildPlans,legacyMomoPlans,startOf,endOf,nextPlan} from './planner-engine.js?v=20261115akariRemake1';
+import {normalizePlanner,mergePlanner,plannerSnapshot,focusElapsed,buildPlans,legacyMomoPlans,startOf,endOf,nextPlan} from './planner-engine.js?v=20261115tsumugiLive1';
 const KEY='heart-companion-planner-v1';
 export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal,closeModal,toast,onChange,onSchedule,onLaunch,getSession,beforeTimerChange=()=>{},canStudy=()=>true,beforeStudy=()=>false,onStudyFinished=()=>{},onStudyStarted=()=>{}}){
  let state=normalizePlanner(null),filter='all';try{state=normalizePlanner(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{}

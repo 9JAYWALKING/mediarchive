@@ -1,5 +1,7 @@
-import {akariFaceRig} from './akari-face-rig.js?v=20261115akariRemake1';
-import {akariBlinkRig} from './akari-blink-rig.js?v=20261115akariRemake1';
+import {tsumugiFaceRig} from './tsumugi-face-rig.js?v=20261115tsumugiLive1';
+import {tsumugiBlinkRig} from './tsumugi-blink-rig.js?v=20261115tsumugiLive1';
+import {akariFaceRig} from './akari-face-rig.js?v=20261115tsumugiLive1';
+import {akariBlinkRig} from './akari-blink-rig.js?v=20261115tsumugiLive1';
 import {aoiFaceRig} from './aoi-face-rig.js?v=20261115aoiLive2';
 import {aoiBlinkRig} from './aoi-blink-rig.js?v=20261115aoiLive2';
 import {mioFaceRig} from './mio-face-rig.js?v=20261115mioLive1';
@@ -21,6 +23,11 @@ export function expressionPose(name){
  return {brow:i,eyes:i,mouth:i};
 }
 export function facialParts(student,name,{talking=false,blink='open'}={}){
+ if(student==='tsumugi'){
+  const face=name==='calm'?{brow:1,eyes:1,mouth:1}:expressionPose(name);
+  const mouth=talking&&['neutral','smile','soft','calm'].includes(name)?0:face.mouth;
+  return {...face,mouth,blink:face.eyes===2||blink==='open'?-1:blink==='closed'?2:4,mouthScale:1};
+ }
  if(student==='akari'){
   // The approved cheerful face has open almond eyes, so it also needs blinks.
   // Her quiet expressions rest on the original closed smile, not a speaking mouth.
@@ -33,6 +40,7 @@ export function facialParts(student,name,{talking=false,blink='open'}={}){
  return {...face,mouth,blink:face.eyes===2||blink==='open'?-1:blink==='closed'?2:4,mouthScale:student==='ritsu'&&talking&&positive&&name!=='happy'?.76:1};
 }
 export const expressionRigs={
+ tsumugi:{size:[1024,1536],blinkBrowGuard:true,atlas:'expressions/tsumugi-live-v1.png',blinkAtlas:'expressions/tsumugi-blink-v1.png',blinkFeatures:tsumugiBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[94,53,.19,-45],mouthRadius:[64,38,48],...tsumugiFaceRig.uniform,source:[[212,270],[332,246],[283,338]],outfits:{casual:{...tsumugiFaceRig.casual,blinkFeatures:tsumugiBlinkRig.casual.features},sleep:{...tsumugiFaceRig.sleep,blinkFeatures:tsumugiBlinkRig.sleep.features}}},
  akari:{size:[1024,1536],blinkBrowGuard:true,atlas:'expressions/akari-live-v6.png',blinkAtlas:'expressions/akari-blink-v3.png',blinkFeatures:akariBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.28,-29],mouthRadius:[64,34,46],...akariFaceRig.uniform,source:[[212,304],[343,268],[296,378]],outfits:{casual:{...akariFaceRig.casual,blinkFeatures:akariBlinkRig.casual.features},sleep:{...akariFaceRig.sleep,blinkFeatures:akariBlinkRig.sleep.features}}},
  aoi:{size:[1024,1536],atlas:'expressions/aoi-live-v1.png',blinkAtlas:'expressions/aoi-blink-v1.png',blinkFeatures:aoiBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.23,-29],mouthRadius:[64,34,46],...aoiFaceRig.uniform,source:[[175,307],[324,275],[269,394]],outfits:{casual:{...aoiFaceRig.casual,blinkFeatures:aoiBlinkRig.casual.features},sleep:{...aoiFaceRig.sleep,blinkFeatures:aoiBlinkRig.sleep.features}}},
  mio:{size:[1024,1536],atlas:'expressions/mio-live-v1.png',blinkAtlas:'expressions/mio-blink-v1.png',blinkFeatures:mioBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.23,-29],mouthRadius:[65,34,46],...mioFaceRig.uniform,source:[[212,300],[342,280],[290,379]],outfits:{casual:{...mioFaceRig.casual,blinkFeatures:mioBlinkRig.casual.features},sleep:{...mioFaceRig.sleep,blinkFeatures:mioBlinkRig.sleep.features}}},

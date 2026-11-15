@@ -1,4 +1,4 @@
-import {illustrationBanks} from './illustration-dialogue.js?v=20261115akariRemake1';
+import {illustrationBanks} from './illustration-dialogue.js?v=20261115tsumugiLive1';
 export const illustrationStudents=[
  {
   "id": "ibuki",
@@ -238,21 +238,18 @@ export const illustrationStudents=[
   "grade": 3,
   "role": "공작부 · 부장",
   "color": "#a3a78a",
-  "portrait": "./assets/illustrations/tsumugi-uniform-v2.png",
-  "model": null,
-  "renderer": "illustration",
+  "portrait": "./assets/tsumugi-live-v1.png",
+  "model": "./assets/tsumugi.model3.json",
+  "renderer": "live2d",
   "outfits": {
    "uniform": {
-    "portrait": "./assets/illustrations/tsumugi-uniform-v2.png",
-    "atlas": "./assets/illustrations/tsumugi-uniform-v2-atlas.png"
+    "portrait": "./assets/tsumugi-live-v1.png"
    },
    "casual": {
-    "portrait": "./assets/illustrations/tsumugi-casual-v2.png",
-    "atlas": "./assets/illustrations/tsumugi-casual-v2-atlas.png"
+    "portrait": "./assets/wardrobe/tsumugi-casual-live-v1.png"
    },
    "sleep": {
-    "portrait": "./assets/illustrations/tsumugi-sleep-v2.png",
-    "atlas": "./assets/illustrations/tsumugi-sleep-v2-atlas.png"
+    "portrait": "./assets/wardrobe/tsumugi-sleep-live-v1.png"
    }
   },
   "accessory": "실매듭 키링",
