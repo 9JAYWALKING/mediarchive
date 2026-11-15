@@ -1,11 +1,11 @@
 import {bondStories} from './bond-story-data.js?v=20261110ritsu';
-import {outfitFor} from './wardrobe-data.js?v=20261115tsumugiLive1';
+import {outfitFor} from './wardrobe-data.js?v=20261115akariVoice1';
 import {bondStory,bondStudents,bondLevel,normalizeBondStories,mergeBondStories,unlockBondStories,changeBondStory,storyTimeline,storyUnread} from './bond-story-engine.js?v=20261110ritsu';
-import {illustratedStudents} from './character-data.js?v=20261115tsumugiLive1';
+import {illustratedStudents} from './character-data.js?v=20261115akariVoice1';
 import {sceneAssets} from './scene-assets.js';
-import {createCharacter} from './renderer.js?v=20261115tsumugiLive1';
+import {createCharacter} from './renderer.js?v=20261115akariVoice1';
 import {splitDialogue} from './dialogue-pages.js';
-import {accessoryFor} from './accessory-art.js?v=20261115tsumugiLive1';
+import {accessoryFor} from './accessory-art.js?v=20261115akariVoice1';
 import {teacherAddress,personalize} from './teacher-profile.js?v=20261110';
 
 const KEY='mediarchive-bond-stories-v1';

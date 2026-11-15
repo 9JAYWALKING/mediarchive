@@ -1,5 +1,5 @@
 import {illustrationRegistration} from './illustration-registration.js?v=20261114framing';
-import {lobbyLayout} from './lobby-framing.js?v=20261115tsumugiLive1';
+import {lobbyLayout} from './lobby-framing.js?v=20261115akariVoice1';
 
 export function illustrationLayout(student,outfit,frame,rect,framing='lobby'){
  if(framing==='lobby'){
@@ -29,6 +29,7 @@ export function positionIllustrationFallback(img,student,outfit,host,framing='lo
 }
 
 export function portraitHeadX(student,outfit='uniform'){
+ if(student==='akari')return 528/1024;
  if(student==='tsumugi')return 526.5/1024;
  return illustrationRegistration[student]?.[outfit]?.frames[0]?.x??.5;
 }

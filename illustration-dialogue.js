@@ -1,5 +1,6 @@
-import {illustrationRoutine} from './illustration-context.js?v=20261115tsumugiLive1';
-import {illustrationExtras} from './illustration-dialogue-extra.js?v=20261115tsumugiLive1';
+import {akariLobby} from './akari-dialogue.js?v=20261115akariVoice1';
+import {illustrationRoutine} from './illustration-context.js?v=20261115akariVoice1';
+import {illustrationExtras} from './illustration-dialogue-extra.js?v=20261115akariVoice1';
 const parse=text=>text.trim().split('\n').filter(Boolean).map(row=>{const [expression,...rest]=row.split('|');return {expression,text:rest.join('|')};});
 const keys=['greeting','early','start','touch','tease','quiet','long','pause','resume','finish','shortFinish','sister','everyday','bond','encourage'];
 const raw={
@@ -63,21 +64,6 @@ smile|나기랑 산책하면 평소 안 보던 꽃을 보게 돼.~happy|아카�
 smile|여행 계획을 고치다 출발이 늦었어. 이번엔 진짜 확정!~happy|새 골목을 찾았어. 빵 냄새가 좋은 쪽이야.
 soft|오늘은 목적지가 없어도 괜찮을 것 같아.~smile|너랑 걷던 길은 나중에도 잘 기억나.
 calm|틀린 길을 표시한 것도 다음에 도움이 돼.~smile|처음 갈림길로 돌아가자. 이번엔 같이 고를게.` ,
-akari:`calm|왔네. 이쪽 자리 비워 뒀어.~smile|{teacher} 선생님, 오늘은 내가 먼저 왔어. 조금 뿌듯한데.~soft|응, 여기 있어. 가방 내려놓고 와.~smile|복도에서 네 발소리 들렸어. 맞혔네.
-smile|벌써? 나 아직 머리도 못 정리했는데. 일단 앉아.~happy|먼저 해 보려고 온 거야? 좋아. 나도 궁금했어.
-calm|책 펴자. 오늘은 어디까지 같이 볼까?~calm|시작하기 전에 끝낼 시간부터 정해 줘. 나도 기억할게.
-smile|방울 안에 든 거? 내가 골랐어. 흔들면 잠깐 빨갛게 보이지.~calm|소리가 작아서 좋아. 가까이 있어야 들리거든.~smile|응? 불렀어?~smile|지금 내 앞머리 보고 있었지. 한 가닥만 자꾸 나와.~smile|손 차갑네. 컵 아직 따뜻해. 잡고 있어.
-smile|나 말고 책. 내 얼굴엔 답 없어.~smile|또 이쪽 봤어. 세 번째야. 세고 있었냐고? 응.~smile|내가 궁금한 건 알겠는데, 방금 어디까지 봤어?~smile|딱 한 번만 눈 마주치고 다시 하자. 약속.
-calm|아까부터 같은 데 보고 있네. 막힌 거 있어?~smile|나 구경은 잠깐 쉬고. 네가 보던 데, 거기부터.~smile|그렇게 보면 나도 보게 되잖아. 우리 둘 다 손 멈췄네.~calm|지금 좋다. 종이 넘기는 소리만 나네.~calm|멈춘 데 있어? 없으면 나는 조용히 있을게.
-calm|어깨 올라갔어. 힘 좀 빼.~calm|계속 같은 데 보고 있네. 잠깐 멀리 볼래?
-soft|잠깐 일어나자. 어깨가 아까부터 굳어 있었어.~soft|잠깐 쉬자. 창가 쪽 바닥이 따뜻하더라.~soft|컵 비었네. 물 받으러 같이 갈까?
-smile|돌아왔네. 표시는 여기 해 뒀어.~smile|아까 막힌 데부터? 응, 나도 다시 보고 싶었어.
-smile|여기까지 했네. 표시해 뒀으니까 이제 쉬자.~smile|끝. 오늘은 약속한 시간에 잘 멈췄네.~smile|덮어도 돼. 마지막 장까지 같이 봤잖아.~smile|잘했어. 이제 간식 고르는 건 내 차례.
-calm|짧아도 하나는 알았네. 그거면 남은 거지.~calm|여기 접어 둘게. 다음에 이어 보자.
-smile|레이랑 같은 데서 멈췄어. 서로 아무 말도 안 했는데.~smile|아오이는 돌아갈 길까지 정하더라. 난 그 길에 고양이 있는지가 궁금하고.~smile|츠무기가 방울 끈 고쳐 줬어. 소리도 조금 얌전해졌네.
-calm|지우개 또 바닥에 갔어. 저쪽을 자기 자리로 정했나 봐.~smile|이 컵은 왠지 화요일 같아. 이유? 그냥 화요일처럼 생겼는데.~calm|창가 고양이 이름 정했어. 단추. 네 겉옷 단추랑 눈이 닮아서.~happy|저기, 봤어? 고양이가 자기 꼬리 놓쳤어. 한 번 더 하나 보자.~smile|오늘 간식은 두 개. 나누려고 산 거 맞아.~smile|의자가 조금 삐걱거려. 내가 움직이면 대답하는 것 같아.~smile|비 오는 날엔 창문 쪽 소리가 좋아.~smile|고양이 사진 볼래? 한 장만. 사실 세 장이야.~smile|이 빨간 탭은 찾기 쉬워서 달았어. 귀엽기도 하고.
-calm|같이 있어도 조용해서 좋네.~smile|이거 네가 좋아할 것 같아서 가져왔어. 맞아?~soft|오늘 얘기하려고 기억해 둔 게 있어. 잠깐 앉아 봐.~smile|응, 나도 방금 좀 잘한 것 같아.~soft|그런 건 갑자기 말하면 좀. 한 번만 다시 말해 봐.~happy|맞혔어? 아, 좋다. 방금 건 진짜 궁금했거든.~soft|{teacher} 선생님, 옆에 있어 줘. 오늘은 그냥 그게 좋아.~soft|네가 웃으면 이유를 확인하고 싶어져. 나도 웃게 되니까.
-soft|오늘 잘 안 풀리네. 작게 하나만 해 보자.~calm|모르면 표시해 둬. 아는 척하면 나중에 못 찾잖아.~smile|처음보다 덜 멈추네. 너도 느껴져?~smile|맞혔네. 방금은 찍은 얼굴 아니었어.~smile|헷갈린 데 찾았으면 앞으로 온 거야. 조금이지만.~smile|응, 이번 설명은 나도 따라갈 수 있겠어.`,
 momo:`smile|왔구나! 선배가 특별히 자리를 남겨 줬지.~happy|{teacher} 선생님, 늦지 않았네. 칭찬해 줄게!
 angry|선배보다 빨리 오면 내가 기다린 척도 못 하잖아!~smile|아직 시작 전이니까 내가 먼저 설명… 아, 책이 거꾸로네.
 smile|오늘은 선배만 믿어! …범위부터 같이 정하자.~calm|익숙하다고 그냥 넘기지 마. 왜 그런지도 말해 봐.
@@ -118,3 +104,5 @@ for(const [id,bank] of Object.entries(illustrationBanks)){
  bank.night.push({text:illustrationRoutine[id].sleep[0],expression:'sleepy'});
  bank.return=[...bank.resume];
 }
+
+illustrationBanks.akari=akariLobby;

@@ -1,7 +1,9 @@
-import {tsumugiFaceRig} from './tsumugi-face-rig.js?v=20261115tsumugiLive1';
-import {tsumugiBlinkRig} from './tsumugi-blink-rig.js?v=20261115tsumugiLive1';
-import {akariFaceRig} from './akari-face-rig.js?v=20261115tsumugiLive1';
-import {akariBlinkRig} from './akari-blink-rig.js?v=20261115tsumugiLive1';
+import {akariSkinPalette} from './akari-skin-palette.js?v=20261115akariVoice1';
+import {akariClosedRig} from './akari-reset-closed-rig.js?v=20261115akariVoice1';
+import {akariHalfRig} from './akari-reset-half-rig.js?v=20261115akariVoice1';
+import {tsumugiFaceRig} from './tsumugi-face-rig.js?v=20261115akariVoice1';
+import {tsumugiBlinkRig} from './tsumugi-blink-rig.js?v=20261115akariVoice1';
+import {akariFaceRig} from './akari-reset-face-rig.js?v=20261115akariVoice1';
 import {aoiFaceRig} from './aoi-face-rig.js?v=20261115aoiLive2';
 import {aoiBlinkRig} from './aoi-blink-rig.js?v=20261115aoiLive2';
 import {mioFaceRig} from './mio-face-rig.js?v=20261115mioLive1';
@@ -31,9 +33,9 @@ export function facialParts(student,name,{talking=false,blink='open'}={}){
  if(student==='akari'){
   // The approved cheerful face has open almond eyes, so it also needs blinks.
   // Her quiet expressions rest on the original closed smile, not a speaking mouth.
-  const face=['calm','soft'].includes(name)?{brow:1,eyes:1,mouth:1}:expressionPose(name);
+  const face=['calm','soft','sleepy'].includes(name)?{brow:1,eyes:1,mouth:1}:expressionPose(name);
   const mouth=talking&&['neutral','smile','soft','calm'].includes(name)?0:face.mouth;
-  return {...face,mouth,blink:blink==='open'?-1:blink==='closed'?2:4,mouthScale:1};
+  return {...face,mouth,blink:blink==='closed'?2:blink==='half'||name==='sleepy'?4:-1,mouthScale:1};
  }
  const face=expressionPose(name),positive=['smile','happy','soft'].includes(name);
  const mouth=talking?(student==='haru'?-1:['momo','sena','ibuki','mio','aoi','akari'].includes(student)?(positive||['ibuki','mio','aoi','akari'].includes(student)&&name==='neutral'?0:face.mouth):student==='ritsu'&&!positive?face.mouth:2):face.mouth;
@@ -41,7 +43,7 @@ export function facialParts(student,name,{talking=false,blink='open'}={}){
 }
 export const expressionRigs={
  tsumugi:{size:[1024,1536],blinkBrowGuard:true,atlas:'expressions/tsumugi-live-v1.png',blinkAtlas:'expressions/tsumugi-blink-v1.png',blinkFeatures:tsumugiBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[94,53,.19,-45],mouthRadius:[64,38,48],...tsumugiFaceRig.uniform,source:[[212,270],[332,246],[283,338]],outfits:{casual:{...tsumugiFaceRig.casual,blinkFeatures:tsumugiBlinkRig.casual.features},sleep:{...tsumugiFaceRig.sleep,blinkFeatures:tsumugiBlinkRig.sleep.features}}},
- akari:{size:[1024,1536],blinkBrowGuard:true,atlas:'expressions/akari-live-v6.png',blinkAtlas:'expressions/akari-blink-v3.png',blinkFeatures:akariBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.28,-29],mouthRadius:[64,34,46],...akariFaceRig.uniform,source:[[212,304],[343,268],[296,378]],outfits:{casual:{...akariFaceRig.casual,blinkFeatures:akariBlinkRig.casual.features},sleep:{...akariFaceRig.sleep,blinkFeatures:akariBlinkRig.sleep.features}}},
+ akari:{silverHairGuard:true,blinkBrowInset:0,skinPalette:akariSkinPalette,size:[1024,1536],blinkBrowGuard:true,atlas:'expressions/akari-reset-v1.png',expressionBlinks:true,blinkAtlas:'expressions/akari-reset-closed-v1.png',halfBlinkAtlas:'expressions/akari-reset-half-v1.png',blinkFeatures:akariClosedRig.uniform.features,halfBlinkFeatures:akariHalfRig.uniform.features,preserveHair:true,registered:true,lidShape:[94,53,.11,-48],mouthRadius:[64,38,48],...akariFaceRig.uniform,source:[[207,302],[348,294],[281,387]],outfits:{casual:{...akariFaceRig.casual,blinkFeatures:akariClosedRig.casual.features,halfBlinkFeatures:akariHalfRig.casual.features},sleep:{...akariFaceRig.sleep,blinkFeatures:akariClosedRig.sleep.features,halfBlinkFeatures:akariHalfRig.sleep.features}}},
  aoi:{size:[1024,1536],atlas:'expressions/aoi-live-v1.png',blinkAtlas:'expressions/aoi-blink-v1.png',blinkFeatures:aoiBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.23,-29],mouthRadius:[64,34,46],...aoiFaceRig.uniform,source:[[175,307],[324,275],[269,394]],outfits:{casual:{...aoiFaceRig.casual,blinkFeatures:aoiBlinkRig.casual.features},sleep:{...aoiFaceRig.sleep,blinkFeatures:aoiBlinkRig.sleep.features}}},
  mio:{size:[1024,1536],atlas:'expressions/mio-live-v1.png',blinkAtlas:'expressions/mio-blink-v1.png',blinkFeatures:mioBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.23,-29],mouthRadius:[65,34,46],...mioFaceRig.uniform,source:[[212,300],[342,280],[290,379]],outfits:{casual:{...mioFaceRig.casual,blinkFeatures:mioBlinkRig.casual.features},sleep:{...mioFaceRig.sleep,blinkFeatures:mioBlinkRig.sleep.features}}},
  ibuki:{size:[1024,1536],atlas:'expressions/ibuki-live-v1.png',blinkAtlas:'expressions/ibuki-blink-v1.png',blinkFeatures:ibukiBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[84,38,.20,-30],mouthRadius:[65,36,48],...ibukiFaceRig.uniform,source:[[192,307],[318,285],[264,375]],outfits:{casual:{...ibukiFaceRig.casual,blinkFeatures:ibukiBlinkRig.casual.features},sleep:{...ibukiFaceRig.sleep,blinkFeatures:ibukiBlinkRig.sleep.features}}},
@@ -61,14 +63,18 @@ export function faceTransform(rig){
 export const expressionFragment=`precision mediump float;
 varying vec2 v_uv; uniform sampler2D u_texture; uniform sampler2D u_faces; uniform vec2 u_artSize;
 uniform sampler2D u_blinkFaces; uniform float u_hasBlinkAtlas;
+uniform sampler2D u_halfBlinkFaces; uniform float u_expressionBlinks,u_blinkExpression;
 uniform vec3 u_mapX; uniform vec3 u_mapY; uniform vec2 u_left; uniform vec2 u_right; uniform vec2 u_mouth;
 uniform vec4 u_fringe; uniform vec4 u_protect;
-uniform float u_preserveHair,u_hairGuard,u_brownHairGuard;
+uniform float u_preserveHair,u_hairGuard,u_brownHairGuard,u_silverHairGuard,u_blinkBrowInset;
 uniform float u_customLids,u_blinkBrowGuard;
 uniform vec3 u_mouthRadius;
 uniform vec4 u_lidShape;
 uniform vec3 u_eyeLeftX,u_eyeLeftY,u_eyeRightX,u_eyeRightY;
 uniform float u_registered,u_mouthScale;
+uniform vec3 u_skinShift,u_browSkin,u_eyeSkin,u_mouthSkin;
+float skinWeight(vec3 c){return smoothstep(.77,.91,c.r)*smoothstep(.045,.09,c.r-c.g)*smoothstep(.58,.69,c.g);}
+float silverHair(vec3 c){return smoothstep(.30,.44,c.r)*(1.0-smoothstep(.07,.12,c.r-c.g))*smoothstep(.003,.025,c.b-c.g);}
 uniform vec3 u_browLeftX,u_browLeftY,u_browRightX,u_browRightY,u_mouthX,u_mouthY;
 uniform float u_browPose; uniform float u_eyePose; uniform float u_mouthPose; uniform float u_blink;
 float oval(vec2 p,vec2 c,vec2 r){return 1.0-smoothstep(.68,1.0,length((p-c)/r));}
@@ -87,19 +93,25 @@ vec4 paint(float e,vec4 base,vec2 p,float mask,int part){
  vec2 eye=distance(p,u_left)<distance(p,u_right)?u_left:u_right;
  if(feature){vec3 local=vec3(p-eye,1.0);at=distance(p,u_left)<distance(p,u_right)?vec2(dot(u_eyeLeftX,local),dot(u_eyeLeftY,local)):vec2(dot(u_eyeRightX,local),dot(u_eyeRightY,local));}
  if(u_registered>.5){
-  if(e==1.0)return base;
+  if(e==1.0&&!(part==1&&u_blink>=0.0&&u_expressionBlinks>.5))return base;
   if(part==0){vec3 local=vec3(p-eye,1.0);at=distance(p,u_left)<distance(p,u_right)?vec2(dot(u_browLeftX,local),dot(u_browLeftY,local)):vec2(dot(u_browRightX,local),dot(u_browRightY,local));}
   if(part==2){vec3 local=vec3((p-u_mouth)/u_mouthScale,1.0);at=vec2(dot(u_mouthX,local),dot(u_mouthY,local));}
  }
- vec2 cell=vec2(mod(e,3.0),floor(e/3.0));
+ float cellIndex=part==1&&u_blink>=0.0&&u_expressionBlinks>.5?u_blinkExpression:e;
+ vec2 cell=vec2(mod(cellIndex,3.0),floor(cellIndex/3.0));
  vec2 uv=(at+cell*512.0)/vec2(1536.0,1024.0);uv.y=1.0-uv.y;
  vec4 ink=texture2D(u_faces,uv);
  if(part==1&&u_blink>=0.0&&u_hasBlinkAtlas>.5)ink=texture2D(u_blinkFaces,uv);
+ if(part==1&&u_blink>3.5&&u_expressionBlinks>.5)ink=texture2D(u_halfBlinkFaces,uv);
+ vec3 skinShift=part==0?u_browSkin:part==1?u_eyeSkin:u_mouthSkin;
+ ink.rgb=clamp(ink.rgb+skinShift*skinWeight(ink.rgb),0.0,1.0);
  return vec4(mix(base.rgb,ink.rgb,mask*ink.a),base.a);
 }
 void main(){
  vec4 base=texture2D(u_texture,v_uv);
  vec2 p=vec2(v_uv.x,1.0-v_uv.y)*u_artSize;
+ float headRegion=smoothstep(210.0,245.0,p.y)*(1.0-smoothstep(525.0,565.0,p.y));
+ base.rgb=clamp(base.rgb+u_skinShift*skinWeight(base.rgb)*headRegion,0.0,1.0);
  float tear=step(4.5,u_browPose);
  // One continuous forehead region prevents split patches through the fringe.
  float fringe=smoothstep(u_fringe.x,u_fringe.x+22.0,p.x)*(1.0-smoothstep(u_fringe.z-22.0,u_fringe.z,p.x))*smoothstep(u_fringe.y,u_fringe.y+28.0,p.y)*(1.0-smoothstep(u_fringe.w-22.0,u_fringe.w,p.y));
@@ -118,6 +130,10 @@ void main(){
  float hairAbove=1.0-smoothstep(.68,.78,above.r);
  float brownHair=hairAbove*smoothstep(.28,.36,base.r)*(1.0-smoothstep(.67,.76,base.r))*(1.0-smoothstep(.12,.19,base.r-base.g));
  hairCover=max(hairCover,u_brownHairGuard*brownHair*(1.0-smoothstep(-23.0,-10.0,p.y-nearEye.y)));
+ // Preserve Akari's original silver fringe, including the unadorned sleep hair.
+ // Exposed dark eyebrows have warm skin above them; hair and pins have gray above.
+ float silverNow=silverHair(base.rgb)*silverHair(texture2D(u_texture,v_uv+vec2(0.0,4.0/u_artSize.y)).rgb)*silverHair(texture2D(u_texture,v_uv-vec2(0.0,4.0/u_artSize.y)).rgb);
+ hairCover=max(hairCover,u_silverHairGuard*silverNow*(1.0-smoothstep(-25.0,-12.0,p.y-nearEye.y)));
  faceMask*=1.0-hairCover;
  if(u_protect.z>0.0)faceMask*=smoothstep(.75,1.0,length((p-u_protect.xy)/u_protect.zw));
  
@@ -134,7 +150,7 @@ void main(){
    // Clear the entire original upper lash without touching lowered sad brows.
    if(u_customLids>.5&&(u_browPose<2.5||u_browPose>4.5))shape=vec4(94.0,53.0,shape.z,-54.0);
    // Akari's lowered brows must survive the neutral blink atlas unchanged.
-   if(u_blinkBrowGuard>.5&&u_blink>=0.0)shape.w=u_lidShape.w;
+   if(u_blinkBrowGuard>.5&&u_blink>=0.0){shape.w=u_lidShape.w;if(u_browPose>2.5)shape.w+=u_blinkBrowInset;}
    vec2 l=p-u_left,r=p-u_right;l.y+=l.x*shape.z;r.y+=r.x*shape.z;
    float leftLid=(1.0-smoothstep(.9,1.0,length(l/shape.xy)))*smoothstep(shape.w,shape.w+3.0,l.y);
    float rightLid=(1.0-smoothstep(.9,1.0,length(r/shape.xy)))*smoothstep(shape.w,shape.w+3.0,r.y);
@@ -143,9 +159,10 @@ void main(){
 
   if(u_browPose>4.5&&u_blink<0.0)lids=max(lids,max(oval(p,u_left+vec2(0.0,29.0),vec2(63.0,53.0)),oval(p,u_right+vec2(0.0,29.0),vec2(63.0,53.0))));
  }
+ if(u_expressionBlinks>.5&&u_blink>=0.0)lids=faceMask;
  face=paint(eyes,face,p,lids*(1.0-hairCover),1);
  // A blink replaces eyelids, not the tear tracks beneath them.
- if(u_registered>.5&&u_browPose>4.5&&u_blink>=0.0){
+ if(u_registered>.5&&u_browPose>4.5&&u_blink>=0.0&&u_expressionBlinks<.5){
   float tears=max(oval(p,u_left+vec2(0.0,45.0),vec2(48.0,42.0))*smoothstep(u_left.y+27.0,u_left.y+31.0,p.y),oval(p,u_right+vec2(0.0,45.0),vec2(48.0,42.0))*smoothstep(u_right.y+27.0,u_right.y+31.0,p.y));
   face=paint(u_browPose,face,p,tears,0);
  }

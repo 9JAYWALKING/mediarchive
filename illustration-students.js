@@ -1,4 +1,4 @@
-import {illustrationBanks} from './illustration-dialogue.js?v=20261115tsumugiLive1';
+import {illustrationBanks} from './illustration-dialogue.js?v=20261115akariVoice1';
 export const illustrationStudents=[
  {
   "id": "ibuki",
@@ -160,21 +160,21 @@ export const illustrationStudents=[
   "grade": 2,
   "role": "행사운영부 · 대기실 담당",
   "color": "#a34c5a",
-  "portrait": "./assets/akari-live-v10.png",
-  "model": "./assets/akari.model3.json",
+  "portrait": "./assets/akari-reset-uniform-v2.png",
+  "model": "./assets/akari-reset.model3.json",
   "renderer": "live2d",
   "outfits": {
    "uniform": {
-    "portrait": "./assets/akari-live-v10.png"
+    "portrait": "./assets/akari-reset-uniform-v2.png"
    },
    "casual": {
-    "portrait": "./assets/wardrobe/akari-casual-live-v5.png"
+    "portrait": "./assets/wardrobe/akari-reset-casual-v3.png"
    },
    "sleep": {
-    "portrait": "./assets/wardrobe/akari-sleep-live-v5.png"
+    "portrait": "./assets/wardrobe/akari-reset-sleep-v5.png"
    }
   },
-  "accessory": "검은 고양이 방울 참",
+  "accessory": "고양이 귀 핀",
   "trait": "작은 신호",
   "relation": "분석과 결정 · 예방과 현장",
   "relations": [
@@ -191,7 +191,7 @@ export const illustrationStudents=[
     "label": "현장 콤비"
    }
   ],
-  "profile": "자기 속도로 주변을 살피는 조용한 관찰자. 엉뚱한 기준으로 자리를 고르고, 마음에 드는 걸 발견하면 갑자기 환해진다. 고양이 사진과 작은 간식을 좋아한다."
+  "profile": "자기 속도가 분명하고 호기심이 많은 관찰자. 느긋하게 딴청 피우다가 좋아하는 것을 발견하면 눈을 반짝이며 먼저 다가온다. 장난을 치고도 태연한 척하지만 칭찬과 작은 약속에는 솔직하다."
  },
  {
   "id": "momo",

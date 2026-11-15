@@ -37,8 +37,8 @@ export const accessoryArt=Object.freeze({
     "src": "./assets/accessories/aoi.svg"
   },
   "akari": {
-    "name": "검은 고양이 방울 참",
-    "src": "./assets/accessories/akari-v2.svg"
+    "name": "고양이 귀 핀",
+    "src": "./assets/accessories/akari-v3.svg"
   },
   "momo": {
     "name": "토끼 가방 참",

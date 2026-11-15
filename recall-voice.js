@@ -1,5 +1,6 @@
-import {illustrationRecall} from './illustration-recall.js?v=20261115tsumugiLive1';
-import {illustrationBanks} from './illustration-dialogue.js?v=20261115tsumugiLive1';
+import {akariFeedback} from './akari-dialogue.js?v=20261115akariVoice1';
+import {illustrationRecall} from './illustration-recall.js?v=20261115akariVoice1';
+import {illustrationBanks} from './illustration-dialogue.js?v=20261115akariVoice1';
 // Only conversational phrasing changes; names, numbers, arrows and qualifiers stay intact.
 const voices={
  haru:{ask:['좋아, 내 차례!','이번엔 이거!','자, 떠올려 봐.','이건 기억나?'],answer:['자, 같이 맞춰 보자!','내 답은 이거야.','여기까지 연결하면 돼!','하나씩 보면 이래.'],wait:['calm','smile','soft'],question:['smile','happy','calm'],reveal:['smile','happy','soft'],ending:'어때, 나랑 한 바퀴 다 돌았네!'},
@@ -31,5 +32,4 @@ const feedback={
  momo:{good:['후후, 잘하고 있네! 선배가 괜히 기다린 게 아니지?','어라, 제법인데? 다음 것도 기대해도 되겠네.'],steady:['조금 헷갈린 건 표시해 두자. 선배랑 다시 보면 되지.','아는 것도 많잖아? 나머지는 천천히 채우자.'],hard:['음, 좀 어려웠어? 선배가 옆에서 기다려 줄게.','오늘은 만만하지 않네. 괜찮아, 하나씩 다시 해 보자.']}
 };
 for(const [id,bank] of Object.entries(illustrationBanks))feedback[id]={good:bank.finish.map(l=>l.text.replace('{teacher} 선생님','선생님')),steady:bank.encourage.map(l=>l.text),hard:bank.long.map(l=>l.text)};
-feedback.akari={good:['잘하고 있네. 다음 것도 궁금한데.','이번엔 확실히 기억하고 있었네. 나도 기뻐.'],steady:['멈칫한 데 몇 개 있네. 표시한 것부터 다시 볼까?','아는 것도 있어. 헷갈린 것만 조금 더 보자.'],hard:['오늘 내용이 어렵구나. 속도 조금 낮출까?','계속 틀리면 지치지. 한 가지만 골라서 같이 보자.']};
-export function feedbackLine(student,quality,random=Math.random){const list=(feedback[student]||feedback.rei)[quality];return {text:list[Math.floor(random()*list.length)],expression:quality==='good'?recallExpression(student,'reveal'):quality==='hard'?'soft':'calm'};}
+export function feedbackLine(student,quality,random=Math.random){if(student==='akari'){const pool=akariFeedback[quality]||akariFeedback.steady;return {...pool[Math.min(pool.length-1,Math.floor(random()*pool.length))]};}const list=(feedback[student]||feedback.rei)[quality];return {text:list[Math.floor(random()*list.length)],expression:quality==='good'?recallExpression(student,'reveal'):quality==='hard'?'soft':'calm'};}

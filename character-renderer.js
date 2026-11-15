@@ -1,7 +1,7 @@
-import {lobbyLayout} from './lobby-framing.js?v=20261115tsumugiLive1';
-import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261115tsumugiLive1';
-import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261115tsumugiLive1';
-import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115tsumugiLive1';
+import {lobbyLayout} from './lobby-framing.js?v=20261115akariVoice1';
+import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261115akariVoice1';
+import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261115akariVoice1';
+import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115akariVoice1';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
 export async function createCharacter(canvas, options={}){
@@ -9,14 +9,14 @@ export async function createCharacter(canvas, options={}){
  if(!core)throw Error('캐릭터를 불러오지 못했어요. 연결을 확인해 주세요.');
  const gl=canvas.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:false});
  if(!gl)throw Error('이 브라우저에서 움직임을 표시할 수 없어요.');
- let moc,model,program,texture,faceTexture,blinkTexture,observer,raf=0,disposed=false,contextLost=false,appearanceRequest=0;
+ let moc,model,program,texture,faceTexture,blinkTexture,halfBlinkTexture,observer,raf=0,disposed=false,contextLost=false,appearanceRequest=0;
  const buffers=[],shaders=[],listeners=[];
  const on=(target,type,fn)=>{target.addEventListener(type,fn);listeners.push(()=>target.removeEventListener(type,fn));};
  function destroy(){
   if(disposed)return;disposed=true;appearanceRequest++;cancelAnimationFrame(raf);observer?.disconnect();
   for(const remove of listeners)remove();
   model?.release();moc?._release();
-  if(!contextLost){for(const b of buffers)gl.deleteBuffer(b);for(const s of shaders)gl.deleteShader(s);if(texture)gl.deleteTexture(texture);if(faceTexture)gl.deleteTexture(faceTexture);if(blinkTexture)gl.deleteTexture(blinkTexture);if(program)gl.deleteProgram(program);if(options.releaseContext)gl.getExtension('WEBGL_lose_context')?.loseContext();}
+  if(!contextLost){for(const b of buffers)gl.deleteBuffer(b);for(const s of shaders)gl.deleteShader(s);if(texture)gl.deleteTexture(texture);if(faceTexture)gl.deleteTexture(faceTexture);if(blinkTexture)gl.deleteTexture(blinkTexture);if(halfBlinkTexture)gl.deleteTexture(halfBlinkTexture);if(program)gl.deleteProgram(program);if(options.releaseContext)gl.getExtension('WEBGL_lose_context')?.loseContext();}
   canvas.dataset.live2d='disposed';
  }
  try{
@@ -48,7 +48,8 @@ export async function createCharacter(canvas, options={}){
   let expression=1,expressionStarted=0,facesReady=false,blinkReady=false,activeTime=0;
   const acting=createExpressionPerformance(studentId);
   const faceLocations=Object.fromEntries(['browPose','eyePose','mouthPose','blink'].map(name=>[name,gl.getUniformLocation(program,'u_'+name)]));
-  gl.uniform1i(gl.getUniformLocation(program,'u_texture'),0);gl.uniform1i(gl.getUniformLocation(program,'u_faces'),1);gl.uniform1i(gl.getUniformLocation(program,'u_blinkFaces'),2);
+  gl.uniform1i(gl.getUniformLocation(program,'u_texture'),0);gl.uniform1i(gl.getUniformLocation(program,'u_faces'),1);gl.uniform1i(gl.getUniformLocation(program,'u_blinkFaces'),2);gl.uniform1i(gl.getUniformLocation(program,'u_halfBlinkFaces'),3);
+  halfBlinkTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,halfBlinkTexture);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
   blinkTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,blinkTexture);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
   faceTexture=gl.createTexture();gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);
   gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
@@ -56,14 +57,19 @@ export async function createCharacter(canvas, options={}){
   let rig=null;
   const featureLocations=Object.fromEntries(['browLeft','browRight','eyeLeft','eyeRight','mouth'].flatMap(name=>['X','Y'].map(axis=>[name+axis,gl.getUniformLocation(program,'u_'+name+axis)])));
   const mouthScaleLocation=gl.getUniformLocation(program,'u_mouthScale');
+  const skinLocations=Object.fromEntries(['skinShift','browSkin','eyeSkin','mouthSkin'].map(name=>[name,gl.getUniformLocation(program,'u_'+name)]));
+  function skinUniform(name,rgb){gl.uniform3fv(skinLocations[name],(rgb||[0,0,0]).map(v=>v/255));}
   function featureMap(name,map){if(!map)return;const[a,b,c,d,x,y]=map;gl.uniform3f(featureLocations[name+'X'],a,b,x);gl.uniform3f(featureLocations[name+'Y'],c,d,y);}
   function alignFace(outfit){
    rig=faceRig?{...faceRig,...faceRig.outfits?.[outfit]}:null;
+   skinUniform('skinShift',rig?.skinPalette?.outfits?.[outfit]);
    gl.uniform1f(gl.getUniformLocation(program,'u_registered'),rig?.registered?1:0);
    gl.uniform2fv(gl.getUniformLocation(program,'u_artSize'),rig?.size||[1199,1312]);
    gl.uniform1f(gl.getUniformLocation(program,'u_preserveHair'),rig?.preserveHair?1:0);
    gl.uniform1f(gl.getUniformLocation(program,'u_hairGuard'),rig?.hairGuard?1:0);
    gl.uniform1f(gl.getUniformLocation(program,'u_brownHairGuard'),rig?.brownHairGuard?1:0);
+   gl.uniform1f(gl.getUniformLocation(program,'u_silverHairGuard'),rig?.silverHairGuard?1:0);
+   gl.uniform1f(gl.getUniformLocation(program,'u_blinkBrowInset'),rig?.blinkBrowInset||0);
    gl.uniform3fv(gl.getUniformLocation(program,'u_mouthRadius'),rig?.mouthRadius||(rig?.hairGuard?[76,42,62]:[70,42,42]));
    gl.uniform4fv(gl.getUniformLocation(program,'u_lidShape'),rig?.lidShape||[84,34,.26,-29]);
    gl.uniform1f(gl.getUniformLocation(program,'u_customLids'),rig?.lidShape?1:0);
@@ -76,6 +82,7 @@ export async function createCharacter(canvas, options={}){
   let faceLoad=null;
   function loadFaces(){if(!faceRig)return Promise.resolve(false);if(faceLoad)return faceLoad;faceLoad=(async()=>{try{const art=new Image();art.src=new URL(faceRig.atlas||`expressions/${options.personality||'haru'}-v1.png`,manifestURL).href;await art.decode();if(disposed||contextLost)return false;gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,faceTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,art);gl.activeTexture(gl.TEXTURE0);facesReady=true;
     if(faceRig.blinkAtlas){const blinkArt=new Image();blinkArt.src=new URL(faceRig.blinkAtlas,manifestURL).href;await blinkArt.decode();if(disposed||contextLost)return false;const previous=blinkTexture;blinkTexture=makeTexture(blinkArt,2);gl.deleteTexture(previous);blinkReady=true;gl.uniform1f(gl.getUniformLocation(program,'u_hasBlinkAtlas'),1);gl.activeTexture(gl.TEXTURE0);canvas.dataset.blinks='ready';}
+    if(faceRig.halfBlinkAtlas){const halfArt=new Image();halfArt.src=new URL(faceRig.halfBlinkAtlas,manifestURL).href;await halfArt.decode();if(disposed||contextLost)return false;const previous=halfBlinkTexture;halfBlinkTexture=makeTexture(halfArt,3);gl.deleteTexture(previous);gl.uniform1f(gl.getUniformLocation(program,'u_expressionBlinks'),1);gl.activeTexture(gl.TEXTURE0);}
     canvas.dataset.expressions='ready';requestDraw();return true;}catch{canvas.dataset.expressions='unavailable';return false;}})();return faceLoad;}
   function setExpression(name,{duration=0}={}){if(!expressionNames.includes(name)||disposed)return;acting.set(name,activeTime,duration);loadFaces().then(requestDraw);requestDraw();}
   function speak(line,pageText){if(disposed)return;const text=typeof line==='string'?line:line?.text||'';acting.speak({text:pageText||text,expression:dialogueExpression(studentId,line)},activeTime);loadFaces().then(requestDraw);requestDraw();}
@@ -83,7 +90,7 @@ export async function createCharacter(canvas, options={}){
   gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.disable(gl.DEPTH_TEST);
   const profiles={
    tsumugi:{speed:.48,breath:1.04,head:.27,body:.30,hair:.42,lag:1.7,damping:3.6,look:.44,react:.58,hold:2,blink:4.2,open:.19},
-   akari:{speed:.52,breath:1.05,head:.30,body:.34,hair:.48,lag:1.6,damping:3.3,look:.52,react:.75,hold:1.8,blink:4.2,open:.18},
+   akari:{speed:.60,breath:1.12,head:.31,body:.35,hair:.50,lag:1.8,damping:3.5,look:.55,react:.82,hold:1.65,blink:3.9,open:.18},
    aoi:{speed:.57,breath:1.04,head:.34,body:.38,hair:.62,lag:1.65,damping:3.1,look:.55,react:.68,hold:1.9,blink:4.1,open:.20},
    mio:{speed:.49,breath:1.02,head:.28,body:.34,hair:.50,lag:1.85,damping:3.2,look:.46,react:.58,hold:2.1,blink:4.3,open:.20},
    ibuki:{speed:.74,breath:1.25,head:.35,body:.43,hair:.78,lag:2.8,damping:4.3,look:.64,react:.92,hold:1.5,blink:3.3,open:.16},
@@ -146,7 +153,12 @@ export async function createCharacter(canvas, options={}){
    set('ParamEyeLOpen',1);model.update();
    const face=facialParts(studentId,pose.expression,{talking:pose.talking,blink});
    const blinkArt=face.blink;
-   if(rig?.registered){const eye=blinkArt>=0?blinkArt:face.eyes;for(const[i,side]of ['Left','Right'].entries()){featureMap('brow'+side,rig.features[i][face.brow]);featureMap('eye'+side,(blinkReady&&blinkArt>=0?rig.blinkFeatures:rig.features)[i][eye]);}featureMap('mouth',rig.features[2][face.mouth]);}
+   const palette=rig?.skinPalette,blinkExpression=face.brow>=0?face.brow:1;
+   gl.uniform1f(gl.getUniformLocation(program,'u_blinkExpression'),blinkExpression);
+   skinUniform('browSkin',palette?.faces?.[face.brow]);
+   skinUniform('eyeSkin',blinkReady&&blinkArt>=0?(rig.expressionBlinks?(blinkArt===4?palette?.halfBlinks:palette?.blinks)?.[blinkExpression]:palette?.blinks?.[blinkArt]):palette?.faces?.[face.eyes]);
+   skinUniform('mouthSkin',palette?.faces?.[face.mouth]);
+   if(rig?.registered){const eye=blinkArt>=0?blinkArt:face.eyes;for(const[i,side]of ['Left','Right'].entries()){featureMap('brow'+side,rig.features[i][face.brow]);featureMap('eye'+side,(blinkReady&&blinkArt>=0?(rig.expressionBlinks&&blinkArt===4?rig.halfBlinkFeatures:rig.blinkFeatures):rig.features)[i][blinkReady&&blinkArt>=0&&rig.expressionBlinks?blinkExpression:eye]);}featureMap('mouth',rig.features[2][face.mouth]);}
    gl.uniform1f(mouthScaleLocation,face.mouthScale);
    gl.uniform1f(faceLocations.browPose,facesReady?face.brow:-1);
    gl.uniform1f(faceLocations.eyePose,facesReady?face.eyes:-1);

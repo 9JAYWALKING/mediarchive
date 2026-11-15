@@ -1,4 +1,4 @@
-import {illustrationMeals} from './illustration-context.js?v=20261115tsumugiLive1';
+import {illustrationMeals} from './illustration-context.js?v=20261115akariVoice1';
 // Meal dialogue follows the configured schedule; it does not assert that the user ate.
 import {ritsuMeals} from './ritsu-dialogue.js?v=20261110ritsu';
 export const mealLines={...illustrationMeals,

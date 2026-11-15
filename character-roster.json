@@ -563,11 +563,11 @@
       "name": "아카리",
       "grade": 2,
       "role": "행사운영부 · 대기실 담당",
-      "personality": "조용하고 자기 속도가 분명한 관찰자. 엉뚱한 생각을 담담히 말하다 좋아하는 것을 발견하면 환해진다.",
+      "personality": "자기 속도가 분명하고 호기심이 많은 관찰자. 느긋하게 딴청 피우다가 좋아하는 것을 발견하면 눈을 반짝이며 먼저 다가온다. 장난을 치고도 태연한 척하지만 칭찬과 작은 약속에는 솔직하다.",
       "contrast": "무심한 듯 살피면서 상대가 좋아한 작은 것을 기억한다.",
       "daily": "고양이 사진, 작은 간식, 조용하고 따뜻한 자리.",
-      "appearance": "검정 단발과 가넷빛 안쪽 머리, 붉은 눈. 2학년 교복·블랙 봄버 사복·빨간 파이핑 잠옷.",
-      "accessory": "검은 고양이 방울 참",
+      "appearance": "중간 명도의 은회색 단발과 붉은 안쪽 머리, 또렷한 붉은 눈. 작은 고양이 귀 핀. 2학년 교복·그레이 재킷과 검정 원피스·고양이 프린트 은회색 박스티 잠옷.",
+      "accessory": "고양이 귀 핀",
       "trait": "작은 신호",
       "traitMeaning": "작은 차이를 놓치지 않고, 기다려도 되는 때와 바로 살펴야 할 때를 구별한다.",
       "status": "implemented-live2d",
@@ -581,12 +581,12 @@
       ],
       "scheduledHours": 6,
       "dialogue": {
-        "greeting": "왔네. 이쪽 자리 비워 뒀어.",
-        "early": "벌써? 나 아직 머리도 덜 정리했는데. 일단 앉아.",
-        "idle": "나 말고 책. 내 얼굴엔 답 없어.",
-        "wrong": "음, 그 조건은 놓쳤네. 같이 본 데 다시 봐.",
-        "reminder": "전에 헷갈린 거, 표시해 뒀어. 잠깐 같이 볼래?",
-        "bond": "그냥 옆에 있어도 편해서 좋아."
+        "greeting": "왔네. 여기 네 자리. 내가 먼저 찜했어.",
+        "early": "벌써 왔어? 잠깐! 나 아직 마음의 준비 안 했는데.",
+        "idle": "나 쳐다보지 말고 앞에 봐. 벌써 세 번째야.",
+        "wrong": "우, 그쪽 아니잖아. 조건 하나 놓쳤어. 다시 봐.",
+        "reminder": "전에 같이 보던 거, 기억나? 내가 표시한 데 남아 있어. 잠깐 다시 볼래?",
+        "bond": "네 발소리 알아들은 날엔 괜히 좀 뿌듯해."
       },
       "internalLearningProfile": {
         "difficultyEstimate": "높음",
@@ -612,17 +612,17 @@
       },
       "art": {
         "renderer": "live2d",
-        "portrait": "./assets/akari-live-v10.png",
-        "model": "./assets/akari.model3.json",
+        "portrait": "./assets/akari-reset-uniform-v2.png",
+        "model": "./assets/akari-reset.model3.json",
         "outfits": {
           "uniform": {
-            "portrait": "./assets/akari-live-v10.png"
+            "portrait": "./assets/akari-reset-uniform-v2.png"
           },
           "casual": {
-            "portrait": "./assets/wardrobe/akari-casual-live-v5.png"
+            "portrait": "./assets/wardrobe/akari-reset-casual-v3.png"
           },
           "sleep": {
-            "portrait": "./assets/wardrobe/akari-sleep-live-v5.png"
+            "portrait": "./assets/wardrobe/akari-reset-sleep-v5.png"
           }
         }
       },

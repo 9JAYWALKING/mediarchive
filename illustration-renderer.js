@@ -1,6 +1,6 @@
-import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115tsumugiLive1';
-import {createExpressionPerformance} from './expression-direction.js?v=20261115tsumugiLive1';
-import {illustrationLayout} from './illustration-layout.js?v=20261115tsumugiLive1';
+import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115akariVoice1';
+import {createExpressionPerformance} from './expression-direction.js?v=20261115akariVoice1';
+import {illustrationLayout} from './illustration-layout.js?v=20261115akariVoice1';
 
 // Complete expression illustrations: no overlapping eyes, eyebrows or jaw patches.
 export async function createIllustration(canvas,options={}){

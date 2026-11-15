@@ -1,6 +1,6 @@
-import {illustrationRoutine,illustrationNextClass} from './illustration-context.js?v=20261115tsumugiLive1';
+import {illustrationRoutine,illustrationNextClass} from './illustration-context.js?v=20261115akariVoice1';
 import {schedule} from './schedule-data.js';
-import {mealPool} from './meal-dialogue.js?v=20261115tsumugiLive1';
+import {mealPool} from './meal-dialogue.js?v=20261115akariVoice1';
 // Character voices for the user's 05:00–24:00 routine. No attendance or meal is assumed.
 import {ritsuRoutine} from './ritsu-dialogue.js?v=20261110ritsu';
 export const routineLines={...illustrationRoutine,

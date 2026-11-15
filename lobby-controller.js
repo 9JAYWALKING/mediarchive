@@ -1,8 +1,8 @@
-import {illustratedStudents} from './character-data.js?v=20261115tsumugiLive1';
-import {createCharacter} from './renderer.js?v=20261115tsumugiLive1';
-import {appearanceFor} from './wardrobe-service.js?v=20261115tsumugiLive1';
+import {illustratedStudents} from './character-data.js?v=20261115akariVoice1';
+import {createCharacter} from './renderer.js?v=20261115akariVoice1';
+import {appearanceFor} from './wardrobe-service.js?v=20261115akariVoice1';
 import {teacherProfile,saveTeacher} from './teacher-profile.js?v=20261110';
-import {positionIllustrationFallback} from './illustration-layout.js?v=20261115tsumugiLive1';
+import {positionIllustrationFallback} from './illustration-layout.js?v=20261115akariVoice1';
 export function createLobbyController({getStudents,onSelect,onReady,onMotionChange,openModal,closeModal}){
  const $=s=>document.querySelector(s);let selected=teacherProfile().lobby,model=null,controller=null,generation=0,lastSwipe=0,presented=false;
  const stage=$('#stage'),reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');

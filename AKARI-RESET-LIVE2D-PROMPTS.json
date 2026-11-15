@@ -1,0 +1,26 @@
+{
+  "tool": "built-in image_gen",
+  "referenceLinks": [
+    "https://stellive.me/mashiro",
+    "https://www.youtube.com/@neneko_mashiro"
+  ],
+  "assets": {
+    "uniform": "assets/akari-reset-uniform-v2.png",
+    "casual": "assets/wardrobe/akari-reset-casual-v3.png",
+    "sleep": "assets/wardrobe/akari-reset-sleep-v5.png"
+  },
+  "expressions": [
+    {
+      "asset": "assets/expressions/akari-reset-v1.png",
+      "prompt": "Use case: identity-preserve. Production FACIAL EXPRESSION ATLAS for the attached approved adult anime woman Akari. Create one 1536x1024 image in an exact 3 columns by 2 rows grid of six equally sized 512x512 cells. Each cell has the SAME close-up head, same size and orientation and landmarks, forehead-to-chin entirely in cell, at least 20px gutters at edges. Preserve the exact reference face, eye style, peach skin palette and brightness, red irises, silver-gray bob with crimson streak, anime cel shading. Head top around y25, eye centers around (210,270) and (335,257), mouth center around (280,340) within EACH cell, chin around410, no head tilt changes between cells. Keep exact same hair contour across cells. Use reference as style/identity, do not redesign. Facial expressions left to right top row: 0 attentive friendly speaking, small parted smiling mouth, normal eyes; 1 exact tiny CLOSED smile and normal eyes matching original portrait; 2 suddenly delighted mischievous CATLIKE delight with bright wider OPEN red eyes and lively open smile, cute not manic. Bottom row: 3 adorable mildly annoyed pout, eyebrows angled softly, slightly puffed cheeks and closed tiny pout, no rage; 4 genuinely hurt disappointed eyes and subtle downturned mouth, no sinister expression; 5 softly tearful eyes with tears along cheeks, trembling small mouth, vulnerable cute, not wailing. Keep mouths restrained, generally within 50px width and 35px height, centered same point. No doglike round startled eyes, no exaggerated W mouth, no sharp toothy grin. A tiny lifted lip corner only. Skin brightness and color must be IDENTICAL across all six faces and reference. Background a flat pale neutral blush. No labels, text, grid lines, floating emotion symbols, clothing body, hands or props."
+    },
+    {
+      "asset": "assets/expressions/akari-reset-closed-v1.png",
+      "prompt": "Precise editing of provided 1536x1024 3x2 six-expression anime atlas. Preserve EACH of the SIX different expressions exactly: its own eyebrow shape and location, mouth, cheeks, tears, hair silhouette and face color. Change ONLY both eye openings in EVERY cell to a natural fully CLOSED blink, upper lids meeting lower lids near lower part of original opening, downward relaxed curves, no smiling crescent eyes. IMPORTANT bottom row angry/sad/crying BROWS must stay EXACTLY as original, NOT neutral eyebrows. Crying cell retains its tears. All face sizes and coordinates stay pixel-aligned to source; do not move head, cheeks, nose, mouth, brows or hair at all. Same silver hair, red accents, identical peach skin palette and brightness. Top-left small speaking mouth, top-middle closed smile, top-right delighted open mouth, bottom-left pout, bottom-middle disappointed mouth, bottom-right trembling crying mouth all unchanged. No labels, outlines around cells, changes in background, or other edits. Technical complete closed-eye atlas for this same character, all SIX cells eyes closed."
+    },
+    {
+      "asset": "assets/expressions/akari-reset-half-v1.png",
+      "prompt": "Precise editing of provided 1536x1024 3x2 six-expression anime atlas. Preserve EACH of the SIX different expressions exactly: its own eyebrow shape and location, mouth, cheeks, tears, hair silhouette and face color. Change ONLY both eye openings in EVERY cell to HALF-CLOSED mid-blink: upper eyelid has lowered halfway across the red iris, lower eyelid stays fixed, a narrow but clearly visible red iris and pupil under the upper lid. Not fully closed. All SIX cells must be half closed. IMPORTANT bottom row angry/sad/crying BROWS stay EXACTLY original, NOT neutral eyebrows. Crying cell retains tears. All face sizes and coordinates stay pixel-aligned to source; do not move head, nose, mouth, brows or hair at all. Same silver-gray hair, red accents, identical peach skin palette and brightness. Top-left speaking mouth, top-middle closed smile, top-right delighted open mouth, bottom-left pout, bottom-middle disappointed mouth, bottom-right trembling crying mouth unchanged. No labels or grid lines. Technical halfway blink atlas for this same character. Same background. No other edits."
+    }
+  ]
+}
