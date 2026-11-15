@@ -1,6 +1,6 @@
 import {classTime} from './class-time.js';
 import {illustrationClass} from './illustration-messages.js?v=20261114studentVoices';
-import {illustratedStudents} from './character-data.js?v=20261115mioLive1';
+import {illustratedStudents} from './character-data.js?v=20261115aoiLive2';
 
 export const classReplies={
  ...illustrationClass,

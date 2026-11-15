@@ -1,6 +1,6 @@
-import {wardrobeSettings,saveWardrobe,currentOutfit} from './wardrobe-service.js?v=20261115mioLive1';
+import {wardrobeSettings,saveWardrobe,currentOutfit} from './wardrobe-service.js?v=20261115aoiLive2';
 import {wardrobeSettingsError,outfitLabels} from './wardrobe-engine.js';
-import {outfitFor} from './wardrobe-data.js?v=20261115mioLive1';
+import {outfitFor} from './wardrobe-data.js?v=20261115aoiLive2';
 
 export function openWardrobeSettings({openModal,closeModal,toast}){
  const settings=wardrobeSettings();

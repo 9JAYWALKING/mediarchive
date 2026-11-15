@@ -123,21 +123,18 @@ export const illustrationStudents=[
   "grade": 2,
   "role": "교내 안내부",
   "color": "#79a6a6",
-  "portrait": "./assets/illustrations/aoi-uniform.png",
-  "model": null,
-  "renderer": "illustration",
+  "portrait": "./assets/aoi-live-v1.png",
+  "model": "./assets/aoi.model3.json",
+  "renderer": "live2d",
   "outfits": {
    "uniform": {
-    "portrait": "./assets/illustrations/aoi-uniform.png",
-    "atlas": "./assets/illustrations/aoi-uniform-atlas.png"
+    "portrait": "./assets/aoi-live-v1.png"
    },
    "casual": {
-    "portrait": "./assets/illustrations/aoi-casual.png",
-    "atlas": "./assets/illustrations/aoi-casual-atlas.png"
+    "portrait": "./assets/wardrobe/aoi-casual-live-v1.png"
    },
    "sleep": {
-    "portrait": "./assets/illustrations/aoi-sleep.png",
-    "atlas": "./assets/illustrations/aoi-sleep-atlas.png"
+    "portrait": "./assets/wardrobe/aoi-sleep-live-v2.png"
    }
   },
   "accessory": "나침반 참",

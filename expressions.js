@@ -1,3 +1,5 @@
+import {aoiFaceRig} from './aoi-face-rig.js?v=20261115aoiLive2';
+import {aoiBlinkRig} from './aoi-blink-rig.js?v=20261115aoiLive2';
 import {mioFaceRig} from './mio-face-rig.js?v=20261115mioLive1';
 import {mioBlinkRig} from './mio-blink-rig.js?v=20261115mioLive1';
 import {ritsuFaceRig} from './ritsu-face-rig.js?v=20261111ritsuExpressions';
@@ -18,10 +20,11 @@ export function expressionPose(name){
 }
 export function facialParts(student,name,{talking=false,blink='open'}={}){
  const face=expressionPose(name),positive=['smile','happy','soft'].includes(name);
- const mouth=talking?(student==='haru'?-1:['momo','sena','ibuki','mio'].includes(student)?(positive||['ibuki','mio'].includes(student)&&name==='neutral'?0:face.mouth):student==='ritsu'&&!positive?face.mouth:2):face.mouth;
+ const mouth=talking?(student==='haru'?-1:['momo','sena','ibuki','mio','aoi'].includes(student)?(positive||['ibuki','mio','aoi'].includes(student)&&name==='neutral'?0:face.mouth):student==='ritsu'&&!positive?face.mouth:2):face.mouth;
  return {...face,mouth,blink:face.eyes===2||blink==='open'?-1:blink==='closed'?2:4,mouthScale:student==='ritsu'&&talking&&positive&&name!=='happy'?.76:1};
 }
 export const expressionRigs={
+ aoi:{size:[1024,1536],atlas:'expressions/aoi-live-v1.png',blinkAtlas:'expressions/aoi-blink-v1.png',blinkFeatures:aoiBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.23,-29],mouthRadius:[64,34,46],...aoiFaceRig.uniform,source:[[175,307],[324,275],[269,394]],outfits:{casual:{...aoiFaceRig.casual,blinkFeatures:aoiBlinkRig.casual.features},sleep:{...aoiFaceRig.sleep,blinkFeatures:aoiBlinkRig.sleep.features}}},
  mio:{size:[1024,1536],atlas:'expressions/mio-live-v1.png',blinkAtlas:'expressions/mio-blink-v1.png',blinkFeatures:mioBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.23,-29],mouthRadius:[65,34,46],...mioFaceRig.uniform,source:[[212,300],[342,280],[290,379]],outfits:{casual:{...mioFaceRig.casual,blinkFeatures:mioBlinkRig.casual.features},sleep:{...mioFaceRig.sleep,blinkFeatures:mioBlinkRig.sleep.features}}},
  ibuki:{size:[1024,1536],atlas:'expressions/ibuki-live-v1.png',blinkAtlas:'expressions/ibuki-blink-v1.png',blinkFeatures:ibukiBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[84,38,.20,-30],mouthRadius:[65,36,48],...ibukiFaceRig.uniform,source:[[192,307],[318,285],[264,375]],outfits:{casual:{...ibukiFaceRig.casual,blinkFeatures:ibukiBlinkRig.casual.features},sleep:{...ibukiFaceRig.sleep,blinkFeatures:ibukiBlinkRig.sleep.features}}},
  sena:{size:[1024,1536],atlas:'expressions/sena-live-v1.png',preserveHair:true,registered:true,brownHairGuard:true,mouthRadius:[70,38,45],...senaFaceRig.uniform,source:[[205,323],[340,291],[289,396]],outfits:{casual:senaFaceRig.casual,sleep:senaFaceRig.sleep}},

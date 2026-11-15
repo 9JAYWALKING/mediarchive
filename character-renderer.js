@@ -1,6 +1,6 @@
-import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261115mioLive1';
-import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261115mioLive1';
-import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115mioLive1';
+import {expressionRigs,expressionNames,facialParts,faceTransform,expressionFragment} from './expressions.js?v=20261115aoiLive2';
+import {createExpressionPerformance,dialogueExpression,blinkPose} from './expression-direction.js?v=20261115aoiLive2';
+import {appearanceFor,subscribeWardrobe} from './wardrobe-service.js?v=20261115aoiLive2';
 // Cubism Core evaluates actual .moc3 keyforms; this draws the resulting mesh.
 // Each viewer owns its visibility and releases GPU/Core resources on close.
 export async function createCharacter(canvas, options={}){
@@ -80,6 +80,7 @@ export async function createCharacter(canvas, options={}){
   function autoExpression(){acting.auto(activeTime);requestDraw();}
   gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.disable(gl.DEPTH_TEST);
   const profiles={
+   aoi:{speed:.57,breath:1.04,head:.34,body:.38,hair:.62,lag:1.65,damping:3.1,look:.55,react:.68,hold:1.9,blink:4.1,open:.20},
    mio:{speed:.49,breath:1.02,head:.28,body:.34,hair:.50,lag:1.85,damping:3.2,look:.46,react:.58,hold:2.1,blink:4.3,open:.20},
    ibuki:{speed:.74,breath:1.25,head:.35,body:.43,hair:.78,lag:2.8,damping:4.3,look:.64,react:.92,hold:1.5,blink:3.3,open:.16},
    sena:{speed:.51,breath:1.08,head:.30,body:.38,hair:.63,lag:1.9,damping:3.4,look:.46,react:.62,hold:1.9,blink:4.2,open:.19},
@@ -148,7 +149,7 @@ export async function createCharacter(canvas, options={}){
    gl.uniform1f(faceLocations.mouthPose,facesReady?face.mouth:-1);
    gl.uniform1f(faceLocations.blink,facesReady?blinkArt:-1);
    canvas.dataset.blink=blink;
-   const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,['momo','sena','ibuki','mio'].includes(studentId)?3:2);
+   const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,['momo','sena','ibuki','mio','aoi'].includes(studentId)?3:2);
    if(rect.width<=0||rect.height<=0)return;
    const w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
    const imageH=options.framing==='face'?rect.height*2.5:options.framing==='review'?rect.height*1.65:options.framing==='portrait'?Math.min(rect.height*.99,rect.width*(img.height/img.width)*1.25):Math.max(rect.height*.99,rect.width*1.34);

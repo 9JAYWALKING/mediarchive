@@ -1,4 +1,4 @@
-import {createRecallUI} from './recall-ui.js?v=20261115mioLive1';
+import {createRecallUI} from './recall-ui.js?v=20261115aoiLive2';
 import {paintLevelBadge} from './level-badge.js?v=20261110rank';
 import {teacherAddress,teacherLevel} from './teacher-profile.js?v=20261110';
 import {studentGrowth} from './student-growth.js?v=20261110';
@@ -7,10 +7,10 @@ import {accessoryFor} from './accessory-art.js?v=20261110';
 import {schedule} from './schedule-data.js';
 import {tracks,haruLessons,koreanDate,validDate,examCountdown,normalizePreferences,normalizeChoice,shiftDate} from './game-state.js';
 
-import {illustratedStudents} from './character-data.js?v=20261115mioLive1';
-import {createCharacterViewer} from './character-viewer.js?v=20261115mioLive1';
+import {illustratedStudents} from './character-data.js?v=20261115aoiLive2';
+import {createCharacterViewer} from './character-viewer.js?v=20261115aoiLive2';
 import {storiesFor} from './character-stories.js';
-import {createStatisticsUI} from './statistics-ui.js?v=20261115mioLive1';
+import {createStatisticsUI} from './statistics-ui.js?v=20261115aoiLive2';
 import {unifiedRecords,growthRoster} from './statistics-engine.js?v=20261111overtime';
 const KEY='heart-companion-shell-v1';
 export function createGameUI({beforeRecall=()=>{},onRecallTime=()=>{},bondEvents,getLobby=()=> 'haru',getStudentGrowth,onLobby,getState,getQuiz,getGrowth,reviews,momo,planner,quests,openModal,closeModal,onStart,onTalk,onCoverage,onGrowth,toast,format}){

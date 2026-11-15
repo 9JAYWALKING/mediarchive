@@ -1,7 +1,7 @@
 import {dialogueGroups} from './dialogue.js';
 import {routineLines} from './routine-dialogue.js?v=20261114studentVoices';
 import {mealLines} from './meal-dialogue.js?v=20261114studentVoices';
-import {illustratedStudents} from './character-data.js?v=20261115mioLive1';
+import {illustratedStudents} from './character-data.js?v=20261115aoiLive2';
 import {characterStories} from './character-stories.js';
 
 const names={s:'smile',h:'happy',a:'angry',d:'disappointed',c:'cry',f:'soft',z:'sleepy',n:'calm'};
@@ -68,7 +68,7 @@ export function dialogueExpression(student,line){
  return 'smile';
 }
 
-const idleChoices={mio:['soft','smile','sleepy','soft'],ibuki:['soft','smile','happy','soft'],haru:['soft','calm','soft'],nagi:['soft','sleepy','soft'],shiori:['calm','soft','calm'],rei:['calm','soft','calm'],ritsu:['calm','soft','calm'],sena:['soft','calm','sleepy','soft']};
+const idleChoices={aoi:['smile','soft','smile','calm'],mio:['soft','smile','sleepy','soft'],ibuki:['soft','smile','happy','soft'],haru:['soft','calm','soft'],nagi:['soft','sleepy','soft'],shiori:['calm','soft','calm'],rei:['calm','soft','calm'],ritsu:['calm','soft','calm'],sena:['soft','calm','sleepy','soft']};
 export function createExpressionPerformance(student,{random=Math.random}={}){
  let cue=null,pinned=null,nextIdle=12000+random()*6000,idleUntil=0,idle='smile';
  function defer(now){idleUntil=0;nextIdle=now+12000+random()*8000;}
