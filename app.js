@@ -26,7 +26,7 @@ import {normalizeStudy,studySnapshot,mergeStudy} from './study-store.js';
 import {createGrowthUI} from './growth-ui.js';
 import {configureRoutine,routineLine,configuredRoutineContext} from './routine-service.js?v=20261115akariVoice1';
 import {createMomoUI} from './momo-ui.js?v=20261115akariVoice1';
-import {createPlannerUI} from './planner-ui.js?v=20261115akariVoice1';
+import {createPlannerUI} from './planner-ui.js?v=20261116timeButtons1';
 import {startWorldTime} from './world-time.js?v=20261110hometalk';
 import {createQuestUI} from './quest-ui.js?v=20261111overtime';
 const $=s=>document.querySelector(s),KEY='heart-companion-v1';let state=normalizeStudy(null),storageOK=true;
@@ -97,7 +97,7 @@ reviews=createReviewUI({beforeOpen:()=>{if(state.session?.started){checkpoint();
 lectureAdviceUI=createLectureAdvice({openModal:modal,closeModal:()=>$('#modal').close(),onLine:say});
 quiz=createQuizUI({onExpression:name=>{currentLobbyLine={...currentLobbyLine,expression:name};character?.speak(currentLobbyLine,lobbyDialogue.text);},getMemories:getHaruMemories,onLine:text=>{say(text);director.schedule(Date.now());character?.react();},onBondChange:renderBond,openModal:modal,closeModal:()=>$('#modal').close(),toast});
 growthUI=createGrowthUI({getState:()=>state,getGrowth,openModal:modal,closeModal:()=>$('#modal').close(),onCommit:commitEvent,onReview:id=>reviews.open(id),onContinue:resumeSession,onLaunch:(lecture,track)=>game.launch(lecture,track),format});
-planner=createPlannerUI({onPause:()=>{refresh();quests?.restOpen();},getHaruGrowth:getGrowth,onStudyStarted:id=>{selectStudying(id);speak('start');refresh();},onStudyFinished:event=>{selectStudying(event.student);speak('finish');refresh();const id=reviews.enqueue(event);if(id)reviews.open(id);},beforeTimerChange:()=>quests?.capture(Date.now(),true),canStudy,beforeStudy:(context,next)=>lectureAdviceUI.open(context,next),openModal:modal,closeModal:()=>$('#modal').close(),toast,getSession:()=>state.session,onChange:()=>{game?.refreshPanel();refreshWardrobe();refresh();},onSchedule:date=>game.openSchedule(date),onLaunch:(lecture,track,id)=>game.launch(lecture,track,id)});
+planner=createPlannerUI({onPause:()=>{refresh();quests?.restOpen();},getHaruGrowth:getGrowth,onStudyStarted:id=>{selectStudying(id);speak('start');refresh();},onStudyFinished:event=>{selectStudying(event.student);speak('finish');refresh();const id=reviews.enqueue(event);if(id)reviews.open(id);},beforeTimerChange:()=>quests?.capture(Date.now(),true),canStudy,beforeStudy:(context,next)=>lectureAdviceUI.open(context,next),openModal:modal,closeModal:()=>$('#modal').close(),toast,getSession:()=>state.session,onChange:()=>{game?.refreshPanel();refreshWardrobe();refresh();},onSchedule:date=>game.openSchedule(date)});
 quests=createQuestUI({getStudy:()=>state,getPlanner:()=>planner.state,pauseStudy:()=>{if(state.session?.started){checkpoint();save();refresh();}},pausePlanner:()=>planner.pauseForRest(),openModal:modal,closeModal:()=>$('#modal').close(),onPlan:seed=>planner.edit(seed),onLine:say,onChange:()=>{refresh();game?.refreshPanel();},toast});
 configureWardrobe(()=>planner.state.meals);
 startWorldTime({openModal:modal});
@@ -158,4 +158,8 @@ const welcome=routineLine(lobbyId);if(welcome)say(welcome);else speak(state.sess
 checkLateArrival();classCheckin.check();
 lobby=createLobbyController({getStudents:()=>planner.state.settings.students,openModal:modal,closeModal:()=>$('#modal').close(),onMotionChange:updateMotion,onSelect:(id,greet)=>{lobbyId=id;refresh();if(greet)speak('greeting');},onReady:model=>{character=model;if(model){model.speak(currentLobbyLine,lobbyDialogue.text);updateMotion();}}});
 const latest=[...planner.state.records.map(r=>({id:r.student,at:r.at})),...state.growth.events.map(r=>({id:'haru',at:r.at}))].sort((a,b)=>b.at-a.at)[0]?.id;
-await lobby.select(state.session?'haru':planner.focus?.student||(teacherProfile().updatedAt?teacherProfile().lobby:latest)||'haru',{greet:true});
+window.mediarchiveBoot?.uiReady();
+try {
+ await lobby.select(state.session?'haru':planner.focus?.student||(teacherProfile().updatedAt?teacherProfile().lobby:latest)||'haru',{greet:true});
+ window.mediarchiveBoot?.finish();
+} catch(error) { window.mediarchiveBoot?.fail(); console.error('Lobby startup failed',error); }

@@ -1,5 +1,5 @@
 import {studyTargets,completedTargets,linkedTitle,linkedLabel,targetKey} from './linked-study.js?v=20261110';
-import {createDayPicker} from './day-picker.js?v=20261110';
+import {createDayPicker} from './day-picker.js?v=20261116timeButtons1';
 import {schedule} from './schedule-data.js';
 import {createMealEditor} from './meals-ui.js';
 import {mealsForDate} from './meals-engine.js';
@@ -10,7 +10,7 @@ import {suggestPlan} from './momo-engine.js?v=20261115akariVoice1';
 import {studentGrowth,recordSnapshot,focusPreview} from './student-growth.js?v=20261110';
 import {normalizePlanner,mergePlanner,plannerSnapshot,focusElapsed,buildPlans,legacyMomoPlans,startOf,endOf,nextPlan} from './planner-engine.js?v=20261115akariVoice1';
 const KEY='heart-companion-planner-v1';
-export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal,closeModal,toast,onChange,onSchedule,onLaunch,getSession,beforeTimerChange=()=>{},canStudy=()=>true,beforeStudy=()=>false,onStudyFinished=()=>{},onStudyStarted=()=>{}}){
+export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal,closeModal,toast,onChange,onSchedule,getSession,beforeTimerChange=()=>{},canStudy=()=>true,beforeStudy=()=>false,onStudyFinished=()=>{},onStudyStarted=()=>{}}){
  let state=normalizePlanner(null),filter='all';try{state=normalizePlanner(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{}
  const $=s=>document.querySelector(s),node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
  const student=id=>state.settings.students.find(s=>s.id===id),lecture=id=>schedule.find(l=>l.id===id);
@@ -82,7 +82,6 @@ export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal
   if(!canStudy(()=>start(p,briefed),p.student))return;
   if(state.focus){if(state.focus.planId===p.id){focusModal();return;}toast('진행 중인 약속을 먼저 마쳐 줘.');return;}
   if(getSession()){toast('진행 중인 이벤트를 먼저 마쳐 줘.');return;}
-  if(p.student==='haru'&&[1,2,6].includes(p.lecture)&&p.track&&studyTargets(p).length<=1){onLaunch(p.lecture,p.track,p.id);return;}
   if(p.student&&!briefed&&beforeStudy({lecture:p.lecture,track:p.track,student:student(p.student)},()=>start(p,true)))return;
   const growth=p.student?{...studentGrowth(state.records,student(p.student)),...(p.student==='haru'?getHaruGrowth():{})}:null;if(save({...state,focus:{id:crypto.randomUUID(),planId:p.id,elapsed:0,started:Date.now(),...recordSnapshot(p),previewElapsed:0,cycle:growth?.cycle||1,scope:growth?.scope||[]}})){onStudyStarted(p.student);changed();}
  }

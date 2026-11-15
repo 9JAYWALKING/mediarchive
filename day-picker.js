@@ -8,10 +8,19 @@ export function createDayPicker(host,{state,date,time,minutes,exclude,onChange})
  let range=snapRange(timeMinutes(time),timeMinutes(time)+minutes),day=date,drag=null;
  host.className='dayPicker';const heading=el('div','dayPickerHeading'),label=el('b'),jump=el('button','dayJump','선택 시간');jump.type='button';heading.append(label,jump);
  const scroller=el('div','dayScroll'),grid=el('div','dayGrid');scroller.append(grid);host.append(heading,scroller);
- const fine=el('div','dayAdjust');for(const [text,target,delta]of [['시작 −10','start',-10],['시작 +10','start',10],['끝 −10','end',-10],['끝 +10','end',10]]){const b=el('button',null,text);b.type='button';b.onclick=()=>{const next=target==='start'?snapRange(range.start+delta,range.end):snapRange(range.start,range.end+delta);set(next);};fine.append(b);}host.append(fine);
- const shortcuts=el('div','dayDurations');for(const value of [30,60,90,120,180,240]){const b=el('button',null,value<60?value+'분':value/60+'시간');b.type='button';b.onclick=()=>set(snapRange(range.start,range.start+value));shortcuts.append(b);}host.append(shortcuts);
+ const fine=el('div','dayAdjust');
+ for(const [name,target] of [['시작','start'],['끝','end']]){
+  const column=el('div','dayAdjustColumn');column.setAttribute('role','group');column.setAttribute('aria-label',name+' 시간 조절');
+  for(const delta of [-10,10]){
+   const button=el('button',null,`${name} ${delta<0?'−':'+'}10`);button.type='button';
+   button.setAttribute('aria-label',`${name} 시간 10분 ${delta<0?'앞으로':'뒤로'}`);
+   button.onclick=()=>set(target==='start'?snapRange(range.start+delta,range.end):snapRange(range.start,range.end+delta));column.append(button);
+  }
+  fine.append(column);
+ }
+ host.append(fine);
  const selection=el('div','daySelection'),startHandle=el('button','dayHandle start'),endHandle=el('button','dayHandle end'),title=el('strong');startHandle.type=endHandle.type='button';startHandle.setAttribute('aria-label','시작 시간 조절');endHandle.setAttribute('aria-label','종료 시간 조절');selection.append(startHandle,title,endHandle);
- function paint(){selection.style.top=range.start/1440*100+'%';selection.style.height=(range.end-range.start)/1440*100+'%';label.textContent=`${minuteClock(range.start)} — ${minuteClock(range.end)}`;title.textContent=range.minutes+'분';startHandle.textContent=minuteClock(range.start);endHandle.textContent=minuteClock(range.end);for(const b of shortcuts.children)b.setAttribute('aria-pressed',String(b.textContent===(range.minutes<60?range.minutes+'분':range.minutes/60+'시간')));}
+ function paint(){selection.style.top=range.start/1440*100+'%';selection.style.height=(range.end-range.start)/1440*100+'%';label.textContent=`${minuteClock(range.start)} — ${minuteClock(range.end)}`;title.textContent=range.minutes+'분';startHandle.textContent=minuteClock(range.start);endHandle.textContent=minuteClock(range.end);}
  function set(next,notify=true){range=next;paint();if(notify)onChange({time:range.time,minutes:range.minutes});}
  function render(){grid.replaceChildren();for(let hour=0;hour<24;hour++){const row=el('div','dayHour');row.style.top=hour/24*100+'%';row.append(el('span',null,String(hour).padStart(2,'0')+':00'));grid.append(row);}
   const entries=[...schedule.filter(l=>l.date===day).map(l=>({...l,minutes:l.hours*60,kind:'class'})),...state.plans.filter(p=>p.date===day&&p.id!==exclude&&p.status!=='canceled').map(p=>({...p,kind:'plan'})),...mealsForDate(state.meals,day).map(m=>({...m,kind:'meal'}))];

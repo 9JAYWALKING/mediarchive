@@ -1,0 +1,26 @@
+/* A quiet classroom title screen; no dependency on the app or Cubism. */
+@font-face{font-family:LaunchOutfit;src:url('./assets/fonts/Outfit-Variable.woff2') format('woff2');font-weight:100 900;font-display:swap}
+html[data-boot] .phone{pointer-events:none}
+html[data-boot] dialog,html[data-boot] dialog::backdrop{visibility:hidden}
+.launchScreen{position:fixed;inset:0;z-index:10000;overflow:hidden;isolation:isolate;background:#e8e3df;color:#355d71;transition:opacity .55s ease,visibility .55s;touch-action:none}
+.launchScreen.is-leaving{opacity:0;visibility:hidden;pointer-events:none}
+.launchClassroom{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 48%;z-index:-2;transform:scale(1.045) translateX(-.8%);animation:launchClassroomDrift 18s ease-in-out infinite alternate;will-change:transform}
+.launchScreen::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#f6f8fc12 0%,#f9fbff38 19%,transparent 44%,transparent 72%,#fdf8f099 100%)}
+.launchComposition{position:absolute;inset:0;display:flex;align-items:center;flex-direction:column;padding-top:calc(env(safe-area-inset-top,0px) + clamp(92px,19vh,180px));pointer-events:none}
+.launchBrand{display:flex;flex-direction:column;align-items:center;gap:9px;filter:drop-shadow(0 2px 14px #ffffffb0)}
+.launchBrand img{width:52px;height:52px}
+.launchWordmark{font-family:LaunchOutfit,'Wanted Sans',sans-serif;font-size:clamp(38px,10.5vw,52px);font-weight:500;line-height:1.12;letter-spacing:-1.8px;margin:0;color:#31576c;text-shadow:0 1px 12px #ffffffb0}
+.launchWordmark span{font-weight:300}
+.launchFooter{position:absolute;bottom:0;left:50%;transform:translateX(-50%);text-align:center;padding:18px 24px calc(env(safe-area-inset-bottom,0px) + 43px);width:min(100%,380px);box-sizing:border-box}
+.launchTrack{height:2px;width:112px;margin:0 auto 14px;background:#71859230;border-radius:4px;overflow:hidden}
+.launchTrack::after{content:'';display:block;width:44%;height:100%;border-radius:4px;background:#4a7b91;animation:launchSweep 1.65s ease-in-out infinite}
+.launchStatus{font-family:LaunchOutfit,'Wanted Sans',sans-serif;font-size:10px;letter-spacing:3px;line-height:1.6;margin:0;color:#4e697a;text-shadow:0 1px 8px #fff}
+.launchActions{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.launchActions[hidden]{display:none}
+.launchActions button{border:1px solid #ffffffd9;border-radius:12px;background:#ffffffe0;color:#3f697b;padding:11px 18px;font:600 13px 'Wanted Sans',sans-serif;min-height:44px;cursor:pointer;box-shadow:0 3px 15px #314b6110}
+@keyframes launchClassroomDrift{from{transform:scale(1.045) translateX(-.8%)}to{transform:scale(1.045) translateX(.8%)}}
+@keyframes launchSweep{0%{transform:translateX(-110%)}100%{transform:translateX(330%)}}
+@media(max-height:650px){.launchComposition{padding-top:calc(env(safe-area-inset-top,0px) + 65px)}.launchBrand img{width:44px;height:44px}.launchWordmark{font-size:36px}.launchFooter{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 25px)}}
+@media(prefers-reduced-motion:reduce){.launchScreen{transition:none}.launchClassroom{animation:none;transform:none;will-change:auto}.launchTrack::after{animation:none;width:100%;opacity:.6}}
+
+.launchScreen.is-leaving .launchClassroom{animation-play-state:paused}
