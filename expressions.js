@@ -1,6 +1,10 @@
+import {mioFaceRig} from './mio-face-rig.js?v=20261115mioLive1';
+import {mioBlinkRig} from './mio-blink-rig.js?v=20261115mioLive1';
 import {ritsuFaceRig} from './ritsu-face-rig.js?v=20261111ritsuExpressions';
 import {momoFaceRig} from './momo-face-rig.js?v=20261114momoLive4';
 import {senaFaceRig} from './sena-face-rig.js?v=20261115senaLive5';
+import {ibukiFaceRig} from './ibuki-face-rig.js?v=20261115ibukiLive2';
+import {ibukiBlinkRig} from './ibuki-blink-rig.js?v=20261115ibukiLive2';
 // Facial atlas registration: source eye/mouth landmarks align with the approved portrait.
 export const expressionNames=['neutral','smile','happy','angry','disappointed','cry','soft','sleepy','calm'];
 export const expressionLabels=['평소','미소','활짝','삐침','실망','울먹','눈웃음','나른','차분'];
@@ -14,10 +18,12 @@ export function expressionPose(name){
 }
 export function facialParts(student,name,{talking=false,blink='open'}={}){
  const face=expressionPose(name),positive=['smile','happy','soft'].includes(name);
- const mouth=talking?(student==='haru'?-1:['momo','sena'].includes(student)?(positive?0:face.mouth):student==='ritsu'&&!positive?face.mouth:2):face.mouth;
+ const mouth=talking?(student==='haru'?-1:['momo','sena','ibuki','mio'].includes(student)?(positive||['ibuki','mio'].includes(student)&&name==='neutral'?0:face.mouth):student==='ritsu'&&!positive?face.mouth:2):face.mouth;
  return {...face,mouth,blink:face.eyes===2||blink==='open'?-1:blink==='closed'?2:4,mouthScale:student==='ritsu'&&talking&&positive&&name!=='happy'?.76:1};
 }
 export const expressionRigs={
+ mio:{size:[1024,1536],atlas:'expressions/mio-live-v1.png',blinkAtlas:'expressions/mio-blink-v1.png',blinkFeatures:mioBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[82,35,.23,-29],mouthRadius:[65,34,46],...mioFaceRig.uniform,source:[[212,300],[342,280],[290,379]],outfits:{casual:{...mioFaceRig.casual,blinkFeatures:mioBlinkRig.casual.features},sleep:{...mioFaceRig.sleep,blinkFeatures:mioBlinkRig.sleep.features}}},
+ ibuki:{size:[1024,1536],atlas:'expressions/ibuki-live-v1.png',blinkAtlas:'expressions/ibuki-blink-v1.png',blinkFeatures:ibukiBlinkRig.uniform.features,preserveHair:true,registered:true,lidShape:[84,38,.20,-30],mouthRadius:[65,36,48],...ibukiFaceRig.uniform,source:[[192,307],[318,285],[264,375]],outfits:{casual:{...ibukiFaceRig.casual,blinkFeatures:ibukiBlinkRig.casual.features},sleep:{...ibukiFaceRig.sleep,blinkFeatures:ibukiBlinkRig.sleep.features}}},
  sena:{size:[1024,1536],atlas:'expressions/sena-live-v1.png',preserveHair:true,registered:true,brownHairGuard:true,mouthRadius:[70,38,45],...senaFaceRig.uniform,source:[[205,323],[340,291],[289,396]],outfits:{casual:senaFaceRig.casual,sleep:senaFaceRig.sleep}},
  momo:{size:[1024,1536],atlas:'expressions/momo-live-v2.png',preserveHair:true,registered:true,hairGuard:true,...momoFaceRig.uniform,source:[[214,288],[365,255],[307,370]],outfits:{casual:momoFaceRig.casual,sleep:momoFaceRig.sleep}},
  ritsu:{size:[1108,1420],preserveHair:true,registered:true,protect:[738,355,35,52],...ritsuFaceRig.uniform,source:[[208,302],[337,287],[280,385]],outfits:{casual:{...ritsuFaceRig.casual,protect:[755,354,36,52]},sleep:{...ritsuFaceRig.sleep,protect:[738,355,35,52]}}},
@@ -33,10 +39,13 @@ export function faceTransform(rig){
 }
 export const expressionFragment=`precision mediump float;
 varying vec2 v_uv; uniform sampler2D u_texture; uniform sampler2D u_faces; uniform vec2 u_artSize;
+uniform sampler2D u_blinkFaces; uniform float u_hasBlinkAtlas;
 uniform vec3 u_mapX; uniform vec3 u_mapY; uniform vec2 u_left; uniform vec2 u_right; uniform vec2 u_mouth;
 uniform vec4 u_fringe; uniform vec4 u_protect;
 uniform float u_preserveHair,u_hairGuard,u_brownHairGuard;
+uniform float u_customLids;
 uniform vec3 u_mouthRadius;
+uniform vec4 u_lidShape;
 uniform vec3 u_eyeLeftX,u_eyeLeftY,u_eyeRightX,u_eyeRightY;
 uniform float u_registered,u_mouthScale;
 uniform vec3 u_browLeftX,u_browLeftY,u_browRightX,u_browRightY,u_mouthX,u_mouthY;
@@ -64,6 +73,7 @@ vec4 paint(float e,vec4 base,vec2 p,float mask,int part){
  vec2 cell=vec2(mod(e,3.0),floor(e/3.0));
  vec2 uv=(at+cell*512.0)/vec2(1536.0,1024.0);uv.y=1.0-uv.y;
  vec4 ink=texture2D(u_faces,uv);
+ if(part==1&&u_blink>=0.0&&u_hasBlinkAtlas>.5)ink=texture2D(u_blinkFaces,uv);
  return vec4(mix(base.rgb,ink.rgb,mask*ink.a),base.a);
 }
 void main(){
@@ -96,12 +106,15 @@ void main(){
  if(u_preserveHair>.5){
   if(u_blink<0.0&&(u_eyePose==1.0||u_eyePose==0.0))eyes=-1.0;
   lids=max(1.0-smoothstep(.9,1.0,length((p-u_left)/vec2(90.0,46.0))),1.0-smoothstep(.9,1.0,length((p-u_right)/vec2(90.0,46.0))));
-  if(u_brownHairGuard>.5){
-   // Follow Sena's slanted eye line. The blink window must stop below her
-   // expressive brows instead of replacing them with the smiling-eye atlas.
-   vec2 l=p-u_left,r=p-u_right;l.y+=l.x*.26;r.y+=r.x*.26;
-   float leftLid=(1.0-smoothstep(.9,1.0,length(l/vec2(84.0,34.0))))*smoothstep(-29.0,-26.0,l.y);
-   float rightLid=(1.0-smoothstep(.9,1.0,length(r/vec2(84.0,34.0))))*smoothstep(-29.0,-26.0,r.y);
+  if(u_brownHairGuard>.5||u_customLids>.5){
+   // Follow each character's eye line; blinking must not replace the brows.
+   vec4 shape=u_lidShape;
+   // Ibuki's open, curious eyes rise higher than her narrowed upset eyes.
+   // Clear the entire original upper lash without touching lowered sad brows.
+   if(u_customLids>.5&&(u_browPose<2.5||u_browPose>4.5))shape=vec4(94.0,53.0,shape.z,-54.0);
+   vec2 l=p-u_left,r=p-u_right;l.y+=l.x*shape.z;r.y+=r.x*shape.z;
+   float leftLid=(1.0-smoothstep(.9,1.0,length(l/shape.xy)))*smoothstep(shape.w,shape.w+3.0,l.y);
+   float rightLid=(1.0-smoothstep(.9,1.0,length(r/shape.xy)))*smoothstep(shape.w,shape.w+3.0,r.y);
    lids=max(leftLid,rightLid);
   }
 

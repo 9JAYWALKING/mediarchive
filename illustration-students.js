@@ -8,21 +8,18 @@ export const illustrationStudents=[
   "grade": 2,
   "role": "방송부 · 진행 담당",
   "color": "#c08a65",
-  "portrait": "./assets/illustrations/ibuki-uniform.png",
-  "model": null,
-  "renderer": "illustration",
+  "portrait": "./assets/ibuki-live-v1.png",
+  "model": "./assets/ibuki.model3.json",
+  "renderer": "live2d",
   "outfits": {
    "uniform": {
-    "portrait": "./assets/illustrations/ibuki-uniform.png",
-    "atlas": "./assets/illustrations/ibuki-uniform-atlas.png"
+    "portrait": "./assets/ibuki-live-v1.png"
    },
    "casual": {
-    "portrait": "./assets/illustrations/ibuki-casual.png",
-    "atlas": "./assets/illustrations/ibuki-casual-atlas.png"
+    "portrait": "./assets/wardrobe/ibuki-casual-live-v1.png"
    },
    "sleep": {
-    "portrait": "./assets/illustrations/ibuki-sleep.png",
-    "atlas": "./assets/illustrations/ibuki-sleep-atlas.png"
+    "portrait": "./assets/wardrobe/ibuki-sleep-live-v1.png"
    }
   },
   "accessory": "번개 지퍼 참",
@@ -48,21 +45,18 @@ export const illustrationStudents=[
   "grade": 2,
   "role": "생활지원부",
   "color": "#91a8b8",
-  "portrait": "./assets/illustrations/mio-uniform-v2.png",
-  "model": null,
-  "renderer": "illustration",
+  "portrait": "./assets/mio-live-v1.png",
+  "model": "./assets/mio.model3.json",
+  "renderer": "live2d",
   "outfits": {
    "uniform": {
-    "portrait": "./assets/illustrations/mio-uniform-v2.png",
-    "atlas": "./assets/illustrations/mio-uniform-v2-atlas.png"
+    "portrait": "./assets/mio-live-v1.png"
    },
    "casual": {
-    "portrait": "./assets/illustrations/mio-casual-v2.png",
-    "atlas": "./assets/illustrations/mio-casual-v2-atlas.png"
+    "portrait": "./assets/wardrobe/mio-casual-live-v1.png"
    },
    "sleep": {
-    "portrait": "./assets/illustrations/mio-sleep-v2.png",
-    "atlas": "./assets/illustrations/mio-sleep-v2-atlas.png"
+    "portrait": "./assets/wardrobe/mio-sleep-live-v1.png"
    }
   },
   "accessory": "매듭 팔찌",
