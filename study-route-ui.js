@@ -1,7 +1,7 @@
 import {guidePortrait} from './guide-dm-ui.js?v=20261116guideDM3';
 import {guideDMCopy} from './guide-dm-copy.js?v=20261116guideDM2';
-import {studyDays,routeUnit,studentVoices,routeSources} from './study-route-data.js?v=20261116guideDM2';
-import {buildRoute,normalizeRoute,mergeRoute,routeKey,routeFocus,unitMinutes,dayMinute,clock,routeQuestProgress,assignRouteQuests,completeRouteQuest,routeQuestRows} from './study-route-engine.js?v=20261116assigned1';
+import {studyDays,routeUnit,studentVoices,routeSources} from './study-route-data.js?v=20261116materials1';
+import {buildRoute,normalizeRoute,mergeRoute,routeKey,routeFocus,unitMinutes,dayMinute,clock,routeQuestProgress,assignRouteQuests,completeRouteQuest,routeQuestRows} from './study-route-engine.js?v=20261116materials1';
 import {koreanDate,shiftDate} from './game-state.js';
 import {reviewQuestions} from './review-data.js';
 import {defaultStudents} from './planner-catalog.js?v=20261115akariVoice1';
@@ -108,9 +108,9 @@ export function createStudyRoute({planner,say,selectStudent,openModal,closeModal
    owner=defaultStudents.find(s=>s.lectures.includes(b.lectures[0]))?.id||owner;
    return make('class',day+':class:'+b.start,b.title,copy(owner).class,'day','퀘스트',{time:clock(b.start)+'–'+clock(b.end)});
   }
-  if(f){const p=planner.state.plans.find(p=>p.id===planner.focus.planId);return make('focus',planner.focus.id,p.title,planner.focus.started?voice(owner).middle:copy(owner).resume,planner.focus.started?'finish':'resume',planner.focus.started?'완료':'재개',{goal:p.note,material:f.material,time:p.time+'–'+clock(Math.min(1380,dayMinute(Date.parse(p.date+'T'+p.time+':00+09:00'))+p.minutes)),unitId:f.id});}
+  if(f){const p=planner.state.plans.find(p=>p.id===planner.focus.planId);return make('focus',planner.focus.id,p.title,planner.focus.started?voice(owner).middle:copy(owner).resume,planner.focus.started?'finish':'resume',planner.focus.started?'완료':'재개',{goal:p.note,material:p.track,lecture:p.lecture,time:p.time+'–'+clock(Math.min(1380,dayMinute(Date.parse(p.date+'T'+p.time+':00+09:00'))+p.minutes)),unitId:f.id});}
   if(getSession()||planner.focus)return null;
-  const event=pending();if(event){const p=planner.state.plans.find(p=>p.id===event.planId);owner=p.student;return make('check',event.id+':check',p.title,copy(owner).check,'check','확인',{goal:p.note});}
+  const event=pending();if(event){const p=planner.state.plans.find(p=>p.id===event.planId);owner=p.student;return make('check',event.id+':check',p.title,copy(owner).check,'check','확인',{goal:p.note,material:p.track,lecture:p.lecture});}
   if(b?.kind==='study')return make('study',day+':guide:'+(b.questId||b.unit.id),b.title,voice(owner).start,'start','시작',{unitId:b.unit.id,goal:b.unit.goal,material:b.unit.material,lecture:b.unit.lecture,minutes:b.minutes,time:clock(b.start)+'–'+clock(b.end),sources:routeSources(b.unit.lecture)});
   if(b?.kind==='meal')return make('meal',day+':meal:'+b.meal,'식사부터 할까?',copy(owner).meal,'meal','식사',{meal:b.meal,time:clock(b.start)+'–'+clock(b.end)});
   if(b?.kind==='plan'){owner=planner.state.plans.find(p=>p.id===b.planId)?.student||owner;return make('plan',b.planId,b.title,voice(owner).start,'start','시작',{time:clock(b.start)+'–'+clock(b.end)});}

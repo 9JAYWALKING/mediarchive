@@ -1,4 +1,4 @@
-import {studyDays,routeUnit} from './study-route-data.js?v=20261116guideDM2';
+import {studyDays,routeUnit} from './study-route-data.js?v=20261116materials1';
 import {schedule} from './schedule-data.js?v=20261116guideDM2';
 import {koreanDate} from './game-state.js';
 export const routeKey='mediarchive-study-route-v1';

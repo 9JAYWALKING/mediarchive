@@ -1,4 +1,4 @@
-import {lectureAdvice} from './lecture-advice-data.js';
+import {lectureAdvice} from './lecture-advice-data.js?v=20261116materials1';
 import {schedule} from './schedule-data.js';
 import {defaultStudents} from './planner-catalog.js?v=20261115akariVoice1';
 import {illustratedStudents} from './character-data.js?v=20261115akariVoice1';

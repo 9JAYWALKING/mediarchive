@@ -99,12 +99,13 @@ export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal
  function updateNext(){
   const now=Date.now(),p=agendaItem(state,now,undefined,getSession?.());nextButton.hidden=!p;
   if(!p){nextSignature='';return;}
-  const timing=agendaTiming(p,now),signature=JSON.stringify([p.id,p.kind,p.label,p.title,p.date,timing]);
+  const material=['focus','plan'].includes(p.kind)?linkedLabel(p):'';
+  const timing=agendaTiming(p,now),signature=JSON.stringify([p.id,p.kind,p.label,p.title,p.date,material,timing]);
   if(signature===nextSignature)return;nextSignature=signature;
-  nextButton.dataset.kind=p.kind;nextButton.dataset.overtime=String(timing?.remaining?.startsWith('+')||false);const body=node('span',undefined,'plannerNextBody');body.append(node('span',p.title,'plannerNextTitle'));
+  nextButton.dataset.kind=p.kind;nextButton.dataset.overtime=String(timing?.remaining?.startsWith('+')||false);const body=node('span',undefined,'plannerNextBody'),title=node('span',material||p.title,'plannerNextTitle');title.title=material||p.title;body.append(title);
   if(timing){const meta=node('span',undefined,'plannerNextMeta');meta.append(node('span',timing.range,'plannerNextRange'));if(timing.remaining)meta.append(node('span',timing.remaining,'plannerNextRemaining'));body.append(meta);}
   nextButton.replaceChildren(node('b',p.label),body,node('i','›'));
-  nextButton.setAttribute('aria-label',[p.label,p.title,timing?.range,timing?.remaining].filter(Boolean).join(' · '));
+  nextButton.setAttribute('aria-label',[p.label,material||p.title,timing?.range,timing?.remaining].filter(Boolean).join(' · '));
   nextButton.onclick=()=>p.kind==='focus'&&state.focus?focusModal():onSchedule(p.date);
  }
  function pauseForRest(){const f=state.focus;if(!f?.started)return;beforeTimerChange();save({...state,focus:{...f,elapsed:focusElapsed(f),previewElapsed:focusPreview(f,state.plans.find(p=>p.id===f.planId)),started:null,pausedAt:Date.now()}});tick();}
