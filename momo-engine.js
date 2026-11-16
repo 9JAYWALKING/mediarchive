@@ -1,4 +1,4 @@
-import {normalizeGuideMessages,mergeGuideMessages} from './guide-dm-engine.js?v=20261116guideDM3';
+import {normalizeGuideMessages,mergeGuideMessages} from './guide-dm-engine.js?v=20261116quietDM1';
 import {schedule} from './schedule-data.js?v=20261116guideDM2';
 import {koreanDate,validDate,shiftDate} from './game-state.js';
 import {routineContext} from './routine-engine.js';
@@ -26,29 +26,8 @@ export function normalizeMomo(raw){
 export function mergeMomo(a,b){return normalizeMomo({guidance:mergeGuideMessages(a?.guidance,b?.guidance),messages:[...(a?.messages||[]),...(b?.messages||[])],plans:[...(a?.plans||[]),...(b?.plans||[])]});}
 export const planStart=p=>Date.parse(`${p.date}T${p.time}:00+09:00`);
 function lastStudy(lecture,study){return Math.max(0,...(study?.memories||[]).filter(m=>m.context?.lecture===lecture&&m.duration>=300000).map(m=>Date.parse(m.date)).filter(Number.isFinite));}
-export function deliverMomo(raw,study,examDate,now=Date.now()){
- const state=normalizeMomo(raw),ctx=routineContext(now);
- if(ctx.minute<390||ctx.minute>=1320||(validDate(examDate)&&koreanDate(now)>examDate))return state;
- const first=!state.messages.length,lastMessage=Math.max(0,...state.messages.map(m=>m.at));
- if(!first&&now-lastMessage<4*3600000)return state;
- for(const [student,ids] of Object.entries(momoOwners)){
-  const history=state.messages.filter(m=>m.student===student),last=history.at(-1);
-  if(last&&(!last.readAt||now-last.at<DAY))continue;
-  if(state.plans.some(p=>p.student===student&&p.status==='scheduled'))continue;
-  // Do not stack another invitation on an unanswered one.
-  if(last&&!state.plans.some(p=>p.messageId===last.id&&p.status!=='scheduled'))continue;
-  const candidates=schedule.filter(l=>ids.includes(l.id)).map(l=>{
-   const end=Date.parse(`${l.date}T${l.time}:00+09:00`)+l.hours*3600000;
-   const review=Math.max(lastStudy(l.id,study),...state.plans.filter(p=>p.lecture===l.id&&p.status==='done').map(p=>p.updatedAt),0);
-   return {l,end,review};
-  }).filter(x=>now-x.end>=DAY&&(!x.review||now-x.review>=2*DAY)&&!state.plans.some(p=>p.lecture===x.l.id&&p.status==='scheduled')).sort((a,b)=>(a.review||a.end)-(b.review||b.end));
-  if(!candidates.length)continue;
-  const lecture=candidates[0].l.id,id=`${student}:${lecture}:${koreanDate(now)}`;
-  if(state.messages.some(m=>m.id===id))continue;
-  state.messages.push({id,student,lecture,at:now,readAt:0});if(!first)break;
- }
- return normalizeMomo(state);
-}
+// Retired automatic review invitations. Keep legacy data for existing planner links.
+export function deliverMomo(raw){return normalizeMomo(raw);}
 export function planError(plan,plans,now=Date.now(),meals=null){
  if(!validDate(plan.date)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(plan.time)||![15,30,45,60].includes(plan.minutes))return '날짜와 시간을 확인해 줘.';
  const start=planStart(plan),end=start+plan.minutes*M;

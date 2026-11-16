@@ -7,7 +7,7 @@ import {mealsForDate} from './meals-engine.js';
 import {agendaItem,agendaTiming} from './agenda-engine.js?v=20261111rest';
 import {illustratedStudents} from './character-data.js?v=20261115akariVoice1';
 import {koreanDate,shiftDate} from './game-state.js';
-import {suggestPlan} from './momo-engine.js?v=20261116guideDM2';
+import {suggestPlan} from './momo-engine.js?v=20261116quietDM1';
 import {studentGrowth,recordSnapshot,focusPreview} from './student-growth.js?v=20261116guideDM2';
 import {normalizePlanner,mergePlanner,plannerSnapshot,focusElapsed,buildPlans,legacyMomoPlans,startOf,endOf,nextPlan} from './planner-engine.js?v=20261116assigned1';
 const KEY='heart-companion-planner-v1';
@@ -84,7 +84,7 @@ export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal
   if(state.focus){if(state.focus.planId===p.id){focusModal();return;}toast('진행 중인 약속을 먼저 마쳐 줘.');return;}
   if(getSession()){toast('진행 중인 이벤트를 먼저 마쳐 줘.');return;}
   if(p.student&&!briefed&&beforeStudy({lecture:p.lecture,track:p.track,student:student(p.student)},()=>start(p,true)))return;
-  const growth=p.student?{...studentGrowth(state.records,student(p.student)),...(p.student==='haru'?getHaruGrowth():{})}:null;if(save({...state,focus:{id:crypto.randomUUID(),planId:p.id,elapsed:0,started:Date.now(),...recordSnapshot(p),previewElapsed:0,...(p.sourceId?.startsWith('guide:')?{stopAt:Math.min(Date.parse(p.date+'T23:00:00+09:00'),...classTime.lessons().map(l=>Date.parse(l.date+'T'+l.time+':00+09:00')).filter(t=>t>Date.now()),...state.plans.filter(x=>x.status==='scheduled'&&!x.sourceId?.startsWith('guide:')).map(startOf).filter(t=>t>Date.now())),guideMinutes:p.minutes}:{}),cycle:growth?.cycle||1,scope:growth?.scope||[]}})){onStudyStarted(p.student);changed();}
+  const growth=p.student?{...studentGrowth(state.records,student(p.student)),...(p.student==='haru'?getHaruGrowth():{})}:null;if(save({...state,focus:{id:crypto.randomUUID(),planId:p.id,elapsed:0,started:Date.now(),...recordSnapshot(p),previewElapsed:0,...(p.sourceId?.startsWith('guide:')?{stopAt:Math.min(Date.parse(p.date+'T'+(p.guideEnd===24?'24':'22')+':00:00+09:00'),...classTime.lessons().map(l=>Date.parse(l.date+'T'+l.time+':00+09:00')).filter(t=>t>Date.now()),...state.plans.filter(x=>x.status==='scheduled'&&!x.sourceId?.startsWith('guide:')).map(startOf).filter(t=>t>Date.now())),guideMinutes:p.minutes}:{}),cycle:growth?.cycle||1,scope:growth?.scope||[]}})){onStudyStarted(p.student);changed();}
  }
  function focusModal(){
   const f=state.focus;if(!f)return;const p=state.plans.find(p=>p.id===f.planId),s=student(p.student);
@@ -114,7 +114,7 @@ export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal
   if(!student(unit.student)?.enabled||!student(unit.student)?.lectures.includes(unit.lecture)){toast('담당 학생 설정을 먼저 확인해 줘.');return false;}
   if(state.focus||getSession()){toast('진행 중인 시간을 먼저 마쳐 줘.');return false;}
   if(!canStudy(()=>startGuided(unit,minutes),unit.student))return false;
-  const now=Date.now(),date=koreanDate(now),time=new Date(now+32400000).toISOString().slice(11,16),p={id:crypto.randomUUID(),sourceId:'guide:'+unit.id,questId:unit.questId||'',title:unit.title,student:unit.student,lecture:unit.lecture,track:unit.material,targets:[{lecture:unit.lecture,track:unit.material}],date,time,minutes:Math.max(5,Math.ceil(minutes)),note:unit.goal,status:'scheduled',createdAt:now,updatedAt:now};
+  const now=Date.now(),date=koreanDate(now),time=new Date(now+32400000).toISOString().slice(11,16),p={id:crypto.randomUUID(),sourceId:'guide:'+unit.id,questId:unit.questId||'',guideEnd:unit.guideEnd===24?24:22,title:unit.title,student:unit.student,lecture:unit.lecture,track:unit.material,targets:[{lecture:unit.lecture,track:unit.material}],date,time,minutes:Math.max(5,Math.ceil(minutes)),note:unit.goal,status:'scheduled',createdAt:now,updatedAt:now};
   if(!save({...state,plans:[...state.plans,p]}))return false;
   start(p,true);return state.focus?.planId===p.id;
  }

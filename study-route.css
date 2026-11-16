@@ -28,6 +28,16 @@
 .routeSources{display:block;color:#72909c;font-size:11px;line-height:1.6;margin:6px 0 5px}.routeBody details{border:0;padding:0;margin:5px 0 0;background:transparent}.routeBody details summary{border:0;padding:5px 0}.routeBody .routeInline{margin-top:4px}
 
 .routeCarry{display:block;width:100%;text-align:left;border:1px solid #d8e6eb;border-radius:10px;background:#fff9;color:#5c7b8a;min-height:44px;padding:10px 12px;margin:7px 0;font:inherit;font-size:12px}
+.routeStages{border:0;border-top:1px solid #dceae9;margin-top:10px;padding-top:4px;background:none}
+.routeStages summary{padding:9px 0;color:#698c97;font-size:12px;cursor:pointer}
+.routeStageRow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 10px}
+.routeStageRow>span{display:grid;gap:6px;padding:10px 8px;background:#ffffffb8;border:1px solid #e0eceb;border-radius:12px;text-align:center}
+.routeStageRow small{font-size:11px;color:#77949d}.routeStageRow b{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;color:#427487}
+.routeStageBadge{display:inline-block;padding:3px 8px;border-radius:7px;background:#edf5f6;color:#71929f;font-size:10px;line-height:1.4}
+.routeExtra{display:block;width:100%;min-height:44px;padding:9px 12px;border:1px solid #d9e3ec;border-radius:12px;background:linear-gradient(120deg,#f4f4fb,#eef6f7);font:inherit;font-size:12px;color:#617a92;margin-top:12px}
+.routeExtra:disabled{background:transparent;color:#879ca8;border-style:dashed;opacity:.75}
+.routeBody .routeTip{font-size:12px;color:#75909a;border-top:1px solid #e6eeee;padding-top:8px}
+.routeQuestActions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.routeQuestActions>button{flex:1;min-height:44px;white-space:nowrap}
 
 /* Shared current-task card. No extra animated portrait or canvas is mounted in DM. */
 .guideSlot:empty{display:none}
@@ -75,7 +85,8 @@
 .routeQuestCount{flex:none;color:#467b8d;font:500 24px/1.2 var(--numbers);font-variant-numeric:tabular-nums;letter-spacing:-.04em}
 .routeQuestMeter{display:block;appearance:none;border:0;border-radius:8px;width:100%;height:5px;margin:14px 0 10px;background:#dae9ed;overflow:hidden}
 .routeQuestMeter::-webkit-progress-bar{background:#dae9ed;border-radius:8px}.routeQuestMeter::-webkit-progress-value{background:#70a8af;border-radius:8px}.routeQuestMeter::-moz-progress-bar{background:#70a8af;border-radius:8px}
-.routeQuestCompleted{margin-top:10px;color:#73929a;font-size:12px}.routeQuestCompleted summary{cursor:pointer;padding:5px 0}.routeQuestCompleted p{margin:4px 0;font-size:12px}
+.routeQuestCompleted{margin:2px 0 0;padding:0;border:0;background:none;color:#73929a;font-size:12px}.routeQuestCompleted summary{cursor:pointer;min-height:44px;display:flex;align-items:center;padding:0}.routeQuestCompleted summary:before{content:'▸';margin-right:6px}.routeQuestCompleted[open] summary:before{content:'▾'}.routeQuestCompleted p{margin:4px 0;font-size:12px}
+.routeStages{padding:0}.routeStages summary{min-height:44px;box-sizing:border-box;display:flex;align-items:center;padding:0}.routeStages summary:before{content:'▸';margin-right:6px}.routeStages[open] summary:before{content:'▾'}
 
 .routeCompleteQuest{display:block;margin:12px 0 0 auto;min-height:40px;min-width:76px;padding:8px 15px;border:1px solid #bcdadd;border-radius:12px;background:#eef8f7;color:#4b8490;font:700 12px var(--ui);touch-action:manipulation}
 .routeCompleteQuest:active{background:#dcefeb}.routeCompleteQuest.is-done{border-color:transparent;background:transparent;color:#85a8a7;min-height:28px;padding:4px 0;opacity:1}

@@ -1,4 +1,4 @@
-import {createStudyRoute,snapshotBeforeRoute} from './study-route-ui.js?v=20261116materials1';
+import {createStudyRoute,snapshotBeforeRoute} from './study-route-ui.js?v=20261116quietDM1';
 const preRouteBackupOK=snapshotBeforeRoute();
 import {overtimeState,overtimeLine} from './overtime-dialogue.js?v=20261115akariVoice1';
 import {bondStories} from './bond-story-data.js?v=20261110ritsu';
@@ -26,8 +26,8 @@ import {sessionTotals,summarizeGrowth,normalizeGrowth,growthReminder} from './gr
 import {normalizeStudy,studySnapshot,mergeStudy} from './study-store.js';
 import {createGrowthUI} from './growth-ui.js';
 import {configureRoutine,routineLine,configuredRoutineContext} from './routine-service.js?v=20261115akariVoice1';
-import {createMomoUI} from './momo-ui.js?v=20261116guideDM3';
-import {createPlannerUI} from './planner-ui.js?v=20261116materials2';
+import {createMomoUI} from './momo-ui.js?v=20261116quietDM1';
+import {createPlannerUI} from './planner-ui.js?v=20261116quietDM1';
 import {startWorldTime} from './world-time.js?v=20261110hometalk';
 import {createCareUI} from './care-ui.js?v=20261116quests2';
 const $=s=>document.querySelector(s),KEY='heart-companion-v1';let state=normalizeStudy(null),storageOK=true;
@@ -169,4 +169,5 @@ try {
  window.mediarchiveBoot?.finish();
  if(!preRouteBackupOK)toast('이전 기록 사본을 만들 공간이 부족해. 설정에서 내보내 줘.');
 } catch(error) { window.mediarchiveBoot?.fail(); console.error('Lobby startup failed',error); }
+
 
