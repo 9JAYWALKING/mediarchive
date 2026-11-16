@@ -9,7 +9,7 @@ import {illustratedStudents} from './character-data.js?v=20261115akariVoice1';
 import {koreanDate,shiftDate} from './game-state.js';
 import {suggestPlan} from './momo-engine.js?v=20261116guideDM2';
 import {studentGrowth,recordSnapshot,focusPreview} from './student-growth.js?v=20261116guideDM2';
-import {normalizePlanner,mergePlanner,plannerSnapshot,focusElapsed,buildPlans,legacyMomoPlans,startOf,endOf,nextPlan} from './planner-engine.js?v=20261116guideDM2';
+import {normalizePlanner,mergePlanner,plannerSnapshot,focusElapsed,buildPlans,legacyMomoPlans,startOf,endOf,nextPlan} from './planner-engine.js?v=20261116assigned1';
 const KEY='heart-companion-planner-v1';
 export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal,closeModal,toast,onChange,onSchedule,getSession,beforeTimerChange=()=>{},canStudy=()=>true,beforeStudy=()=>false,onStudyFinished=()=>{},onStudyStarted=()=>{}}){
  let state=normalizePlanner(null),filter='all';try{state=normalizePlanner(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{}
@@ -92,7 +92,7 @@ export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal
   $('#focusStudent').textContent=s?.name||'개인 일정';$('#focusTitle').textContent=p.title;$('#modal').setAttribute('aria-label',p.title);$('#focusLink').textContent=linkedLabel(f);$('#focusPortrait').append(portrait(p.student));
   for(const t of studyTargets(f)){const label=node('label',undefined,'plannerCheck'),input=node('input');input.type='checkbox';input.dataset.unit=targetKey(t);input.setAttribute('aria-label',`${t.lecture}강 ${t.track} 완료`);label.append(input,node('span',`${t.lecture}강 · ${t.track} 완료`));$('#focusUnits').append(label);}
   $('#focusPause').onclick=()=>{if(state.focus?.started){pauseForRest();tick();onPause();}else resumeFocus();};
-  $('#focusFinish').onclick=()=>{const focus=state.focus;if(!focus)return;beforeTimerChange();const duration=focusElapsed(focus);if(duration<1000){toast('조금 뒤에 저장해 줘.');return;}const now=Date.now(),records=[...state.records,{id:focus.id,planId:focus.planId,at:now,duration,...recordSnapshot(focus),preview:focusPreview(focus,p,now),cycle:focus.cycle||1,scope:focus.scope||[],completed:[...document.querySelectorAll('#focusUnits input:checked:not(:disabled)')].map(x=>x.dataset.unit),unitComplete:false}],plans=state.plans.map(x=>x.id===p.id&&$('#focusComplete').checked?{...x,status:'done',updatedAt:now}:x);if(save({...state,focus:null,records,plans})){closeModal();changed();toast('기록했어.');onStudyFinished({...records.at(-1),name:s?.name||''});}};tick();
+  $('#focusFinish').onclick=()=>{const focus=state.focus;if(!focus)return;beforeTimerChange();const duration=focusElapsed(focus);if(duration<1000){toast('조금 뒤에 저장해 줘.');return;}const now=Date.now(),records=[...state.records,{id:focus.id,planId:focus.planId,at:now,duration,...recordSnapshot(focus),preview:focusPreview(focus,p,now),cycle:focus.cycle||1,scope:focus.scope||[],completed:[...document.querySelectorAll('#focusUnits input:checked:not(:disabled)')].map(x=>x.dataset.unit),unitComplete:false}],plans=state.plans.map(x=>x.id===p.id&&$('#focusComplete').checked?{...x,status:'done',updatedAt:now}:x);if(save({...state,focus:null,records,plans})){closeModal();changed();toast('기록했어.');onStudyFinished({...records.at(-1),name:s?.name||'',questComplete:plans.find(x=>x.id===p.id)?.status==='done'});}};tick();
  }
  const nextButton=node('button',undefined,'plannerNext');document.querySelector('.session').before(nextButton);
  let nextSignature='';
@@ -113,7 +113,7 @@ export function createPlannerUI({onPause=()=>{},getHaruGrowth=()=>null,openModal
   if(!student(unit.student)?.enabled||!student(unit.student)?.lectures.includes(unit.lecture)){toast('담당 학생 설정을 먼저 확인해 줘.');return false;}
   if(state.focus||getSession()){toast('진행 중인 시간을 먼저 마쳐 줘.');return false;}
   if(!canStudy(()=>startGuided(unit,minutes),unit.student))return false;
-  const now=Date.now(),date=koreanDate(now),time=new Date(now+32400000).toISOString().slice(11,16),p={id:crypto.randomUUID(),sourceId:'guide:'+unit.id,title:unit.title,student:unit.student,lecture:unit.lecture,track:unit.material,targets:[{lecture:unit.lecture,track:unit.material}],date,time,minutes:Math.max(5,Math.ceil(minutes)),note:unit.goal,status:'scheduled',createdAt:now,updatedAt:now};
+  const now=Date.now(),date=koreanDate(now),time=new Date(now+32400000).toISOString().slice(11,16),p={id:crypto.randomUUID(),sourceId:'guide:'+unit.id,questId:unit.questId||'',title:unit.title,student:unit.student,lecture:unit.lecture,track:unit.material,targets:[{lecture:unit.lecture,track:unit.material}],date,time,minutes:Math.max(5,Math.ceil(minutes)),note:unit.goal,status:'scheduled',createdAt:now,updatedAt:now};
   if(!save({...state,plans:[...state.plans,p]}))return false;
   start(p,true);return state.focus?.planId===p.id;
  }

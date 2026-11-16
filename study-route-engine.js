@@ -6,7 +6,13 @@ export const minute=s=>Number(s.slice(0,2))*60+Number(s.slice(3));
 export const clock=m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(Math.floor(m%60)).padStart(2,'0')}`;
 export const dayMinute=now=>(now-Date.parse(koreanDate(now)+'T00:00:00+09:00'))/60000;
 export function normalizeRoute(raw){
- const out={version:1,checks:{},mealDeferrals:{},meals:[],activeMeal:null,restUntil:0,reviewed:[],signals:[],enabled:raw?.enabled!==false};
+ const out={version:1,checks:{},questDays:{},mealDeferrals:{},meals:[],activeMeal:null,restUntil:0,reviewed:[],signals:[],enabled:raw?.enabled!==false};
+ for(const day of studyDays){const saved=raw?.questDays?.[day.date];if(!saved||!Array.isArray(saved.items))continue;
+  const seen=new Set(),items=[];
+  for(const q of saved.items.slice(0,100)){if(!q||!day.units.some(u=>u.id===q.unitId)||typeof q.id!=='string'||!q.id.startsWith(day.date+':')||q.id.length>120||seen.has(q.id)||!Number.isFinite(q.minutes)||q.minutes<1||q.minutes>60||!Number.isFinite(q.start)||!Number.isFinite(q.end)||q.start<420||q.end>1380||q.end<=q.start)continue;seen.add(q.id);items.push({id:q.id,unitId:q.unitId,minutes:q.minutes,start:q.start,end:q.end});}
+  if(!items.length)continue;const done={};for(const q of items)if(Number.isFinite(saved.done?.[q.id])&&saved.done[q.id]>0)done[q.id]=saved.done[q.id];
+  out.questDays[day.date]={items,done};
+ }
  for(const [id,c] of Object.entries(raw?.checks||{}).slice(0,1000))if(routeUnit(id)&&c&&['again','clear','partial'].includes(c.rating)&&Number.isFinite(c.at))out.checks[id]={rating:c.rating,at:c.at,done:c.done===true};
  out.meals=(Array.isArray(raw?.meals)?raw.meals:[]).filter(m=>m&&Number.isFinite(m.start)&&Number.isFinite(m.end)&&m.end>=m.start&&m.end-m.start<=86400000&&['lunch','dinner','other'].includes(m.kind)).slice(-100);
  for(const [key,until] of Object.entries(raw?.mealDeferrals||{}).slice(-40))if(/^2026-11-\d{2}:(lunch|dinner)$/.test(key)&&Number.isFinite(until)&&until>=0)out.mealDeferrals[key]=until;
@@ -16,13 +22,40 @@ export function normalizeRoute(raw){
  out.signals=(Array.isArray(raw?.signals)?raw.signals:[]).filter(s=>typeof s==='string'&&s.length<200).slice(-300);
  return out;
 }
-export function mergeRoute(a,b){const left=normalizeRoute(a),right=normalizeRoute(b);for(const [id,c] of Object.entries(right.checks))if(!left.checks[id]||left.checks[id].at<c.at)left.checks[id]=c;for(const [key,until] of Object.entries(right.mealDeferrals))left.mealDeferrals[key]=Math.max(left.mealDeferrals[key]||0,until);left.reviewed=[...new Set([...left.reviewed,...right.reviewed])];left.meals=[...new Map([...left.meals,...right.meals].map(m=>[m.start,m])).values()];return normalizeRoute(left);}
+export function mergeRoute(a,b){const left=normalizeRoute(a),right=normalizeRoute(b);for(const [id,c] of Object.entries(right.checks))if(!left.checks[id]||left.checks[id].at<c.at)left.checks[id]=c;for(const [key,until] of Object.entries(right.mealDeferrals))left.mealDeferrals[key]=Math.max(left.mealDeferrals[key]||0,until);for(const [date,day] of Object.entries(right.questDays)){if(!left.questDays[date])left.questDays[date]=day;else for(const q of left.questDays[date].items){const at=day.done[q.id];if(at)left.questDays[date].done[q.id]=Math.max(left.questDays[date].done[q.id]||0,at);}}left.reviewed=[...new Set([...left.reviewed,...right.reviewed])];left.meals=[...new Map([...left.meals,...right.meals].map(m=>[m.start,m])).values()];return normalizeRoute(left);}
 export function unitMinutes(unit,planner,now=Date.now()){
  const ids=new Set(planner.plans.filter(p=>p.sourceId==='guide:'+unit.id).map(p=>p.id));
  const saved=planner.records.filter(r=>ids.has(r.planId)).reduce((sum,r)=>sum+r.duration,0),f=planner.focus;
  return (saved+(f&&ids.has(f.planId)?f.elapsed+(f.started?Math.max(0,Math.min(now,f.stopAt||now)-f.started):0):0))/60000;
 }
-export function routeFocus(planner){const p=planner.plans.find(p=>p.id===planner.focus?.planId);const u=p?.sourceId?.startsWith('guide:')?routeUnit(p.sourceId.slice(6)):null;return u?{...u,lecture:p.lecture,student:p.student,title:p.title,goal:p.note,material:p.track}:null;}
+export function routeFocus(planner){const p=planner.plans.find(p=>p.id===planner.focus?.planId);const u=p?.sourceId?.startsWith('guide:')?routeUnit(p.sourceId.slice(6)):null;return u?{...u,lecture:p.lecture,student:p.student,title:p.title,goal:p.note,material:p.track,questId:p.questId||''}:null;}
+// Assigned cards have stable identities. Timer records never complete or add quests.
+export function assignRouteQuests(date,state,planner,{lessons=schedule,now=Date.now()}={}){
+ if(state.questDays?.[date]||!studyDays.some(d=>d.date===date))return state;
+ const cleanState={...normalizeRoute(null),enabled:state.enabled};
+ const cleanPlanner={...planner,focus:null,records:[],plans:planner.plans.filter(p=>p.status!=='canceled'&&!p.sourceId?.startsWith('guide:')).map(p=>({...p,status:'scheduled'}))};
+ const baseline=buildRoute(date,cleanState,cleanPlanner,{now,lessons,fromNow:false}),ordinals={};
+ const items=baseline.rows.filter(b=>b.kind==='study').map(b=>({id:date+':'+b.unit.id+':'+(ordinals[b.unit.id]=(ordinals[b.unit.id]||0)+1),unitId:b.unit.id,minutes:b.minutes,start:b.start,end:b.end}));
+ if(!items.length)return state;
+ return {...state,questDays:{...state.questDays,[date]:{items,done:{}}}};
+}
+export function completeRouteQuest(state,date,id,now=Date.now()){
+ const day=state.questDays?.[date];if(!day?.items.some(q=>q.id===id)||day.done[id])return state;
+ return {...state,questDays:{...state.questDays,[date]:{...day,done:{...day.done,[id]:now}}}};
+}
+export function routeQuestProgress(route,state){
+ const day=state.questDays?.[route?.day.date],items=day?.items||[];
+ const completed=items.filter(q=>day.done[q.id]).map(q=>({...q,title:route.units.find(u=>u.id===q.unitId)?.title||routeUnit(q.unitId)?.title||''}));
+ return {done:completed.length,total:items.length,completed};
+}
+// Keep one visible card per assigned quest even if a class splits its time slots.
+export function routeQuestRows(route,state){
+ const day=state.questDays?.[route.day.date];if(!day)return route.rows;
+ const units=new Map(route.units.map(u=>[u.id,u]));
+ const rows=day.items.map(q=>{const slots=route.rows.filter(r=>r.kind==='study'&&r.questId===q.id),done=!!day.done[q.id],unit=units.get(q.unitId)||routeUnit(q.unitId);
+  return {kind:'study',questId:q.id,unit:{...unit,questId:q.id},title:unit.title,minutes:q.minutes,start:slots[0]?.start??q.start,end:slots.at(-1)?.end??q.end,slots,done,unplaced:!done&&!slots.length};});
+ return [...route.rows.filter(r=>r.kind!=='study'),...rows].sort((a,b)=>a.start-b.start);
+}
 function mergeBusy(rows){const result=[];for(const row of [...rows].sort((a,b)=>a.start-b.start)){const prev=result.at(-1);if(prev&&row.start<=prev.end&&row.kind===prev.kind){prev.end=Math.max(prev.end,row.end);prev.title+=' · '+row.title;prev.lectures.push(...(row.lectures||[]));}else result.push({...row,lectures:row.lectures||[]});}return result;}
 export function buildRoute(date,state,planner,{now=Date.now(),fromNow=true,lessons=schedule,releasedAt}={}){
  const day=studyDays.find(d=>d.date===date);if(!day)return null;
@@ -47,16 +80,24 @@ export function buildRoute(date,state,planner,{now=Date.now(),fromNow=true,lesso
  const links=new Map(planner.plans.filter(p=>p.sourceId?.startsWith('guide:')).map(p=>[p.id,p.sourceId.slice(6)])),used=new Map();
  for(const r of planner.records){const id=links.get(r.planId);if(id)used.set(id,(used.get(id)||0)+r.duration/60000);}
  const f=planner.focus,focusId=links.get(f?.planId);if(focusId)used.set(focusId,(used.get(focusId)||0)+(f.elapsed+(f.started?Math.max(0,Math.min(now,f.stopAt||now)-f.started):0))/60000);
- const units=day.units.map(u=>{const changed=u.id.endsWith('recall')?weak[0]:u.title.startsWith('약한 묶음')?weak[weakIndex++]:null;return {...u,...(changed?{lecture:changed.lecture,student:changed.student,material:changed.material,question:changed.question,goal:changed.goal,title:changed.title+' 다시 확인'}:{}),remaining:state.checks[u.id]?.done?0:Math.max(0,u.minutes-(used.get(u.id)||0))};});
+ let units=day.units.map(u=>{const changed=u.id.endsWith('recall')?weak[0]:u.title.startsWith('약한 묶음')?weak[weakIndex++]:null;return {...u,...(changed?{lecture:changed.lecture,student:changed.student,material:changed.material,question:changed.question,goal:changed.goal,title:changed.title+' 다시 확인'}:{}),remaining:state.checks[u.id]?.done?0:Math.max(0,u.minutes-(used.get(u.id)||0))};});
  // Keep the first dose of pharmacology and unlearned concepts when the day gets short.
- const remainingTotal=units.reduce((n,u)=>n+u.remaining,0),queue=units.filter(u=>u.remaining>=1);
+ const assigned=state.questDays?.[date];let tasks=units;
+ if(assigned){
+  const byUnit=new Map(units.map(u=>[u.id,u])),byPlan=new Map(planner.plans.map(p=>[p.id,p])),legacy=new Map(),spent=new Map();
+  for(const r of planner.records){const p=byPlan.get(r.planId);if(!p?.sourceId?.startsWith('guide:'))continue;const target=p.questId?spent:legacy,key=p.questId||p.sourceId.slice(6);target.set(key,(target.get(key)||0)+r.duration/60000);}
+  if(f&&focusId){const p=byPlan.get(f.planId),target=p.questId?spent:legacy,key=p.questId||focusId;target.set(key,(target.get(key)||0)+(f.elapsed+(f.started?Math.max(0,Math.min(now,f.stopAt||now)-f.started):0))/60000);}
+  tasks=assigned.items.map(q=>{const credited=Math.min(q.minutes,legacy.get(q.unitId)||0);legacy.set(q.unitId,Math.max(0,(legacy.get(q.unitId)||0)-credited));return {...byUnit.get(q.unitId),questId:q.id,remaining:assigned.done[q.id]||state.checks[q.unitId]?.done?0:Math.max(0,q.minutes-credited-(spent.get(q.id)||0))};});
+  units=units.map(u=>({...u,remaining:tasks.filter(q=>q.id===u.id).reduce((n,q)=>n+q.remaining,0)}));
+ }
+ const remainingTotal=tasks.reduce((n,u)=>n+u.remaining,0),queue=tasks.filter(u=>u.remaining>=1);
  function allocate(order){let cursor=cursorStart,consecutive=0;const blocks=[];
   for(const u of order){let left=Math.ceil(u.remaining);while(left>=1&&cursor<1380){
    const overlap=blocked.find(b=>b.start<=cursor&&b.end>cursor);if(overlap){cursor=overlap.end;consecutive=0;continue;}
    const next=blocked.find(b=>b.start>cursor),end=Math.min(1380,next?.start??1380);
    if(end-cursor<10){cursor=end;continue;}
    if(consecutive>=60||(consecutive>0&&60-consecutive<15&&left>60-consecutive)){const n=Math.min(10,end-cursor);blocks.push({kind:'rest',start:cursor,end:cursor+n,title:'잠깐 쉬기'});cursor+=n;consecutive=0;continue;}
-   const n=Math.min(left,60-consecutive,end-cursor);blocks.push({kind:'study',start:cursor,end:cursor+n,title:u.title,unit:u,minutes:n});left-=n;cursor+=n;consecutive+=n;
+   const n=Math.min(left,60-consecutive,end-cursor);blocks.push({kind:'study',start:cursor,end:cursor+n,title:u.title,unit:u,questId:u.questId,minutes:n});left-=n;cursor+=n;consecutive+=n;
   }}return blocks;
  }
  let blocks=allocate(queue);const squeezed=blocks.filter(b=>b.kind==='study').reduce((n,b)=>n+b.minutes,0)+1<remainingTotal;

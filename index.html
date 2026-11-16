@@ -16,7 +16,7 @@
 <script>if(navigator.standalone===true)document.documentElement.dataset.iosStandalone='';</script>
 <link rel="stylesheet" href="./mobile-layout.css?v=3">
 <link rel="stylesheet" href="./refinement.css?v=20261116speech1"><link rel="stylesheet" href="./bond-stories.css?v=20261110bondpolish"><link rel="stylesheet" href="./recall.css?v=20261111walk">
-<link rel="stylesheet" href="./study-route.css?v=20261116quests2">
+<link rel="stylesheet" href="./study-route.css?v=20261116assigned1">
 <link rel="preload" href="./assets/sd/student-arrival-v1.webp" as="image">
 <link rel="stylesheet" href="./student-arrival.css?v=20261116sd1">
 </head>
@@ -56,7 +56,7 @@
   <div class="bond"><svg><use href="#i-heart"/></svg><div><small>인연</small><b id="bondLevel">1</b><progress id="bondProgress" max="100" value="20" aria-label="인연 진행도"></progress><small id="bondPoints">20 / 100</small></div></div>
  </section>
  <div class="stage" id="stage"><img id="fallback" src="./assets/haru-fresh-airy.png" alt="흰 재킷에 하트 머리핀을 한 분홍 단발의 하루"><canvas id="character" aria-hidden="true"></canvas><button id="touch" class="touch" aria-label="하루에게 말 걸기"></button></div>
- <div class="quickTools"><button id="quickSchedule"><svg><use href="#i-calendar"/></svg><span>일정</span></button><button id="quickQuest" aria-label="오늘의 퀘스트"><svg><use href="#i-target"/></svg><span>퀘스트</span></button></div>
+ <div class="quickTools"><button id="quickSchedule"><svg><use href="#i-calendar"/></svg><span>일정</span></button><button id="quickQuest" aria-label="오늘의 퀘스트"><svg><use href="#i-target"/></svg><span>퀘스트</span><b id="questSessionCount" class="questSessionCount" hidden></b></button></div>
  <div class="sideTools"><button id="quietToggle" class="motion" aria-label="자동 대사 끄기" aria-pressed="false"><svg><use href="#i-moon"/></svg></button><button id="motionToggle" class="motion" aria-label="캐릭터 움직임 멈추기"><svg><use href="#i-pause"/></svg></button></div>
  <div id="loadStatus" class="loadStatus" role="status">불러오는 중…</div>
  <section class="bottom">
@@ -73,5 +73,5 @@
 </main>
 <dialog id="modal"><button id="closeModal" class="close" aria-label="닫기">×</button><div id="modalContent"></div></dialog>
 <script src="./launch-screen.js?v=20261116launch1"></script>
-<script src="https://cubism.live2d.com/sdk-web/core/05/live2dcubismcore.min.js" onerror="window.coreLoadFailed=true"></script><script id="appModule" type="module" src="./app.js?v=20261116speech1"></script></body></html>
+<script src="https://cubism.live2d.com/sdk-web/core/05/live2dcubismcore.min.js" onerror="window.coreLoadFailed=true"></script><script id="appModule" type="module" src="./app.js?v=20261116questDM1"></script></body></html>
 

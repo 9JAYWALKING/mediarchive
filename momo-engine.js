@@ -1,4 +1,4 @@
-import {normalizeGuideMessages,mergeGuideMessages} from './guide-dm-engine.js?v=20261116guideDM2';
+import {normalizeGuideMessages,mergeGuideMessages} from './guide-dm-engine.js?v=20261116guideDM3';
 import {schedule} from './schedule-data.js?v=20261116guideDM2';
 import {koreanDate,validDate,shiftDate} from './game-state.js';
 import {routineContext} from './routine-engine.js';

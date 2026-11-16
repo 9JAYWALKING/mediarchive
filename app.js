@@ -1,4 +1,4 @@
-import {createStudyRoute,snapshotBeforeRoute} from './study-route-ui.js?v=20261116quests2';
+import {createStudyRoute,snapshotBeforeRoute} from './study-route-ui.js?v=20261116assigned1';
 const preRouteBackupOK=snapshotBeforeRoute();
 import {overtimeState,overtimeLine} from './overtime-dialogue.js?v=20261115akariVoice1';
 import {bondStories} from './bond-story-data.js?v=20261110ritsu';
@@ -26,8 +26,8 @@ import {sessionTotals,summarizeGrowth,normalizeGrowth,growthReminder} from './gr
 import {normalizeStudy,studySnapshot,mergeStudy} from './study-store.js';
 import {createGrowthUI} from './growth-ui.js';
 import {configureRoutine,routineLine,configuredRoutineContext} from './routine-service.js?v=20261115akariVoice1';
-import {createMomoUI} from './momo-ui.js?v=20261116guideDM2';
-import {createPlannerUI} from './planner-ui.js?v=20261116guideDM2';
+import {createMomoUI} from './momo-ui.js?v=20261116guideDM3';
+import {createPlannerUI} from './planner-ui.js?v=20261116assigned1';
 import {startWorldTime} from './world-time.js?v=20261110hometalk';
 import {createCareUI} from './care-ui.js?v=20261116quests2';
 const $=s=>document.querySelector(s),KEY='heart-companion-v1';let state=normalizeStudy(null),storageOK=true;
@@ -103,7 +103,7 @@ care=createCareUI({pauseStudy:()=>{if(state.session?.started){checkpoint();save(
 configureWardrobe(()=>planner.state.meals);
 startWorldTime({openModal:modal});
 bondEvents=createBondStoryUI({getBond:id=>Math.max(0,selectedGrowth(id).bond+(reviews?.delta(id)||0)+(care?.penalty(id)||0)),beforeOpen:()=>{if(state.session?.started){checkpoint();save();refresh();}planner?.pauseForRest();},onChange:()=>{momo?.updateBadge();game?.refreshPanel();},toast});
-momo=createMomoUI({getGuide:()=>route,openGuide:id=>{game.show('momo');momo.openThread(id);},isHome:()=>game?.view==='home',canNotify:()=>!quiet&&!document.hidden&&!document.querySelector('dialog[open]')&&!care?.resting&&!document.documentElement.dataset.boot&&!['recall'].includes(game?.view),planner,bondEvents,getStudy:()=>state,getExamDate:()=>game?.examDate,openModal:modal,closeModal:()=>$('#modal').close(),onSchedule:date=>game.openSchedule(date),onLaunch:lecture=>game.launch(lecture),toast});
+momo=createMomoUI({getGuide:()=>route,openGuide:id=>{game.show('momo');momo.openThread(id);},isHome:()=>game?.view==='home',canNotify:()=>!quiet&&!lobby?.loading&&!document.hidden&&!document.querySelector('dialog[open]')&&!care?.resting&&!document.documentElement.dataset.boot&&!['recall'].includes(game?.view),planner,bondEvents,getStudy:()=>state,getExamDate:()=>game?.examDate,openModal:modal,closeModal:()=>$('#modal').close(),onSchedule:date=>game.openSchedule(date),onLaunch:lecture=>game.launch(lecture),toast});
 game=createGameUI({onGuide:date=>route?.openDay(date),onRecallTime:event=>planner.recordWalk(event),beforeRecall:()=>{if(care?.resting){care.restOpen();return false;}if(state.session?.started){checkpoint();save();refresh();}planner?.pauseForRest();},bondEvents,getLobby:()=>lobbyId,getStudentGrowth:selectedGrowth,onLobby:id=>lobby.select(id),reviews,getState:()=>state,getQuiz:()=>quiz,getGrowth,momo,planner,care,openModal:modal,closeModal:()=>$('#modal').close(),onStart:startSession,onTalk:speak,onCoverage:()=>quiz.openProgress(),onGrowth:()=>growthUI.progress(),toast,format});
 route=createStudyRoute({onCard:c=>momo.syncGuide(c),onMessage:m=>momo.receiveGuide(m),inConversation:()=>game?.view==='momo',planner,say,selectStudent:selectStudying,openModal:modal,closeModal:()=>$('#modal').close(),toast,getSession:()=>state.session,pauseLegacy:()=>{if(state.session?.started){checkpoint();save();refresh();}},getLobby:()=>lobbyId,blocked:()=>!!document.querySelector('dialog[open]')||game.view!=='home'||lobbyDialogue.hasNext||!!care?.resting||!!document.documentElement.dataset.boot,quiet:()=>quiet,onSchedule:date=>game.openSchedule(date),onChange:()=>refresh()});
 const manualContext=$('#eventContext').onclick;$('#eventContext').onclick=()=>{if(route.active&&route.card()){const c=route.card();game.show('momo');momo.openThread(c.student);}else if(route.active)route.openDay();else manualContext?.();};

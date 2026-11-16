@@ -5,7 +5,7 @@ export function guidePortrait(id){
  wrap.dataset.student=s.id;wrap.style.setProperty('--student-color',s.color);
  const img=node('img');img.src=s.portrait;img.alt='';img.decoding='async';wrap.append(img);return wrap;
 }
-export function createGuideSurfaces({act,deferMeal,open,overview,canNotify,isHome,onChange}){
+export function createGuideSurfaces({act,deferMeal,open,overview,canNotify,onChange,onShown=()=>{}}){
  let current=null,signature='',queued=null,shown=null,until=0,shownAt=0;
  const banner=node('button',undefined,'guideNotification');banner.hidden=true;banner.setAttribute('aria-live','polite');document.querySelector('.phone').append(banner);
  banner.onclick=()=>{const owner=shown?.student;dismiss();if(owner)open(owner);};
@@ -14,16 +14,16 @@ export function createGuideSurfaces({act,deferMeal,open,overview,canNotify,isHom
   current=c;
   const key=JSON.stringify(c);
   if(key!==signature){signature=key;onChange();home(c);}
+  if(shown&&['invite','check','meal'].includes(shown.kind)&&shown.id!==c?.noticeId)dismiss();
   if(document.hidden||!canNotify()){dismiss();return;}
   if(shown&&Date.now()>until)dismiss();
-  if(queued&&Date.now()-queued.at>180000)queued=null;
   if(queued&&!shown&&Date.now()-shownAt>60000){
-   const m=queued;queued=null;if(isHome())return;
+   const m=queued;queued=null;
    if(['invite','check','meal'].includes(m.kind)&&m.student!==current?.student)return;
-   if(['invite','check'].includes(m.kind)&&m.id!==current?.noticeId)return;
+   if(['invite','check','meal'].includes(m.kind)&&m.id!==current?.noticeId)return;
    shown=m;shownAt=Date.now();until=Date.now()+8000;
    const s=illustratedStudents.find(s=>s.id===m.student),body=node('span',undefined,'guideNotificationBody');
-   body.append(node('b',s.name+' · DM'),node('span',m.text));banner.replaceChildren(guidePortrait(s.id),body);banner.hidden=false;
+   body.append(node('b',s.name+' · DM'),node('span',m.text));banner.replaceChildren(guidePortrait(s.id),body);banner.hidden=false;onShown(m);
   }
  }
  function home(c){
@@ -58,5 +58,5 @@ export function createGuideSurfaces({act,deferMeal,open,overview,canNotify,isHom
   if(compact||c.action!=='day'){const secondary=node('button',c.kind==='meal'?'30분 뒤':compact?'DM':'일정','guideSecondary');secondary.onclick=()=>c.kind==='meal'?deferMeal(c.id):compact?open(s.id):overview();actions.append(secondary);}card.append(actions);container.append(card);
  }
  document.addEventListener('visibilitychange',()=>{if(document.hidden)dismiss();});
- return {sync,draw,redraw,notify(m){queued=m;},get current(){return current;},dismiss};
+ return {sync,draw,redraw,notify(m){queued=m;},read(student){if(queued?.student===student)queued=null;if(shown?.student===student)dismiss();},get current(){return current;},dismiss};
 }

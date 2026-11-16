@@ -11,8 +11,13 @@ export function normalizeGuideMessages(raw){
  return [...messages.values()].sort((a,b)=>a.at-b.at).slice(-300);
 }
 export function mergeGuideMessages(a,b){return normalizeGuideMessages([...(a||[]),...(b||[])]);}
+export function guideMessageForCard(card){
+ const kind={study:'invite',plan:'invite',check:'check',meal:'meal'}[card?.kind];
+ if(!kind||!card.noticeId||!owners.has(card.student)||!card.text)return null;
+ return {id:card.noticeId,student:card.student,kind,text:[card.text,card.goal].filter(Boolean).join(' ')};
+}
 export function guideUnread(messages,card,student){
  // Only today's actionable card carries a guidance badge. Old invitations remain readable history.
- if(!card||!['study','check','meal'].includes(card.kind)||(student&&card.student!==student))return 0;
+ if(!card||!['study','plan','check','meal'].includes(card.kind)||(student&&card.student!==student))return 0;
  return messages.some(m=>m.id===card.noticeId&&!m.readAt)?1:0;
 }

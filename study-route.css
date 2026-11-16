@@ -66,3 +66,21 @@
 #modal .routeDaySheet>.routeEyebrow{padding-right:136px;min-height:18px;white-space:nowrap}
 #modal .routeDaySheet>h2{margin-top:15px;margin-bottom:22px;font-family:var(--display);font-size:25px}
 @media(max-width:359px){#modal .routeDaySheet>.routeEyebrow{font-size:10px;letter-spacing:.04em}#modal .routeMealButton{right:60px;padding:0 10px}}
+
+/* Session completion, independent of legacy attendance quests. */
+#quickQuest{position:relative}
+.questSessionCount{position:absolute;right:-6px;top:-7px;min-width:30px;padding:3px 6px;border:2px solid #fff;border-radius:10px;background:#578f9d;color:#fff;font:600 11px/1.1 var(--numbers);font-variant-numeric:tabular-nums;box-shadow:0 2px 6px #416d851c}
+.routeQuestHeading{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.routeQuestHeading h3{min-width:0;margin:0}
+.routeQuestCount{flex:none;color:#467b8d;font:500 24px/1.2 var(--numbers);font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.routeQuestMeter{display:block;appearance:none;border:0;border-radius:8px;width:100%;height:5px;margin:14px 0 10px;background:#dae9ed;overflow:hidden}
+.routeQuestMeter::-webkit-progress-bar{background:#dae9ed;border-radius:8px}.routeQuestMeter::-webkit-progress-value{background:#70a8af;border-radius:8px}.routeQuestMeter::-moz-progress-bar{background:#70a8af;border-radius:8px}
+.routeQuestCompleted{margin-top:10px;color:#73929a;font-size:12px}.routeQuestCompleted summary{cursor:pointer;padding:5px 0}.routeQuestCompleted p{margin:4px 0;font-size:12px}
+
+.routeCompleteQuest{display:block;margin:12px 0 0 auto;min-height:40px;min-width:76px;padding:8px 15px;border:1px solid #bcdadd;border-radius:12px;background:#eef8f7;color:#4b8490;font:700 12px var(--ui);touch-action:manipulation}
+.routeCompleteQuest:active{background:#dcefeb}.routeCompleteQuest.is-done{border-color:transparent;background:transparent;color:#85a8a7;min-height:28px;padding:4px 0;opacity:1}
+.routeItem.is-done .routeBody{background:#f0f7f6;border-color:#dce9e7}.routeItem.is-done .routeBody h3{color:#7c9b9b}.routeItem.is-done details,.routeItem.is-done .routeSources{display:none}.routeTime small{white-space:nowrap}
+
+.routeQuestActions{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:10px}.routeQuestActions:empty{display:none}.routeQuestActions .routeInline,.routeQuestActions .routeCompleteQuest{margin:0;min-height:42px}.routeQuestActions .routeInline{margin-right:auto}.routeItem.is-done .routeQuestActions{margin-top:4px}
+
+.routeTimeSlot+.routeTimeSlot{margin-top:10px;padding-top:8px;border-top:1px solid #dbe8eb}.routeItem.is-done .routeTime b{color:#89a9a8;font-size:11px}
